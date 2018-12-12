@@ -1,0 +1,29 @@
+{
+  "name": "mathEditBackend",
+  "version": "1.0.0",
+  "description": "a set of software procedures that handle Prequal client data",
+  "main": "app.js",
+  "scripts": {
+    "server": "node app.js",
+    "mon": "nodemon app.js"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "dotenv": "^4.0.0",
+    "mathquill-markup-generator": "^0.2.0",
+    "nodemon": "^1.17.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "bitbucket"
+  },
+  "keywords": [
+    "latex",
+    "mathquill",
+    "matheditor"
+  ],
+  "author": "paco",
+  "license": "ISC"
+}

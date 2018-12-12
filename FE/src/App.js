@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import NotePad from './notePad'
+import NotePad from './NotePad'
+import './index.css';
 
 class App extends Component {
   render() {

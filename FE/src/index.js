@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import MathPad from './MathPad';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<MathPad />, document.getElementById('root'));

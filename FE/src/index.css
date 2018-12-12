@@ -8,23 +8,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.mjx-char {
+.mq-editable-field {
+  border-radius: 5px;
+  width: 100%;
+ }
+
+ .mq-math-mode {
   /* font-family: 'Noto Serif', serif !important; */
   font-family: 'Alegreya', serif !important;
   /* font-size: 30px; */
   /* font-family: 'Tinos', serif !important; */
-}
+ }
 
-/* summation wrapper
-.MJXp-mo {
-  margin: 0 .15em;
+/* var, big {
+  
 } */
-/* summation element  */
-.MJXc-TeX-size2-R {
-  font-size: 200% !important;
-  padding-top: 12px !important;
-  padding-bottom: 19px !important;
-}
 
 #inputWrapper {
   margin-top: 10%;

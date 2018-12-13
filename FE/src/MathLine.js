@@ -13,6 +13,7 @@ class MathLine extends Component {
     super(props)
     this.state = {
       latex: initialLatex
+      // latex: ''
     }
     this.mathQuillEl = null
 

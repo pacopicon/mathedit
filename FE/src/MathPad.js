@@ -1,49 +1,87 @@
 import React, { Component } from 'react';
 import MathLine from './MathLine'
-import MathPad2 from './MathPad2'
 import Header from './Header'
 import './index.css';
 
 class MathPad extends Component {
   constructor(props) {
     super(props)
+    let i = 1
     this.state = {
       i: 1,
-      MathLines: [],
+      MathLines: [<MathLine key={i} index={i} />],
       stringsPerLine: []
     }
-
-    this.handleKeyPress = this.handleKeyPress.bind(this)
-    this.returnCarriage = this.returnCarriage.bind(this)
     this.getStringsPerLine = this.getStringsPerLine.bind(this)
-    this.renderMathLines = this.renderMathLines.bind(this)
+    this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
 
   }
-
-  componentDidUpdate() {
-    this.returnCarriage()
-  }
-
-  handleKeyPress(e) {
-    e.preventDefault()
+  
+  handleKeyDownEvents(e) {
     if (e.key == 'Enter') {
-      this.setState({
-        i: this.state.i += 1
-      })
-    }
-  }
+    // Carriage Return
+    
+    // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
+    let { MathLines } = this.state
+    let i = MathLines.length + 1
 
-  returnCarriage() {
-    console.log('this kicked off')
-    let ul = document.getElementsByTagName('ul')
-    console.log('ul = ', ul)
-    if (ul && ul[0] && ul[0].children && ul[0].children.length > 1) {
-      let ulArr =  ul[0].children
-      let textArea = ulArr[ulArr.length-1].childNodes[0].childNodes[0].childNodes[0]
-      console.log('textArea = ', textArea)
-        if (textArea) {
-          textArea.focus()
+      MathLines.push(
+        <MathLine key={i} index={i} />
+      )
+    
+      this.setState({
+        MathLines: MathLines
+      }
+      , () => {
+          let ul = document.getElementById('ul')
+          if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
+            let ulArr =  ul.children
+            let textArea = ulArr[ulArr.length-1].childNodes[0].childNodes[0].childNodes[0]
+            if (textArea) {
+              textArea.focus()
+            }
+          }
         }
+      )
+    } else if (e.key == 'ArrowUp') {
+      console.log('going up')
+    } else if (e.key == 'ArrowLeft') {
+      console.log('e.target.textLength = ', e.target.textLength)
+      console.log('e.target.selectionStart = ', e.target.selectionStart)
+      console.log('e.target.selectionEnd = ', e.target.selectionEnd)
+      console.log('e.target.selectionDirection = ', e.target.selectionDirection)
+      console.log('e.target.select = ', e.target.select)
+      console.log('e.target.setRangeText = ', e.target.setRangeText)
+      console.log('e.target.setSelectionRange = ', e.target.setSelectionRange)
+      console.log('e.target.title = ', e.target.title)
+      console.log('e.target.tabIndex = ', e.target.tabIndex)
+      console.log('e.target.innerText = ', e.target.innerText)
+      console.log('e.target.outerText = ', e.target.outerText)
+      console.log('e.target.innerHTML = ', e.target.innerHTML)
+      console.log('e.target.outerHTML = ', e.target.outerHTML)
+      console.log('e.target.scrollLeft = ', e.target.scrollLeft)
+      console.log('e.target.click = ', e.target.click)
+      // for (let p in e.target) {
+      //   console.log('prop = ', p)
+      // }
+    } else if (e.key == 'ArrowRight') {
+      console.log('e.target.textLength = ', e.target.textLength)
+      console.log('e.target.selectionStart = ', e.target.selectionStart)
+      console.log('e.target.selectionEnd = ', e.target.selectionEnd)
+      console.log('e.target.selectionDirection = ', e.target.selectionDirection)
+      console.log('e.target.select = ', e.target.select)
+      console.log('e.target.setRangeText = ', e.target.setRangeText)
+      console.log('e.target.setSelectionRange = ', e.target.setSelectionRange)
+      console.log('e.target.title = ', e.target.title)
+      console.log('e.target.tabIndex = ', e.target.tabIndex)
+      console.log('e.target.innerText = ', e.target.innerText)
+      console.log('e.target.outerText = ', e.target.outerText)
+      console.log('e.target.innerHTML = ', e.target.innerHTML)
+      console.log('e.target.outerHTML = ', e.target.outerHTML)
+      console.log('e.target.scrollLeft = ', e.target.scrollLeft)
+      console.log('e.target.click = ', e.target.click)
+    } else if (e.key == 'Tab') {
+      console.log('pressed Tab')
     }
   }
   
@@ -55,23 +93,13 @@ class MathPad extends Component {
     })
   }
 
-  renderMathLines() {
-    let { MathLines } = this.state
-    for (let i=0; i<this.state.i; i++) {
-      MathLines.push(
-        <MathLine key={i} index={i} />
-      )
-    }
-    return (
-      <ul>{ MathLines }</ul>
-    )
-  }
-
   render() {
+    let { MathLines } = this.state
     return (
-      <div id="MathPad">
+      <div id="MathPad" onKeyDown={this.handleKeyDownEvents}>
         <Header />
-        {this.renderMathLines()}
+        {/* {this.renderMathLines()} */}
+        <ul id='ul'>{ MathLines }</ul>
       </div>
     );
   }

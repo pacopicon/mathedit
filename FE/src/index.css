@@ -8,6 +8,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+nav div.container {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
 #MathPad {
 
 }

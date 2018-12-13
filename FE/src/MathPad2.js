@@ -1,24 +1,46 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom'
-import MathLine from './MathLine'
+import MathQuill, { addStyles as addMathquillStyles } from 'react-mathquill';
+import MathLine from './MathLine2'
 import Header from './Header'
 import './index.css';
+
+
+addMathquillStyles()
+const initialLatex =
+  '\\cos\\left(A\\right)=\\frac{b^2+c^2-a^2}{2\\cdot b\\cdot c}'
 
 class MathPad extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      i: 1
+      i: 1,
+      latex: initialLatex
       // ,
       // stringsPerLine: []
     }
     this.handleKeyPress = this.handleKeyPress.bind(this)
     this.returnCarriage = this.returnCarriage.bind(this)
     this.getStringsPerLine = this.getStringsPerLine.bind(this)
+
+    this.mathQuillEl = null
+
+    this.resetField = () => {
+      this.mathQuillEl.latex(initialLatex)
+    }
+    this.handleChange = this.handleChange.bind(this)
   }
 
   componentDidUpdate() {
     this.returnCarriage()
+  }
+
+  handleChange(latex) {
+    // e.preventDefault()
+    // let latex = e.target.value
+    this.setState({
+      latex
+    })
   }
 
   handleKeyPress(e) {
@@ -52,6 +74,8 @@ class MathPad extends Component {
   }
 
   render() {
+    let { latex } = this.state
+
     let MathLines = []
     for (let i=0; i<this.state.i; i++) {
       MathLines.push(
@@ -66,7 +90,18 @@ class MathPad extends Component {
     return (
       <div id='MathPad' onKeyPress={this.handleKeyPress}>
         <Header />
-        <ul id='MathLines'>{ MathLines }</ul>
+        { MathLines }
+        <MathLine />
+        <MathQuill
+          latex={latex}
+          onChange={latex => {
+            this.handleChange(latex)
+          }}
+          mathquillDidMount={el => {
+            this.mathQuillEl = el
+          }}
+        />
+        {/* <ul id='MathLines'>{ MathLines }</ul> */}
         <button onClick={this.returnCarriage}></button>
       </div>
     );

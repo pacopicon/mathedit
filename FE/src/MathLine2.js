@@ -8,12 +8,12 @@ const tex2 = `\\frac{125\\left(1+\\frac{0.1}{2}\\right)^{2\\left(1-0.5\\right)}-
 const tex3 = `\\sum\\limits^{n=100}_{i=1}`
 const content = `This can be dynamic text (e.g. user-entered) text with tex math embedded in $$ symbols like $$${tex3}$$`
 
-addMathquillStyles()
+// addMathquillStyles()
 
 const initialLatex =
   '\\cos\\left(A\\right)=\\frac{b^2+c^2-a^2}{2\\cdot b\\cdot c}'
 
-class NotePad extends Component {
+class MathLine extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -25,6 +25,10 @@ class NotePad extends Component {
       this.mathQuillEl.latex(initialLatex)
     }
     this.handleChange = this.handleChange.bind(this)
+  }
+
+  componentWillMount() {
+    addMathquillStyles()
   }
 
   handleChange(latex) {
@@ -39,33 +43,20 @@ class NotePad extends Component {
     let { latex } = this.state
     return (
       <div>
-        Math field:{' '}
         <MathQuill
-          latex={this.state.latex}
+          latex={latex}
           onChange={latex => {
             this.handleChange(latex)
           }}
           mathquillDidMount={el => {
             this.mathQuillEl = el
           }}
-        />
-        <div className="result-container">
-          <span>Raw latex:</span>
-          <span className="result-latex">{this.state.latex}</span>
-        </div>
-        <button onClick={this.resetField}>Reset field</button>
-        /////////////////////////////////////////////////////
-        <div id="inputWrapper">
-          <Form horizontal>
-            <FormGroup controlId="formHorizontalEmail">
-              <FormControl type="area" value={ latex } onChange={this.handleInput} />
-            </FormGroup>
-          </Form>
-        </div>
+        />  
+        {/* <button onClick={this.resetField}>Reset field</button> */}
       </div>
     );
   }
 }
 
 
-export default NotePad
+export default MathLine

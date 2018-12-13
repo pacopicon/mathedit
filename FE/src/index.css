@@ -8,21 +8,61 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.mq-editable-field {
+#MathPad {
+
+}
+
+#MathLines {
+  border: 1px;
+  border-style: dashed ;
   border-radius: 5px;
+  border-top-color: lightblue ;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-right-color: lightblue;
+  /* border-top: 3px; */
+  padding-left: 0;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-bottom: 0;
+  width: 90%;
+  height: 120%;
+}
+
+.MathQuillWrapper {
+  padding: 0;
+  margin: 0;
+  height: 100%;
   width: 100%;
+}
+
+.mq-editable-field {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  /* height: 120% !important; */
+ }
+
+ .mq-root-block {
+    padding: 0 !important;
+    margin: 0 !important;
+    /* height: 60px !important; */
  }
 
  .mq-math-mode {
+  padding: 0 !important;
   /* font-family: 'Noto Serif', serif !important; */
   font-family: 'Alegreya', serif !important;
   /* font-size: 30px; */
   /* font-family: 'Tinos', serif !important; */
+  border-style: dashed !important;
+  border-left-color: lightblue !important;
+  border-right-color: lightblue !important;
+  border-bottom-color: lightblue !important;
+  border-top-color: transparent !important;
  }
 
-/* var, big {
-  
-} */
+span.mq-textarea textarea
 
 #inputWrapper {
   margin-top: 10%;

@@ -11,6 +11,7 @@ class MathPad extends Component {
       MathLines: '',
       stringsPerLine: [],
       cursorLinePosition: '',
+      cursorTextPosition: '',
       orderOfComponents: ''
     }
     this.getStringsPerLine = this.getStringsPerLine.bind(this)
@@ -35,8 +36,8 @@ class MathPad extends Component {
     })
   }
 
-  insertComponent() {
-    let { MathLines, cursorLinePosition, orderOfComponents } = this.state
+  insertComponent(MathLines, cursorLinePosition, orderOfComponents) {
+    
     let tempMathLines = [...MathLines]
     let pos = orderOfComponents.indexOf(cursorLinePosition) + 1
     const id = rando()
@@ -54,28 +55,26 @@ class MathPad extends Component {
     tempMathLines.map( mathline => {
       tempOrder.push(mathline.props.id)
     })
-
-    console.log('tempOrder = ', tempOrder)
   
     return {
       tempMathLines,
-      tempOrder
+      tempOrder,
+      pos
     }
   }
   
   handleKeyDownEvents(e) {
-    if (e.key == 'Enter') {      
+    if (e.key == 'a') {
+      alert('a')
+      let id = this.state.cursorLinePosition
+      let i = this.state.orderOfComponents.indexOf(id)
+    let latexStr = new String(this.state.stringsPerLine[i])
+    console.log(latexStr.length)
+    } else if (e.key == 'Enter') {      
     // Carriage Return
     // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
-      let {  } = this.state
-      
-      // let newComponent =  <MathLine
-      //                       key={`${rando()}`} 
-      //                       getStringsPerLine={this.getStringsPerLine}
-      //                       getLinePosition={this.getLinePosition} 
-      //                     />
-
-      let res = this.insertComponent()
+    let { MathLines, cursorLinePosition, orderOfComponents } = this.state
+    let res = this.insertComponent(MathLines, cursorLinePosition, orderOfComponents)
 
  
 
@@ -87,7 +86,7 @@ class MathPad extends Component {
           let ul = document.getElementById('ul')
           if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
             let ulArr =  ul.children
-            let textArea = ulArr[ulArr.length-1].childNodes[0].childNodes[0].childNodes[0]
+            let textArea = ulArr[res.pos].childNodes[0].childNodes[0].childNodes[0]
             if (textArea) {
               textArea.focus()
             }
@@ -97,48 +96,27 @@ class MathPad extends Component {
     } else if (e.key == 'ArrowUp') {
       console.log('going up')
     } else if (e.key == 'ArrowLeft') {
+      console.log('position = ', '-1')
       console.log('e.target.textLength = ', e.target.textLength)
       console.log('e.target.selectionStart = ', e.target.selectionStart)
-      console.log('e.target.selectionEnd = ', e.target.selectionEnd)
-      console.log('e.target.selectionDirection = ', e.target.selectionDirection)
-      console.log('e.target.select = ', e.target.select)
-      console.log('e.target.setRangeText = ', e.target.setRangeText)
-      console.log('e.target.setSelectionRange = ', e.target.setSelectionRange)
-      console.log('e.target.title = ', e.target.title)
-      console.log('e.target.tabIndex = ', e.target.tabIndex)
-      console.log('e.target.innerText = ', e.target.innerText)
-      console.log('e.target.outerText = ', e.target.outerText)
-      console.log('e.target.innerHTML = ', e.target.innerHTML)
-      console.log('e.target.outerHTML = ', e.target.outerHTML)
-      console.log('e.target.scrollLeft = ', e.target.scrollLeft)
-      console.log('e.target.click = ', e.target.click)
+     
       // for (let p in e.target) {
       //   console.log('prop = ', p)
       // }
     } else if (e.key == 'ArrowRight') {
+      console.log('position = ', '+1')
       console.log('e.target.textLength = ', e.target.textLength)
       console.log('e.target.selectionStart = ', e.target.selectionStart)
-      console.log('e.target.selectionEnd = ', e.target.selectionEnd)
-      console.log('e.target.selectionDirection = ', e.target.selectionDirection)
-      console.log('e.target.select = ', e.target.select)
-      console.log('e.target.setRangeText = ', e.target.setRangeText)
-      console.log('e.target.setSelectionRange = ', e.target.setSelectionRange)
-      console.log('e.target.title = ', e.target.title)
-      console.log('e.target.tabIndex = ', e.target.tabIndex)
-      console.log('e.target.innerText = ', e.target.innerText)
-      console.log('e.target.outerText = ', e.target.outerText)
-      console.log('e.target.innerHTML = ', e.target.innerHTML)
-      console.log('e.target.outerHTML = ', e.target.outerHTML)
-      console.log('e.target.scrollLeft = ', e.target.scrollLeft)
-      console.log('e.target.click = ', e.target.click)
+     
     } else if (e.key == 'Tab') {
       console.log('pressed Tab')
     }
   }
   
-  getStringsPerLine(latexStr, index) {
-    let { stringsPerLine } = this.state
-    stringsPerLine[index] = latexStr
+  getStringsPerLine(latexStr, id) {
+    let { stringsPerLine, orderOfComponents } = this.state
+    const i = orderOfComponents.indexOf(id)
+    stringsPerLine[i] = latexStr
     this.setState({
       stringsPerLine
     })

@@ -12,7 +12,7 @@ class MathLine extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      latex: initialLatex
+      latex: ''
       // latex: ''
     }
     this.mathQuillEl = null
@@ -29,6 +29,7 @@ class MathLine extends Component {
     this.setState({
       latex
     })
+    this.props.getStringsPerLine(latex, this.props.id)
   }
 
   render() {

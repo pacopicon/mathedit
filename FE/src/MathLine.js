@@ -34,7 +34,7 @@ class MathLine extends Component {
   render() {
     let { latex } = this.state
     return (
-      <div>
+    <div className='MathQuillWrapper' onFocus={e => {this.props.getLinePosition(e, this.props.id)}}>
         <MathQuill
           latex={this.state.latex}
           onChange={latex => {

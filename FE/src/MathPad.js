@@ -2,35 +2,86 @@ import React, { Component } from 'react';
 import MathLine from './MathLine'
 import Header from './Header'
 import './index.css';
+import { insertComponent, rando } from './utils'
 
 class MathPad extends Component {
   constructor(props) {
     super(props)
-    let i = 1
     this.state = {
-      i: 1,
-      MathLines: [<MathLine key={i} index={i} />],
-      stringsPerLine: []
+      MathLines: '',
+      stringsPerLine: [],
+      cursorLinePosition: '',
+      orderOfComponents: ''
     }
     this.getStringsPerLine = this.getStringsPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
+    this.getLinePosition = this.getLinePosition.bind(this)
+    this.insertComponent = this.insertComponent.bind(this)
+  }
 
+  componentWillMount() {
+    const id = rando()
+    const temp = [id]
+    this.setState({
+      MathLines: [
+        <MathLine 
+          key={id} 
+          id={id}
+          getStringsPerLine={this.getStringsPerLine}
+          getLinePosition={this.getLinePosition} 
+        />
+      ],
+      orderOfComponents: temp
+    })
+  }
+
+  insertComponent() {
+    let { MathLines, cursorLinePosition, orderOfComponents } = this.state
+    let tempMathLines = [...MathLines]
+    let pos = orderOfComponents.indexOf(cursorLinePosition) + 1
+    const id = rando()
+    let tempOrder = []
+
+    let newComponent = <MathLine
+                          key={id}
+                          id={id} 
+                          getStringsPerLine={this.getStringsPerLine}
+                          getLinePosition={this.getLinePosition} 
+                        />
+  
+    tempMathLines.splice(pos, 0, newComponent)
+
+    tempMathLines.map( mathline => {
+      tempOrder.push(mathline.props.id)
+    })
+
+    console.log('tempOrder = ', tempOrder)
+  
+    return {
+      tempMathLines,
+      tempOrder
+    }
   }
   
   handleKeyDownEvents(e) {
-    if (e.key == 'Enter') {
+    if (e.key == 'Enter') {      
     // Carriage Return
-    
     // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
-    let { MathLines } = this.state
-    let i = MathLines.length + 1
+      let {  } = this.state
+      
+      // let newComponent =  <MathLine
+      //                       key={`${rando()}`} 
+      //                       getStringsPerLine={this.getStringsPerLine}
+      //                       getLinePosition={this.getLinePosition} 
+      //                     />
 
-      MathLines.push(
-        <MathLine key={i} index={i} />
-      )
-    
+      let res = this.insertComponent()
+
+ 
+
       this.setState({
-        MathLines: MathLines
+        MathLines: res.tempMathLines,
+        orderOfComponents: [...res.tempOrder]
       }
       , () => {
           let ul = document.getElementById('ul')
@@ -90,6 +141,14 @@ class MathPad extends Component {
     stringsPerLine[index] = latexStr
     this.setState({
       stringsPerLine
+    })
+  }
+
+  getLinePosition(e, i) {
+    e.preventDefault()
+    console.log('i = ', i)
+    this.setState({
+      cursorLinePosition: i
     })
   }
 

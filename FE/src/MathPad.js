@@ -18,6 +18,7 @@ class MathPad extends Component {
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
     this.getLinePosition = this.getLinePosition.bind(this)
     this.insertComponent = this.insertComponent.bind(this)
+    this.getCursorAdjacentString = this.getCursorAdjacentString.bind(this)
   }
 
   componentWillMount() {
@@ -63,13 +64,41 @@ class MathPad extends Component {
     }
   }
   
+  getCursorAdjacentString() {
+    let space = document.getElementsByClassName('mq-root-block')
+    let spaceChildren = space[0].children
+
+    console.log('spaceChildren = ', spaceChildren)
+
+
+
+
+    // let cursor = document.getElementsByClassName('mq-cursor')
+    // let enclosingParentheses = document.querySelector('.mq-paren + .mq-hasCursor')
+    // let cursorParent = document.querySelector('.mq-hasCursor')
+    // let curParChildren = cursorParent.children
+    // let nextVar = document.querySelector('.mq-cursor + var')
+    // let nextSpan = document.querySelector('.mq-cursor + span')
+    // let nextElement = nextVar ? nextVar : nextSpan
+
+    // console.log('cursor = ', cursor)
+    // console.log('enclosingParentheses = ', enclosingParentheses)
+    // if (enclosingParentheses) {
+    //   console.log('enclosingParentheses.length = ', enclosingParentheses.length)
+    // }
+    // console.log('nextElement = ', nextElement)
+    // console.log('cursorParent = ', cursorParent)
+    // console.log('curParChildren = ', curParChildren)
+    // console.log('curParChildren[0].innerText = ', curParChildren[0].innerText)
+  }
   handleKeyDownEvents(e) {
-    if (e.key == 'a') {
-      alert('a')
-      let id = this.state.cursorLinePosition
-      let i = this.state.orderOfComponents.indexOf(id)
-    let latexStr = new String(this.state.stringsPerLine[i])
-    console.log(latexStr.length)
+    // let id = this.state.cursorLinePosition
+    //   let i = this.state.orderOfComponents.indexOf(id)
+    // let latexStr = new String(this.state.stringsPerLine[i])
+    
+    this.getCursorAdjacentString()
+    if (e.key == '0') {
+
     } else if (e.key == 'Enter') {      
     // Carriage Return
     // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
@@ -94,22 +123,12 @@ class MathPad extends Component {
         }
       )
     } else if (e.key == 'ArrowUp') {
-      console.log('going up')
+  
     } else if (e.key == 'ArrowLeft') {
-      console.log('position = ', '-1')
-      console.log('e.target.textLength = ', e.target.textLength)
-      console.log('e.target.selectionStart = ', e.target.selectionStart)
-     
-      // for (let p in e.target) {
-      //   console.log('prop = ', p)
-      // }
+      
     } else if (e.key == 'ArrowRight') {
-      console.log('position = ', '+1')
-      console.log('e.target.textLength = ', e.target.textLength)
-      console.log('e.target.selectionStart = ', e.target.selectionStart)
      
     } else if (e.key == 'Tab') {
-      console.log('pressed Tab')
     }
   }
   

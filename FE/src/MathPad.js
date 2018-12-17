@@ -10,16 +10,20 @@ class MathPad extends Component {
     this.state = {
       MathLines: '',
       stringsPerLine: [],
-      cursorLinePosition: '',
+      mathLineId: '',
       cursorTextPosition: '',
       orderOfComponents: '',
-      spaceChildren: ''
+      spaceChildren: '',
+      numStrokes: -1,
+      symbolHtmlCorrelate: []
     }
     this.getStringsPerLine = this.getStringsPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
     this.getLinePosition = this.getLinePosition.bind(this)
+    this.getCursorHtmlPosition = this.getCursorHtmlPosition.bind(this)
     this.insertComponent = this.insertComponent.bind(this)
     this.getCursorAdjacentString = this.getCursorAdjacentString.bind(this)
+    this.handleCursorPosition = this.handleCursorPosition.bind(this)
   }
 
   componentWillMount() {
@@ -37,15 +41,16 @@ class MathPad extends Component {
       orderOfComponents: temp
     })
   }
+
   // componentDidUpdate() {
   //   let hasCursorParent = document.getElementsByClassName('.mq-hasCursor').parentElement
   //   console.log('parentElement in didMount = ', hasCursorParent)
   // }
 
-  insertComponent(MathLines, cursorLinePosition, orderOfComponents) {
+  insertComponent(MathLines, mathLineId, orderOfComponents) {
     
     let tempMathLines = [...MathLines]
-    let pos = orderOfComponents.indexOf(cursorLinePosition) + 1
+    let pos = orderOfComponents.indexOf(mathLineId) + 1
     const id = rando()
     let tempOrder = []
 
@@ -69,134 +74,12 @@ class MathPad extends Component {
     }
   }
 
-  // latex = f_1=\\left(F_t-F_0\\right)d\\left(t,T\\right)=\\frac{S_t\\left(1+\\frac{r_t}{n}\\right)^{n\\left(T-t\\right)}-S_0\\left(1+\\frac{r_0}{n}\\right)^{nT}}{\\left(1+\\frac{r}{n}\\right)^{n\\left(T-t\\right)}}
-
-  // parseMathDOM(children, ltx) {
-  //   const VAR = 'VAR'
-  //   const SPAN = 'SPAN'
-  //   const SUBSCRIPT = 'mq-supsub mq-non-leaf'
-  //   const SUPERSCRIPT =  'mq-supsub mq-non-leaf mq-sup-only'
-  //   const BINARY_OP = 'mq-binary-operator'
-  //   const PARENTHESES = 'mq-scaled mq-paren'
-  //   const FRACTION = 'mq-fraction mq-non-leaf'
-  //   const NUMERATOR = 'mq-numerator'
-  //   const DENOMINATOR = 'mq-denominator'
-  //   const GROUP = 'mq-non-leaf'
-  //   const SUB = 'mq-sub'
-
-  //   let all = []
-
-  //     for (let i=0; i<children.length; i++) {
-  //       let child = children[i]
-  //       let latex = ltx ? ltx : ``
-  //       if (child.tagName == VAR) {
-  //         latex += `${child.innerText}`
-  //       } else if (child.tagName == SPAN) {
-  //         if (child.tagName == SPAN && !child.innerText && !child.className) {
-  //           let g_children = child.children
-  //           this.parseMathDOM(g_children, latex)
-  //         } else if (child.className == SUB) {
-  //           latex += `SUB ${child.innerText}`
-  //           // this.parseMathDOM(g_children, latex)
-  //         } else if (child.className == PARENTHESES) {
-  //           let g_children = child.children
-  //           latex += `g_children: ${g_children}`
-  //           // this.parseMathDOM(g_children, latex)
-  //         } else if (child.className == SUBSCRIPT || child.className == GROUP) {
-  //           let g_children = child.children
-  //           if (child.className == SUBSCRIPT) {
-  //             latex += `_`
-  //           } else if (child.className == GROUP) {
-
-  //           } 
-  //           if (g_children.length > 0) {
-  //             for (let i=0; i<g_children.length; i++) {
-  //               let g_child = g_children[i]
-  //               // latex += `::${i} innerText: ${g_child.innerText}, className: ${g_child.className}, tagName: ${g_child.tagName}`
-  //               if (g_child.className != SUB) {
-  //                 let g_g_children = g_child.children
-  //                 for (let i=0; i<g_g_children.length; i++) {
-  //                   latex += `:::${i} NOT_SUB innerText: ${g_child.innerText}, className: ${g_child.className}, tagName: ${g_child.tagName}`
-  //                 }
-  //               }
-  //               if (g_child.className == SUB) {
-  //                 latex += g_child.innerText
-  //               } 
-  //               // else if (g_child.tagName == SPAN && !g_child.innerText && !g_child.className) {
-  //               //   latex += g_child.tagName
-  //               // }
-  //             }
-  //             // this.parseMathDOM(g_children, latex)
-  //           }
-  //         } else if (child.className == BINARY_OP) {
-  //           latex += `${child.innerText}`
-  //         } else {
-  //           latex += `${child.className ? child.className : 'unnamed'}`
-  //         }
-  //       }
-  //       all.push(latex)
-  //       // console.log(latex)
-  //     }
-  //     return all
-    
-
-    // for (let i=0; i<children.length; i++) {
-    //   let child = children[i]
-    //   if (child.tagName == VAR) {
-    //     latex += `${child.innerText}`
-    //   } else if (child.tagName == SPAN) {
-    //     if (typeof child.className == 'undefined' && child.innerText) {
-    //       latex += `${child.innerText}`
-    //     } else if (child.className == SUBSCRIPT || child.className == SUPERSCRIPT) {
-    //       if (child.className == SUBSCRIPT) {
-    //         latex += `_${child.innerText}`
-    //       } else if (child.className == SUPERSCRIPT) {
-    //         latex += `^${child.innerText}`
-    //       }
-    //       if (child.children.length > 0) {
-    //         let mq_sup = child.children[0]
-    //         let mq_sup_children = mq_sup.children
-    //         if (mq_sup_children) {
-    //           this.parseMathDOM(mq_sup_children, latex)
-    //         }
-    //       }
-    //     } else if (child.className == BINARY_OP) {
-    //       latex += `${child.innerText}`
-    //     } else if (child.className == PARENTHESES) {
-    //       if (child.innerText == '(') {
-    //         latex += `\\left${child.innerText}`
-    //       } else {
-    //         latex += `\\right${child.innerText}`
-    //       }
-    //     } else if (child.className == FRACTION) {
-    //       if (child.children.length > 0) {
-    //         let grand_children = child.children
-    //         if (grand_children.className == NUMERATOR) {
-    //           latex += `\\frac{`
-    //           this.this.parseMathDOM(grand_children.children, latex)
-    //           latex += `}`
-    //         } else if (grand_children.className == DENOMINATOR) {
-    //           latex += `{`
-    //           this.parseMathDOM(grand_children.children, latex)
-    //           latex += `}`
-    //         }
-    //       }
-    //     } else if (child.className == GROUP) {
-    //       if (child.children.length > 0) {
-    //         this.parseMathDOM(child.children, latex)
-    //       }
-    //     }
-    //   }
-    // }
-    // console.log('latex = ', latex)
-    // return latex
-  // }
-  
-  
   getCursorAdjacentString() {
 
     let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
     
+    const CURSOR = 'mq-cursor'
+    const CURSOR_BLINK = 'mq-cursor mq-blink'
     const VAR = 'VAR'
     const SPAN = 'SPAN'
     const SUBSCRIPT = 'mq-supsub mq-non-leaf'
@@ -250,26 +133,58 @@ class MathPad extends Component {
           } 
           return output
         }
-        const getChildren = (siblingsObj, _latex) => {
+        const getChildren = (siblingsObj, _latex, _p) => {
           let latex = _latex ? _latex : ''
+          let p = _p ? _p : ''
           let len = getObjNumPropLen(siblingsObj)
-          console.log('len = ', len)
-          for (let i=0; i<len; i++) {
-            let p = `${i}`
-            let sib = siblingsObj[p]
-            // console.log('sib = ', sib)
-            if (sib.className == SUB || sib.className == SUP) {
-              if (sib.children.length > 0) {
-                console.log('sib.children.length = ', sib.children.length)
-                console.log('sib.children = ', sib.children)
-                console.log('sib.children[0] = ', sib.children[0])
-               getChildren(sib, latex) 
+          // console.log('len = ', len)
+          let test = false
+          if (!test) {
+            for (let i=0; i<len; i++) {
+              let q = `${i}`
+              let sib = siblingsObj[q]
+              // console.log('sib = ', sib)
+              if (sib.className == SUB || sib.className == SUP) {
+                if (sib.children.length > 0) {
+                  // console.log('sib.children.length = ', sib.children.length)
+                  // console.log('sib.children = ', sib.children)
+                  // console.log('sib.children[0] = ', sib.children[0])
+                  latex += `[[${p}-${q}::${getChildren(sib.children, latex)}` 
+                }
+              } else if (sib.tagName == VAR) {
+                latex += `[[${p}-${q}::${sib.innerText}`
+                // console.log('sib.innerText = ', sib.innerText)
+                // siblings.push(sib.innerText)
+              } 
+              else if (sib.tagName == SPAN && sib.innerText && sib.innerText.length > 1) {
+                console.log('sib = ', sib)
+                console.log(`sib = ${sib}, sib.innerText = ${sib.innerText}`)
+                latex += `[[${p}-${q}::${sib.innerText}`
+              } 
+              else if  (sib.className == NUMERATOR) {
+                console.log('NUMERATOR sib = ', sib)
+                latex += `[[${p}-${q}::\\frac{`
+                if (sib.children.length > 0) {
+                  latex += `[[${p}-${q}::${getChildren(sib.children, latex)}`
+                }
+                latex += `[[${p}-${q}::}`
+              } else if (sib.className == DENOMINATOR) {
+                console.log('DENOMINATOR sib = ', sib)
+                latex += `[[${p}-${q}::{`
+                if (sib.children.length > 0) {
+                  latex += `[[${p}-${q}::${getChildren(sib.children, latex)}`
+                }
+                latex += `[[${p}-${q}::}`
+              } else {
+                if (sib.className == '' && !sib.attributes['style']) {
+                  console.log('no innerText = ', sib)
+                }
               }
-            } else if (sib.innerText) {
-              
-              latex += `${sib.innerText}`
             }
+          } else {
+            latex += `[[${p}::<TEST>`
           }
+          return latex
         }
         
         let sibLen = getObjNumPropLen(siblingsObj)
@@ -284,44 +199,56 @@ class MathPad extends Component {
             // console.log(`${tn}.${cn}.typeof cn= ${typeof cn}`)
             let sib = siblingsObj[p]
             if (sib.tagName == VAR) {
-              latex += `${sib.innerText}`
+              latex += `[[${p}::${sib.innerText}`
               // console.log('sib.innerText = ', sib.innerText)
-              siblings.push(sib.innerText)
+              // siblings.push(sib.innerText)
             } else if (sib.tagName == SPAN) {
               if (sib.className == '' && !sib.attributes['style']) {
-                latex += `${sib.innerText}`
+                latex += `[[${p}::${sib.innerText}`
                 // console.log('sib = ', sib)
                 // console.log('sib.innerText = ', sib.innerText)
-                siblings.push(sib.innerText)
-              } else if (sib.className == SUB || sib.className == SUP) {
+                // siblings.push(sib.innerText)
+              } else if (sib.className == CURSOR || sib.className == CURSOR_BLINK) {
+                // console.log('sib = ', sib)
+                latex += `[[${p}::CURSOR`
+              } else if (sib.className == BINARY_OP) {
+                // console.log('sib = ', sib)
+                latex += `[[${p}::${sib.innerText}`
+              } else if (sib.className == PARENTHESES) {
+                if (sib.innerText == '(') {
+                  latex += `[[${p}::\\left${sib.innerText}`
+                } else {
+                  latex += `[[${p}::\\right${sib.innerText}`
+                }
+              } else if (sib.className == FRACTION) {
+                // console.log('frac sib = ', sib)
+                // console.log('frac sib.children = ', sib.children)
+                // console.log('frac sib.children.length = ', sib.children.length)
                 if (sib.children.length > 0) {
-                  // console.log('sib.children.length = ', sib.children.length)
-                  // console.log('sib.children = ', sib.children)
-                  // console.log('sib.children[0] = ', sib.children[0])
-                //  returnCursorParentTree(sib, latex) 
+                  latex += `[[${p}::${getChildren(sib.children, latex, p)}`
                 }
               } else if (sib.className == SUBSCRIPT || sib.className == SUPERSCRIPT) {
                 if (sib.className == SUBSCRIPT) {
-                  latex += `_${sib.innerText}`
+                  latex += `[[${p}::_${sib.innerText}`
+                  // latex += `[[${p}::_`
                 } else if (sib.className == SUPERSCRIPT) {
-                  latex += `^${sib.innerText}`
+                  latex += `[[${p}::^${sib.innerText}`
+                  // latex += `[[${p}::^`
                 }
                 if (sib.children.length > 0) {
-                  let mq_sup = sib.children[0]
-                  let mq_sup_children = mq_sup.children
+                  // let mq_sup = sib.children[0]
+                  // let mq_sup_children = mq_sup.children
                   // if (mq_sup_children) {
                     // console.log('sib.children.length = ', sib.children.length)
                     // console.log('sib.children = ', sib.children)
                     // console.log('sib.children[0] = ', sib.children[0])
                     // console.log('Array.isArray(sib.children[0]) = ', Array.isArray(sib.children[0]))
                     // returnCursorParentTree(sib, latex)
-                    getChildren(sib.children, latex)
+                    latex += `[[${p}::${getChildren(sib.children, latex, p)}`
                   // }
                 }
               } 
-            } else {
-              siblings.push(siblingsObj[p])
-            }
+            } 
             // console.log(`${tn}.${cn}`)
           }
           
@@ -347,36 +274,77 @@ class MathPad extends Component {
     }  
   }
   handleKeyDownEvents(e) {
-    // let id = this.state.cursorLinePosition
+    let { mathLineId, orderOfComponents } = this.state
+    // let id = this.state.mathLineId
     //   let i = this.state.orderOfComponents.indexOf(id)
     // let latexStr = new String(this.state.stringsPerLine[i])
     
-    this.getCursorAdjacentString()
-    if (e.key == '0') {
-
-    } else if (e.key == 'Enter') {      
-    // Carriage Return
-    // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
-    let { MathLines, cursorLinePosition, orderOfComponents } = this.state
-    let res = this.insertComponent(MathLines, cursorLinePosition, orderOfComponents)
-
- 
-
-      this.setState({
-        MathLines: res.tempMathLines,
-        orderOfComponents: [...res.tempOrder]
-      }
-      , () => {
-          let ul = document.getElementById('ul')
-          if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
-            let ulArr =  ul.children
-            let textArea = ulArr[res.pos].childNodes[0].childNodes[0].childNodes[0]
-            if (textArea) {
-              textArea.focus()
+    // this.getCursorAdjacentString()
+    if (e.key == 'Enter') {      
+      // Carriage Return
+      // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
+      let { MathLines } = this.state
+      let res = this.insertComponent(MathLines, mathLineId, orderOfComponents)
+  
+   
+  
+        this.setState({
+          MathLines: res.tempMathLines,
+          orderOfComponents: [...res.tempOrder]
+        }
+        , () => {
+            let ul = document.getElementById('ul')
+            if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
+              let ulArr =  ul.children
+              let textArea = ulArr[res.pos].childNodes[0].childNodes[0].childNodes[0]
+              if (textArea) {
+                textArea.focus()
+              }
             }
           }
-        }
-      )
+        )
+      } else if (e.key && e.key != 'Backspace') {
+        ///////////////////////////////////////////////
+        let { stringsPerLine, numStrokes } = this.state
+
+        let i = numStrokes + 1
+        this.setState({
+          numStrokes: i
+        }, () => {
+          let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
+        
+        console.log(`rootNode.children[${i-1}] =`)
+        console.log(rootNode.children[i-1])
+        console.log(`rootNode.children[${i}] =`)
+        console.log(rootNode.children[i])
+        // console.log(`rootNode.children[${i+1}] =`)
+        // console.log(rootNode.children[i+1])
+        console.log('rootNode = ', rootNode)
+        console.log('rootNode.children.length = ', rootNode.children.length)
+        let attr = document.querySelector("[mathquill-command-id='1']");
+        let attr2 = document.querySelector("[mathquill-block-id='1']")
+        console.log('attr = ', attr)
+        console.log('attr2 = ', attr2)
+
+        let getAttr = rootNode.children[i].attributes['mathquill-command-id']
+        console.log('getAttr = ', getAttr)
+      
+      
+        let pos = orderOfComponents.indexOf(mathLineId)
+        let latex = stringsPerLine[pos]
+        // console.log('latex = ', latex)
+        let newElement = []
+        newElement.push(rootNode.children[i])
+        this.setState({
+          symbolHtmlCorrelate: [...this.state.symbolHtmlCorrelate,...newElement]
+        })
+
+        })
+    } else if (e.key == 'Backspace') {
+      let { numStrokes } = this.state
+      this.setState({
+        numStrokes: numStrokes > -1 ? numStrokes - 1 : -1
+      })
     } else if (e.key == 'ArrowUp') {
   
     } else if (e.key == 'ArrowLeft') {
@@ -384,7 +352,46 @@ class MathPad extends Component {
     } else if (e.key == 'ArrowRight') {
      
     } else if (e.key == 'Tab') {
+
+    } 
+  }
+
+  getCursorHtmlPosition(node, rootNode, _output) {
+    console.log('this hit')
+    let output = typeof _output != 'undefined' ? [...output,..._output] : [node]
+    let parent = node.parentNode 
+    if (rootNode == parent) {
+      this.setState({
+        cursorTextPosition: output
+      })
+      console.log('output = ', output) 
+      return 
     }
+    output.push(parent)
+    this.getCursorHtmlPosition(parent, rootNode, output)
+  }
+
+  handleCursorPosition(e) {
+    let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
+    // console.log('cursor pos rootNode = ', rootNode)
+    // console.log('cursor pos rootNode.children = ', rootNode.children)
+    // console.log('cursor pos rootNode.children.length = ', rootNode.children.length)
+    
+
+    if (rootNode.children.length == 0) {
+      this.setState({
+        cursorTextPosition: 0
+      })
+    } else {
+      let node = document.querySelector('.mq-cursor')
+      console.log('node = ', node)
+      if (node) {
+        this.getCursorHtmlPosition(node, rootNode)
+        
+      }
+    }
+
+    
   }
   
   getStringsPerLine(latexStr, id) {
@@ -400,14 +407,14 @@ class MathPad extends Component {
     e.preventDefault()
     console.log('i = ', i)
     this.setState({
-      cursorLinePosition: i
+      mathLineId: i
     })
   }
 
   render() {
     let { MathLines } = this.state
     return (
-      <div id="MathPad" onKeyDown={this.handleKeyDownEvents}>
+      <div id="MathPad" onFocus={this.handleCursorPosition} onKeyDown={this.handleKeyDownEvents}>
         <Header />
         {/* {this.renderMathLines()} */}
         <ul id='ul'>{ MathLines }</ul>

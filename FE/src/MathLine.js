@@ -12,8 +12,8 @@ class MathLine extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      latex: initialLatex
-      // latex: ''
+      // latex: initialLatex
+        latex: ''
     }
     this.mathQuillEl = null
 

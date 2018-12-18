@@ -326,6 +326,11 @@ class MathPad extends Component {
           console.log('attr = ', attr)
           console.log('attr2 = ', attr2)
 
+          // (1) as keys are struck, the stroke values are pushed into the keyStrokeValueArray.  At the same time, the HTML node classNames OR innerTexts are pushed into the htmlClassNameORinnerTextsArray.
+          // (2) the keyStrokeValueArray and the htmlClassNameORinnerTextsArray should match up, index for index.  If the cursor is positioned within the htmlClassNameORinnerTextsArray, then cross-referencing this last with the keyStrokeValueArray should identify the exact length of string lying after the cursor.
+          // (3) hitting Enter should slice this length of string out of the current MathLine and paste it to the next
+
+
           // let getAttr = rootNode.children[0].attributes[0]['mathquill-command-id'].value
           let getAttr2 = rootNode.children[0].attributes['0']['mathquill-command-id']
           // [i].attributes['mathquill-command-id']
@@ -338,6 +343,8 @@ class MathPad extends Component {
           // console.log('latex = ', latex)
           let newElement = []
           newElement.push(rootNode.children[i])
+
+          let 
 
           this.setState({
             symbolHtmlCorrelate: [...this.state.symbolHtmlCorrelate,...newElement]

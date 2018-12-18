@@ -23,7 +23,7 @@ class MathPad extends Component {
     this.getCursorHtmlPosition = this.getCursorHtmlPosition.bind(this)
     this.insertComponent = this.insertComponent.bind(this)
     this.getCursorAdjacentString = this.getCursorAdjacentString.bind(this)
-    this.handleCursorPosition = this.handleCursorPosition.bind(this)
+    this.handleFocus = this.handleFocus.bind(this)
   }
 
   componentWillMount() {
@@ -315,27 +315,30 @@ class MathPad extends Component {
           let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
           console.log('_root = ', _root)
           console.log('rootNode = ', rootNode)
-          console.log('rootNode.children.length = ', rootNode.children.length)
+          // console.log('rootNode.children.length = ', rootNode.children.length)
         
-          console.log(`rootNode.children[${i-1}] =`)
-          console.log(rootNode.children[i-1])
-          console.log(`rootNode.children[${i}] =`)
-          console.log(rootNode.children[i])
-          let attr = document.querySelector("[mathquill-command-id='1']");
-          let attr2 = document.querySelector("[mathquill-block-id='1']")
-          console.log('attr = ', attr)
-          console.log('attr2 = ', attr2)
+          // console.log(`rootNode.children[${i-1}] =`)
+          // console.log(rootNode.children[i-1])
+          // console.log(`rootNode.children[${i}] =`)
+          // console.log(rootNode.children[i])
+          // let attr = document.querySelector("[mathquill-command-id='1']");
+          // let attr2 = document.querySelector("[mathquill-block-id='1']")
+          // console.log('attr = ', attr)
+          // console.log('attr2 = ', attr2)
 
-          // (1) as keys are struck, the stroke values are pushed into the keyStrokeValueArray.  At the same time, the HTML node classNames OR innerTexts are pushed into the htmlClassNameORinnerTextsArray.
-          // (2) the keyStrokeValueArray and the htmlClassNameORinnerTextsArray should match up, index for index.  If the cursor is positioned within the htmlClassNameORinnerTextsArray, then cross-referencing this last with the keyStrokeValueArray should identify the exact length of string lying after the cursor.
+          // (1) as keys are struck, the stroke values are added to the latex string.  At the same time, the HTML node classNames OR innerTexts are pushed into the htmlClassNameORinnerTextsArray.
+          // (2) the latex string and the htmlClassNameORinnerTextsArray should match up, index for index.  If the cursor is positioned within the htmlClassNameORinnerTextsArray, then cross-referencing this last with the latex string should identify the exact length of string lying after the cursor.
           // (3) hitting Enter should slice this length of string out of the current MathLine and paste it to the next
 
 
           // let getAttr = rootNode.children[0].attributes[0]['mathquill-command-id'].value
-          let getAttr2 = rootNode.children[0].attributes['0']['mathquill-command-id']
+          // let getAttr2 = rootNode.children[0].attributes['0']['mathquill-command-id']
           // [i].attributes['mathquill-command-id']
           // console.log('getAttr = ', getAttr)
-          console.log('getAttr2 = ', getAttr2)
+          // console.log('getAttr2 = ', getAttr2)
+
+          this.getCursorHtmlPosition()
+          
         
         
           let pos = orderOfComponents.indexOf(mathLineId)
@@ -344,7 +347,7 @@ class MathPad extends Component {
           let newElement = []
           newElement.push(rootNode.children[i])
 
-          let 
+    
 
           this.setState({
             symbolHtmlCorrelate: [...this.state.symbolHtmlCorrelate,...newElement]
@@ -367,42 +370,44 @@ class MathPad extends Component {
     } 
   }
 
-  getCursorHtmlPosition(node, rootNode, _output) {
-    console.log('this hit')
-    let output = typeof _output != 'undefined' ? [...output,..._output] : [node]
-    let parent = node.parentNode 
-    if (rootNode == parent) {
-      this.setState({
-        cursorTextPosition: output
-      })
-      console.log('output = ', output) 
-      return 
-    }
-    output.push(parent)
-    this.getCursorHtmlPosition(parent, rootNode, output)
+  // console.log(`AC: ${afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''}, CP: ${cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''}`)
+
+  handleFocus(e) {
+    this.getCursorHtmlPosition()
   }
 
-  handleCursorPosition(e) {
-    let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
-    // console.log('cursor pos rootNode = ', rootNode)
-    // console.log('cursor pos rootNode.children = ', rootNode.children)
-    // console.log('cursor pos rootNode.children.length = ', rootNode.children.length)
-    
+  getCursorHtmlPosition() {
+    let afterCursorVar = document.querySelector('.mq-cursor + var')
+    let afterCursorSpan = document.querySelector('.mq-cursor + span')
+    let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
 
-    if (rootNode.children.length == 0) {
-      this.setState({
-        cursorTextPosition: 0
-      })
-    } else {
-      let node = document.querySelector('.mq-cursor')
-      console.log('node = ', node)
-      if (node) {
-        this.getCursorHtmlPosition(node, rootNode)
-        
-      }
+    let cursorParent = document.querySelector('.mq-hasCursor')
+    
+    
+    // if (afterCursor && afterCursor.attributes) {
+    let AC, CP, CPC, isLast = false
+
+    if (afterCursor && afterCursor.attributes) {
+      AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
     }
-
-    
+    if (cursorParent && cursorParent.attributes) {
+      CP = cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''
+      CPC = cursorParent.attributes['class'].value ? cursorParent.attributes['class'].value : '' 
+    }
+    if (CP && !AC) {
+      isLast = true
+    }
+      let cursorReport = {
+        AC,
+        CP,
+        CPC,
+        isLast 
+      }
+      this.setState({
+        cursorReport
+      })
+      console.dir(cursorReport)
+    // }
   }
   
   getStringsPerLine(latexStr, id) {
@@ -424,11 +429,9 @@ class MathPad extends Component {
 
   render() {
     let { MathLines } = this.state
-    // onFocus={this.handleCursorPosition}
     return (
-      <div id="MathPad" onKeyDown={this.handleKeyDownEvents}>
+      <div id="MathPad" onFocus={this.handleFocus} onKeyDown={this.handleKeyDownEvents}>
         <Header />
-        {/* {this.renderMathLines()} */}
         <ul id='ul'>{ MathLines }</ul>
       </div>
     );

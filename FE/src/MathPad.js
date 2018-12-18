@@ -311,35 +311,39 @@ class MathPad extends Component {
         this.setState({
           numStrokes: i
         }, () => {
+          let _root = document.getElementsByClassName('mq-root-block')
           let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
+          console.log('_root = ', _root)
+          console.log('rootNode = ', rootNode)
+          console.log('rootNode.children.length = ', rootNode.children.length)
         
-        console.log(`rootNode.children[${i-1}] =`)
-        console.log(rootNode.children[i-1])
-        console.log(`rootNode.children[${i}] =`)
-        console.log(rootNode.children[i])
-        // console.log(`rootNode.children[${i+1}] =`)
-        // console.log(rootNode.children[i+1])
-        console.log('rootNode = ', rootNode)
-        console.log('rootNode.children.length = ', rootNode.children.length)
-        let attr = document.querySelector("[mathquill-command-id='1']");
-        let attr2 = document.querySelector("[mathquill-block-id='1']")
-        console.log('attr = ', attr)
-        console.log('attr2 = ', attr2)
+          console.log(`rootNode.children[${i-1}] =`)
+          console.log(rootNode.children[i-1])
+          console.log(`rootNode.children[${i}] =`)
+          console.log(rootNode.children[i])
+          let attr = document.querySelector("[mathquill-command-id='1']");
+          let attr2 = document.querySelector("[mathquill-block-id='1']")
+          console.log('attr = ', attr)
+          console.log('attr2 = ', attr2)
 
-        let getAttr = rootNode.children[i].attributes['mathquill-command-id']
-        console.log('getAttr = ', getAttr)
-      
-      
-        let pos = orderOfComponents.indexOf(mathLineId)
-        let latex = stringsPerLine[pos]
-        // console.log('latex = ', latex)
-        let newElement = []
-        newElement.push(rootNode.children[i])
-        this.setState({
-          symbolHtmlCorrelate: [...this.state.symbolHtmlCorrelate,...newElement]
-        })
+          // let getAttr = rootNode.children[0].attributes[0]['mathquill-command-id'].value
+          let getAttr2 = rootNode.children[0].attributes['0']['mathquill-command-id']
+          // [i].attributes['mathquill-command-id']
+          // console.log('getAttr = ', getAttr)
+          console.log('getAttr2 = ', getAttr2)
+        
+        
+          let pos = orderOfComponents.indexOf(mathLineId)
+          let latex = stringsPerLine[pos]
+          // console.log('latex = ', latex)
+          let newElement = []
+          newElement.push(rootNode.children[i])
 
-        })
+          this.setState({
+            symbolHtmlCorrelate: [...this.state.symbolHtmlCorrelate,...newElement]
+          })
+
+          })
     } else if (e.key == 'Backspace') {
       let { numStrokes } = this.state
       this.setState({
@@ -413,8 +417,9 @@ class MathPad extends Component {
 
   render() {
     let { MathLines } = this.state
+    // onFocus={this.handleCursorPosition}
     return (
-      <div id="MathPad" onFocus={this.handleCursorPosition} onKeyDown={this.handleKeyDownEvents}>
+      <div id="MathPad" onKeyDown={this.handleKeyDownEvents}>
         <Header />
         {/* {this.renderMathLines()} */}
         <ul id='ul'>{ MathLines }</ul>

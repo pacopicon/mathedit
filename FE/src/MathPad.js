@@ -105,22 +105,44 @@ class MathPad extends Component {
     let { orderOfComponents } = this.state
     let _root = document.getElementsByClassName('mq-root-block')
     let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
-    console.log('_root = ', _root)
-    console.log('rootNode = ', rootNode)
+    // console.log('_root = ', _root)
+    // console.log('rootNode = ', rootNode)
 
     let selection = window.getSelection().toString()
-    console.log('selection = ', selection)
+    // console.log('selection = ', selection)
 
 
     let afterCursorVar = document.querySelector('.mq-cursor + var')
     let afterCursorSpan = document.querySelector('.mq-cursor + span')
     let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
+    let cursor = document.getElementsByClassName('mq-cursor')
+    let rootText = rootNode.innerText
+    let rootLen = rootText.length
 
-    let end = document.querySelector('.mq-root-block')
-
+    let end = rootLen ? rootLen - 1 : 0
+    console.log('rootText = ', rootText)
+    console.log('rootLen = ', rootLen)
+    console.log('end = ', end)
+    console.log('afterCursor = ', afterCursor)
+    console.log('cursor = ', cursor)
+    
     let range = document.createRange()
-    // range.setStart(afterCursor, 0)
-    // range.setEnd()
+  
+    // if (afterCursor) {
+    //   range.setStart(afterCursor, 0)
+    //   range.setEnd(rootNode, end)
+    // }
+
+    let rangeText = range.toString()
+
+    range.setStart(rootNode, 0)
+    range.setEnd(rootNode, 5)
+
+    // if (rangeText) {
+      console.log('rangeText = ', rangeText)
+    // }
+
+    
 
     // let id = this.state.mathLineId
     //   let i = this.state.orderOfComponents.indexOf(id)

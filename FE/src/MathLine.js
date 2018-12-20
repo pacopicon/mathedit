@@ -12,8 +12,8 @@ class MathLine extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      // latex: initialLatex
-        latex: ''
+      latex: initialLatex
+        // latex: ''
     }
     this.mathQuillEl = null
 
@@ -24,21 +24,20 @@ class MathLine extends Component {
   }
 
   handleChange(latex) {
-    // e.preventDefault()
-    // let latex = e.target.value
+    let { latexLength } = this.state
+
     this.setState({
       latex
     })
-    this.props.getStringsPerLine(latex, this.props.id)
+    this.props.getLatexPerLine(latex, this.props.id)
   }
 
   render() {
-    let { latex } = this.state
     return (
-    <div className='MathQuillWrapper' onFocus={e => {this.props.getLinePosition(e, this.props.id)}}>
+    <div className='MathQuillWrapper' onFocus={(e) => {this.props.getId(this.props.id)}} onBlur={(e) => {this.props.dropId(this.props.id)}} >
         <MathQuill
           latex={this.state.latex}
-          onChange={latex => {
+          onChange={(latex) => {
             this.handleChange(latex)
           }}
           mathquillDidMount={el => {

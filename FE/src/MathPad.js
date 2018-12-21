@@ -26,6 +26,8 @@ class MathPad extends Component {
     this.getId = this.getId.bind(this)
     this.dropId = this.dropId.bind(this)
     this.getCurrentMathLineIndex = this.getCurrentMathLineIndex.bind(this)
+    this.handleMouseDown = this.handleMouseDown.bind(this)
+    this.returnSelectedText = this.returnSelectedText.bind(this)
   }
 
   componentWillMount() {
@@ -100,61 +102,35 @@ class MathPad extends Component {
       })
     }
   }
+
+  returnSelectedText(text) {
+    let { latexPerLine } = this.state
+
+    const i = getCurrentMathLineIndex()
+    const cutFrom = latexPerLine[i]
+    const pastedTo = latexPerLine[i+1]
+    
+  }
   
   handleKeyDownEvents(e) {
-    let { orderOfComponents } = this.state
-    let _root = document.getElementsByClassName('mq-root-block')
-    let rootNode = (document.getElementsByClassName('mq-root-block'))[0]
-    // console.log('_root = ', _root)
-    // console.log('rootNode = ', rootNode)
-
-    let selection = window.getSelection().toString()
-    // console.log('selection = ', selection)
-
-
-    let afterCursorVar = document.querySelector('.mq-cursor + var')
-    let afterCursorSpan = document.querySelector('.mq-cursor + span')
-    let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
-    let cursor = document.getElementsByClassName('mq-cursor')
-    let rootText = rootNode.innerText
-    let rootLen = rootText.length
-
-    let end = rootLen ? rootLen - 1 : 0
-    console.log('rootText = ', rootText)
-    console.log('rootLen = ', rootLen)
-    console.log('end = ', end)
-    console.log('afterCursor = ', afterCursor)
-    console.log('cursor = ', cursor)
-    
-    let range = document.createRange()
   
-    // if (afterCursor) {
-    //   range.setStart(afterCursor, 0)
-    //   range.setEnd(rootNode, end)
-    // }
-
-    let rangeText = range.toString()
-
-    range.setStart(rootNode, 0)
-    range.setEnd(rootNode, 5)
-
-    // if (rangeText) {
-      console.log('rangeText = ', rangeText)
-    // }
-
+    // console.log('e = ', e)
     
-
-    // let id = this.state.mathLineId
-    //   let i = this.state.orderOfComponents.indexOf(id)
-    // let latexStr = new String(this.state.latexPerLine[i])
+    // console.log('selection = ', selection)
     
-    // this.getCursorAdjacentString()
-    // console.log('window.getSelection() = ', window.getSelection())
+    
     if (e.key == 'Enter') {      
       // Carriage Return
       // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
       let { MathLines } = this.state
       let res = this.insertComponent(MathLines)
+
+      let selection = window.getSelection()
+      let selectedText = selection.toString()
+
+      if (selectedText) {
+        this.returnSelectedText(selectedText)
+      }
 
         this.setState({
           MathLines: res.tempMathLines,
@@ -277,7 +253,7 @@ class MathPad extends Component {
   render() {
     let { MathLines } = this.state
     return (
-      <div id="MathPad" onFocus={this.handleFocus} onKeyDown={this.handleKeyDownEvents}>
+      <div id="MathPad" onFocus={this.handleFocus} onKeyDown={this.handleKeyDownEvents} onMouseDown={this.handleMouseDown}>
         <Header />
         <ul id='ul'>{ MathLines }</ul>
       </div>

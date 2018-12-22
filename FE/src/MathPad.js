@@ -10,7 +10,6 @@ class MathPad extends Component {
     this.state = {
       MathLines: '',
       latexPerLine: [],
-      countPerLine: [],
       currentMathLineId: '',
       cursorTextPosition: '',
       orderOfComponents: '',
@@ -20,7 +19,7 @@ class MathPad extends Component {
     this.getLatexPerLine = this.getLatexPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
     this.getLinePosition = this.getLinePosition.bind(this)
-    this.getCursorPositionReport = this.getCursorPositionReport.bind(this)
+    // this.getCursorPositionReport = this.getCursorPositionReport.bind(this)
     this.insertComponent = this.insertComponent.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
     this.getId = this.getId.bind(this)
@@ -42,12 +41,6 @@ class MathPad extends Component {
     )
   }
 
-  // componentWillUnmount() {
-  //   this.setState({
-  //     latexPerLine: []
-  //   })
-  // }
-
   componentWillMount() {
     const id = rando()
     const temp = [id]
@@ -56,11 +49,6 @@ class MathPad extends Component {
       orderOfComponents: temp
     })
   }
-
-  // componentDidUpdate() {
-  //   let hasCursorParent = document.getElementsByClassName('.mq-hasCursor').parentElement
-  //   console.log('parentElement in didMount = ', hasCursorParent)
-  // }
 
   getCurrentMathLineIndex() {
     let { currentMathLineId, orderOfComponents } = this.state
@@ -108,19 +96,8 @@ class MathPad extends Component {
       const id = rando()
       const currentComponent = this.createMathLineElement(id, remainder)
       tempMathLines[current] = currentComponent
-
-      // let ul = document.getElementById('ul')
-      // let ulArr =  ul.children
-      // let textArea = ulArr[i].childNodes[0].childNodes[0].childNodes[0].innerText = remainder
-      // console.log(textArea)
-      this.forceUpdate()
     }
-    
-
-    
-     
     const newComponent = this.createMathLineElement(id, snip)
-    
     
     tempMathLines.splice(next, 0, newComponent)
 
@@ -141,12 +118,8 @@ class MathPad extends Component {
           if (textArea) {
             textArea.focus()
           }
-          // if (window.getSelection()) {
-          //   console.log('there was a selection')
-          //   console.log('window.getSelection() = ', window.getSelection())
-          // }
         }
-        this.getCursorPositionReport()
+        // this.getCursorPositionReport()
       })
 
   }
@@ -175,91 +148,48 @@ class MathPad extends Component {
   handleKeyDownEvents(e) {   
     if (e.key == 'Enter') {      
       // Carriage Return
-      // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
       this.insertComponent()
-      
-    } else if (e.key  && e.key != 'Tab' && e.key != 'Escape' && e.key != 'F5'      && e.key != 'Shift' 
-                        && e.key != 'Alt' && e.key != 'Meta'   && e.key != 'Control' && e.key != 'CapsLock') {
-        
-
-        this.getCursorPositionReport()
-
-        if (e.key == 'ArrowUp') {
-
-        } else if (e.key == 'ArrowDown') {
-
-        }
-
-        console.log('selection = ', window.getSelection().toString())
-
-        if (e.key != 'Backspace' && e.key != 'ArrowUp'    && e.key != 'ArrowLeft' 
-                                 && e.key != 'ArrowRight' && e.key != 'ArrowDown') {
-
-          let strokeCountMod = 1
-          // console.log('e.key = ', e.key)
-          if (e.key == '/') {
-            strokeCountMod += 2
-          }
-
-          
-          /////////////
-          // Todo: need to create more strokeCountMod conditions
-
-          let id = this.state.currentMathLineId
-          let { countPerLine } = this.state
-          const i = this.getCurrentMathLineIndex(id)
-
-          countPerLine[i] = countPerLine[i] > 3 ? countPerLine[i] + strokeCountMod : 4
-
-          this.setState({
-            countPerLine
-          })
-        }
-    
     } 
   }
 
-  // console.log(`AC: ${afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''}, CP: ${cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''}`)
-
   handleFocus(e) {
-    this.getCursorPositionReport()
+    // this.getCursorPositionReport()
   }
 
-  getCursorPositionReport() {
-    let afterCursorVar = document.querySelector('.mq-cursor + var')
-    let afterCursorSpan = document.querySelector('.mq-cursor + span')
-    let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
+  // getCursorPositionReport() {
+  //   let afterCursorVar = document.querySelector('.mq-cursor + var')
+  //   let afterCursorSpan = document.querySelector('.mq-cursor + span')
+  //   let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
 
-    let cursorParent = document.querySelector('.mq-hasCursor')
+  //   let cursorParent = document.querySelector('.mq-hasCursor')
     
     
-    // if (afterCursor && afterCursor.attributes) {
-    let AC, CP, CPC, isLast = false
+  //   // if (afterCursor && afterCursor.attributes) {
+  //   let AC, CP, CPC, isLast = false
 
-    if (afterCursor && afterCursor.attributes) {
-      AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
-    }
-    if (cursorParent && cursorParent.attributes && cursorParent.attributes['mathquill-block-id']) {
-      CP = cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''
-      CPC = cursorParent.attributes['class'].value ? cursorParent.attributes['class'].value : '' 
-    }
-    if (CP && !AC) {
-      isLast = true
-    }
-      let cursorReport = {
-        AC,
-        CP,
-        CPC,
-        isLast 
-      }
-      this.setState({
-        cursorReport
-      })
-      console.dir(cursorReport)
-    // }
-  }
+  //   if (afterCursor && afterCursor.attributes) {
+  //     AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
+  //   }
+  //   if (cursorParent && cursorParent.attributes && cursorParent.attributes['mathquill-block-id']) {
+  //     CP = cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''
+  //     CPC = cursorParent.attributes['class'].value ? cursorParent.attributes['class'].value : '' 
+  //   }
+  //   if (CP && !AC) {
+  //     isLast = true
+  //   }
+  //     let cursorReport = {
+  //       AC,
+  //       CP,
+  //       CPC,
+  //       isLast 
+  //     }
+  //     this.setState({
+  //       cursorReport
+  //     })
+  //     console.dir(cursorReport)
+  //   // }
+  // }
 
-  // TODO: The latex parser goes in the function below.  it creates an array of object elements -- the correlations between specific latex atoms and html ids.
   
   getLatexPerLine(latex, id) {
     let { latexPerLine } = this.state

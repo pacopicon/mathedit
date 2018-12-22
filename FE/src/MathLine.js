@@ -29,19 +29,13 @@ class MathLine extends Component {
     if (pushedLatex) {
       this.setState({
         latex: pushedLatex
-      }, () => {
+      }, 
+      () => {
         this.props.getLatexPerLine(pushedLatex, this.props.id)
-      })
+      }
+      )
     }
   }
-
-  // componentWillUnmount() {
-  //   this.setState({
-  //     latex: ''
-  //   }, () => {
-  //     this.props.getLatexPerLine('', this.props.id)
-  //   })
-  // }
 
   componentWillReceiveProps(nextProps) {
     const oldLatex = this.props.pushedLatex
@@ -50,9 +44,11 @@ class MathLine extends Component {
     if (newLatex && oldLatex != newLatex) {
       this.setState({
         latex: newLatex
-      }, () => {
+      }, 
+      () => {
         this.props.getLatexPerLine(newLatex, this.props.id)
-      })
+      }
+      )
     }
   }
 

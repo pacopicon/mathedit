@@ -24,26 +24,35 @@ class MathPad extends Component {
     this.insertComponent = this.insertComponent.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
     this.getId = this.getId.bind(this)
-    this.dropId = this.dropId.bind(this)
     this.getCurrentMathLineIndex = this.getCurrentMathLineIndex.bind(this)
-    this.handleMouseDown = this.handleMouseDown.bind(this)
     this.returnSelectedText = this.returnSelectedText.bind(this)
+    this.createMathLineElement = this.createMathLineElement.bind(this)
   }
+
+  createMathLineElement(id, pushedLatex) {
+    return (
+      <MathLine 
+        key={id} 
+        id={id}
+        getLatexPerLine={this.getLatexPerLine}
+        getLinePosition={this.getLinePosition}
+        pushedLatex={pushedLatex}
+        getId={this.getId}
+      />
+    )
+  }
+
+  // componentWillUnmount() {
+  //   this.setState({
+  //     latexPerLine: []
+  //   })
+  // }
 
   componentWillMount() {
     const id = rando()
     const temp = [id]
     this.setState({
-      MathLines: [
-        <MathLine 
-          key={id} 
-          id={id}
-          getLatexPerLine={this.getLatexPerLine}
-          getLinePosition={this.getLinePosition}
-          getId={this.getId}
-          dropId={this.dropId} 
-        />
-      ],
+      MathLines: [this.createMathLineElement(id, '')],
       orderOfComponents: temp
     })
   }
@@ -59,33 +68,87 @@ class MathPad extends Component {
     return i
   }
 
-  insertComponent(MathLines) {
-    
+  processStr(str){
+    let res = str.replace(/(\\)/g, "\\\\");
+    return res;
+  };
+
+  returnSelectedText(snippet, string) {
+    const snip = this.processStr(snippet);
+    const remainder = string.replace(snip, '');
+    return {
+      remainder,
+      snip
+    }
+  }
+
+  insertComponent() {
+    let { MathLines, latexPerLine, currentMathLineId } = this.state
     let tempMathLines = [...MathLines]
-    let pos = this.getCurrentMathLineIndex() + 1
+    const i = this.getCurrentMathLineIndex()
     const id = rando()
     let tempOrder = []
 
-    let newComponent = <MathLine
-                          key={id}
-                          id={id} 
-                          getLatexPerLine={this.getLatexPerLine}
-                          getLinePosition={this.getLinePosition}
-                          getId={this.getId}
-                          dropId={this.dropId} 
-                        />
-  
-    tempMathLines.splice(pos, 0, newComponent)
+    let selection = window.getSelection()
+    let snippet = selection.toString()
+
+    let snip = ''
+    let remainder = ''
+    const current = i
+    const next = i+1
+
+    if (snippet) {
+      const string = latexPerLine[current]
+      console.log('latexPerLine[current] = ', latexPerLine[current])
+      let result = this.returnSelectedText(snippet, string)
+      remainder = result.remainder
+      latexPerLine[current] = remainder
+      snip = result.snip + (latexPerLine[next] ? latexPerLine[next] : '')
+      latexPerLine[next] = snip
+      const id = rando()
+      const currentComponent = this.createMathLineElement(id, remainder)
+      tempMathLines[current] = currentComponent
+
+      // let ul = document.getElementById('ul')
+      // let ulArr =  ul.children
+      // let textArea = ulArr[i].childNodes[0].childNodes[0].childNodes[0].innerText = remainder
+      // console.log(textArea)
+      this.forceUpdate()
+    }
+    
+
+    
+     
+    const newComponent = this.createMathLineElement(id, snip)
+    
+    
+    tempMathLines.splice(next, 0, newComponent)
 
     tempMathLines.map( mathline => {
+      console.log('mathline = ', mathline)
       tempOrder.push(mathline.props.id)
     })
-  
-    return {
-      tempMathLines,
-      tempOrder,
-      pos
-    }
+
+    this.setState({
+      MathLines: tempMathLines,
+      latexPerLine,
+      orderOfComponents: [...tempOrder]
+    }, () => {
+        let ul = document.getElementById('ul')
+        if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
+          let ulArr =  ul.children
+          let textArea = ulArr[i+1].childNodes[0].childNodes[0].childNodes[0]
+          if (textArea) {
+            textArea.focus()
+          }
+          // if (window.getSelection()) {
+          //   console.log('there was a selection')
+          //   console.log('window.getSelection() = ', window.getSelection())
+          // }
+        }
+        this.getCursorPositionReport()
+      })
+
   }
 
   getId(Id) {
@@ -103,55 +166,19 @@ class MathPad extends Component {
     }
   }
 
-  returnSelectedText(text) {
-    let { latexPerLine } = this.state
-
-    const i = getCurrentMathLineIndex()
-    const cutFrom = latexPerLine[i]
-    const pastedTo = latexPerLine[i+1]
-    
+  getCurrenLineId(Id) {
+    this.setState({
+      currentMathLineId: Id
+    })
   }
   
-  handleKeyDownEvents(e) {
-  
-    // console.log('e = ', e)
-    
-    // console.log('selection = ', selection)
-    
-    
+  handleKeyDownEvents(e) {   
     if (e.key == 'Enter') {      
       // Carriage Return
       // e.preventDefault() // e.preventDefault() will not allow further typing in the field.  This function should never be called.
-      let { MathLines } = this.state
-      let res = this.insertComponent(MathLines)
-
-      let selection = window.getSelection()
-      let selectedText = selection.toString()
-
-      if (selectedText) {
-        this.returnSelectedText(selectedText)
-      }
-
-        this.setState({
-          MathLines: res.tempMathLines,
-          orderOfComponents: [...res.tempOrder]
-        }, () => {
-            let ul = document.getElementById('ul')
-            if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
-              let ulArr =  ul.children
-              let textArea = ulArr[res.pos].childNodes[0].childNodes[0].childNodes[0]
-              if (textArea) {
-                textArea.focus()
-              }
-              // if (window.getSelection()) {
-              //   console.log('there was a selection')
-              //   console.log('window.getSelection() = ', window.getSelection())
-              // }
-            }
-            this.getCursorPositionReport()
-          }
-        )
-      } else if (e.key  && e.key != 'Tab' && e.key != 'Escape' && e.key != 'F5'      && e.key != 'Shift' 
+      this.insertComponent()
+      
+    } else if (e.key  && e.key != 'Tab' && e.key != 'Escape' && e.key != 'F5'      && e.key != 'Shift' 
                         && e.key != 'Alt' && e.key != 'Meta'   && e.key != 'Control' && e.key != 'CapsLock') {
         
 

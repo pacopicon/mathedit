@@ -12,8 +12,8 @@ class MathLine extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      latex: initialLatex
-        // latex: ''
+      // latex: initialLatex
+        latex: ''
     }
     this.mathQuillEl = null
 
@@ -22,6 +22,40 @@ class MathLine extends Component {
     }
     this.handleChange = this.handleChange.bind(this)
   }
+
+  componentWillMount() {
+    const { pushedLatex } = this.props
+    console.log(`element w/ id = ${this.props.id}: this.props.pushedLatex = ${this.props.pushedLatex}`)
+    if (pushedLatex) {
+      this.setState({
+        latex: pushedLatex
+      }, () => {
+        this.props.getLatexPerLine(pushedLatex, this.props.id)
+      })
+    }
+  }
+
+  // componentWillUnmount() {
+  //   this.setState({
+  //     latex: ''
+  //   }, () => {
+  //     this.props.getLatexPerLine('', this.props.id)
+  //   })
+  // }
+
+  componentWillReceiveProps(nextProps) {
+    const oldLatex = this.props.pushedLatex
+    const newLatex = nextProps.pushedLatex
+    console.log(`element w/ id = ${this.props.id}: this.props.pushedLatex = ${newLatex}`) 
+    if (newLatex && oldLatex != newLatex) {
+      this.setState({
+        latex: newLatex
+      }, () => {
+        this.props.getLatexPerLine(newLatex, this.props.id)
+      })
+    }
+  }
+
 
   handleChange(latex) {
     let { latexLength } = this.state
@@ -34,7 +68,7 @@ class MathLine extends Component {
 
   render() {
     return (
-    <div className='MathQuillWrapper' onFocus={(e) => {this.props.getId(this.props.id)}} onBlur={(e) => {this.props.dropId(this.props.id)}} >
+    <div className='MathQuillWrapper' onFocus={(e) => {this.props.getId(this.props.id)}}>
         <MathQuill
           latex={this.state.latex}
           onChange={(latex) => {

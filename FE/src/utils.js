@@ -6,3 +6,8 @@ export const rando = () => {
   }
   return str
 }
+
+export const processStr = (str) => {
+  let res = str.replace(/(\\)/g, "\\\\");
+  return res;
+};

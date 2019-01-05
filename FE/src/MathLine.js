@@ -8,6 +8,10 @@ addMathquillStyles()
 const initialLatex =
   'f_1=\\left(F_t-F_0\\right)d\\left(t,T\\right)=\\frac{S_t\\left(1+\\frac{r_t}{n}\\right)^{n\\left(T-t\\right)}-S_0\\left(1+\\frac{r_0}{n}\\right)^{nT}}{\\left(1+\\frac{r}{n}\\right)^{n\\left(T-t\\right)}}'
 
+const o = 'f_1=\left(F_t-F_0\right)d\left(t,T\right)=\frac{S_t\left(1+\frac{r_t}{n}\right)^{n\left(T-t\right)}-S_0\left(1+\frac{r_0}{n}\right)^{nT}}{\left(1+\frac{r}{n}\right)^{n\left(T-t\right)}}'
+
+const quad = 'x=\frac{-b\pm \sqrt{\left(b^2-4ac\right)}}{2a}'
+
 class MathLine extends Component {
   constructor(props) {
     super(props)
@@ -25,14 +29,15 @@ class MathLine extends Component {
 
   componentWillMount() {
     const { pushedLatex } = this.props
-    console.log(`element w/ id = ${this.props.id}: this.props.pushedLatex = ${this.props.pushedLatex}`)
     if (pushedLatex) {
+      console.log(`element w/ id = ${this.props.id}: this.props.pushedLatex = ${this.props.pushedLatex}`)
       this.setState({
         latex: pushedLatex
-      }, 
-      () => {
-        this.props.getLatexPerLine(pushedLatex, this.props.id)
       }
+      // , 
+      // () => {
+      //   this.props.getLatexPerLine(pushedLatex, this.props.id)
+      // }
       )
     }
   }
@@ -40,14 +45,16 @@ class MathLine extends Component {
   componentWillReceiveProps(nextProps) {
     const oldLatex = this.props.pushedLatex
     const newLatex = nextProps.pushedLatex
-    console.log(`element w/ id = ${this.props.id}: this.props.pushedLatex = ${newLatex}`) 
+    
     if (newLatex && oldLatex != newLatex) {
+      console.log(`element w/ id = ${this.props.id}: this.props.pushedLatex = ${newLatex}`) 
       this.setState({
         latex: newLatex
-      }, 
-      () => {
-        this.props.getLatexPerLine(newLatex, this.props.id)
       }
+      // , 
+      // () => {
+      //   this.props.getLatexPerLine(newLatex, this.props.id)
+      // }
       )
     }
   }

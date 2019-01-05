@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import MathLine from './MathLine'
 import Header from './Header'
 import './index.css';
-import { insertComponent, rando } from './utils'
+import { rando, processStr } from './utils'
 
 class MathPad extends Component {
   constructor(props) {
@@ -18,8 +18,7 @@ class MathPad extends Component {
     }
     this.getLatexPerLine = this.getLatexPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
-    this.getLinePosition = this.getLinePosition.bind(this)
-    // this.getCursorPositionReport = this.getCursorPositionReport.bind(this)
+    this.getCursorPositionReport = this.getCursorPositionReport.bind(this)
     this.insertComponent = this.insertComponent.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
     this.getId = this.getId.bind(this)
@@ -34,7 +33,6 @@ class MathPad extends Component {
         key={id} 
         id={id}
         getLatexPerLine={this.getLatexPerLine}
-        getLinePosition={this.getLinePosition}
         pushedLatex={pushedLatex}
         getId={this.getId}
       />
@@ -56,14 +54,14 @@ class MathPad extends Component {
     return i
   }
 
-  processStr(str){
-    let res = str.replace(/(\\)/g, "\\\\");
-    return res;
-  };
-
   returnSelectedText(snippet, string) {
-    const snip = this.processStr(snippet);
-    const remainder = string.replace(snip, '');
+    // const snip = processStr(snippet);
+    // const processedString = processStr(string);
+    const snip = snippet
+    const processedString = string
+    const remainder = processedString.replace(snip, '');
+    // console.log(`returnSelectedText: snippet = ${snippet}, string = ${string}, processedString = ${processedString}, snip = ${snip}, remainder = ${remainder}`)
+    console.log(`returnSelectedText: snip = ${snip}, remainder = ${remainder}`)
     return {
       remainder,
       snip
@@ -71,14 +69,15 @@ class MathPad extends Component {
   }
 
   insertComponent() {
-    let { MathLines, latexPerLine, currentMathLineId } = this.state
+    let { MathLines, latexPerLine } = this.state
     let tempMathLines = [...MathLines]
     const i = this.getCurrentMathLineIndex()
-    const id = rando()
     let tempOrder = []
-
+    let id = ''
     let selection = window.getSelection()
+    
     let snippet = selection.toString()
+    console.log('snippet = ', snippet)
 
     let snip = ''
     let remainder = ''
@@ -87,22 +86,24 @@ class MathPad extends Component {
 
     if (snippet) {
       const string = latexPerLine[current]
-      console.log('latexPerLine[current] = ', latexPerLine[current])
       let result = this.returnSelectedText(snippet, string)
+      console.log('result = ', result)
       remainder = result.remainder
       latexPerLine[current] = remainder
-      snip = result.snip + (latexPerLine[next] ? latexPerLine[next] : '')
-      latexPerLine[next] = snip
-      const id = rando()
+      snip = result.snip
+      // latexPerLine[next] = snip
+      id = rando()
       const currentComponent = this.createMathLineElement(id, remainder)
       tempMathLines[current] = currentComponent
     }
+    id = rando()
     const newComponent = this.createMathLineElement(id, snip)
     
     tempMathLines.splice(next, 0, newComponent)
+    latexPerLine.splice(next, 0, snip)
 
     tempMathLines.map( mathline => {
-      console.log('mathline = ', mathline)
+      // console.log('mathline = ', mathline)
       tempOrder.push(mathline.props.id)
     })
 
@@ -110,7 +111,7 @@ class MathPad extends Component {
       MathLines: tempMathLines,
       latexPerLine,
       orderOfComponents: [...tempOrder]
-    }, () => {
+      }, () => {
         let ul = document.getElementById('ul')
         if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
           let ulArr =  ul.children
@@ -119,9 +120,8 @@ class MathPad extends Component {
             textArea.focus()
           }
         }
-        // this.getCursorPositionReport()
-      })
-
+      }
+    )
   }
 
   getId(Id) {
@@ -130,65 +130,53 @@ class MathPad extends Component {
     })
   }
 
-  dropId(Id) {
-    let { currentMathLineId } = this.state
-    if (Id == currentMathLineId) {
-      this.setState({
-        currentMathLineId: null
-      })
-    }
-  }
-
-  getCurrenLineId(Id) {
-    this.setState({
-      currentMathLineId: Id
-    })
-  }
-  
   handleKeyDownEvents(e) {   
     if (e.key == 'Enter') {      
       // Carriage Return
       this.insertComponent()
-    } 
+      this.getCursorPositionReport()
+    } else {
+      this.getCursorPositionReport()
+    }
   }
 
   handleFocus(e) {
     // this.getCursorPositionReport()
   }
 
-  // getCursorPositionReport() {
-  //   let afterCursorVar = document.querySelector('.mq-cursor + var')
-  //   let afterCursorSpan = document.querySelector('.mq-cursor + span')
-  //   let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
+  getCursorPositionReport() {
+    let afterCursorVar = document.querySelector('.mq-cursor + var')
+    let afterCursorSpan = document.querySelector('.mq-cursor + span')
+    let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
 
-  //   let cursorParent = document.querySelector('.mq-hasCursor')
+    let cursorParent = document.querySelector('.mq-hasCursor')
     
     
-  //   // if (afterCursor && afterCursor.attributes) {
-  //   let AC, CP, CPC, isLast = false
+    // if (afterCursor && afterCursor.attributes) {
+    let AC, CP, CPC, isLast = false
 
-  //   if (afterCursor && afterCursor.attributes) {
-  //     AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
-  //   }
-  //   if (cursorParent && cursorParent.attributes && cursorParent.attributes['mathquill-block-id']) {
-  //     CP = cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''
-  //     CPC = cursorParent.attributes['class'].value ? cursorParent.attributes['class'].value : '' 
-  //   }
-  //   if (CP && !AC) {
-  //     isLast = true
-  //   }
-  //     let cursorReport = {
-  //       AC,
-  //       CP,
-  //       CPC,
-  //       isLast 
-  //     }
-  //     this.setState({
-  //       cursorReport
-  //     })
-  //     console.dir(cursorReport)
-  //   // }
-  // }
+    if (afterCursor && afterCursor.attributes) {
+      AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
+    }
+    if (cursorParent && cursorParent.attributes && cursorParent.attributes['mathquill-block-id']) {
+      CP = cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''
+      CPC = cursorParent.attributes['class'].value ? cursorParent.attributes['class'].value : '' 
+    }
+    if (CP && !AC) {
+      isLast = true
+    }
+      let cursorReport = {
+        AC,
+        CP,
+        CPC,
+        isLast 
+      }
+      this.setState({
+        cursorReport
+      })
+      console.dir(`AC = ${AC}, CP = ${CP}, CPC = ${CPC}, isLast = ${isLast}`)
+    // }
+  }
 
   
   getLatexPerLine(latex, id) {
@@ -197,13 +185,6 @@ class MathPad extends Component {
     latexPerLine[i] = latex
     this.setState({
       latexPerLine
-    })
-  }
-
-  getLinePosition(i) {
-    console.log('i = ', i)
-    this.setState({
-      mathLineId: i
     })
   }
 

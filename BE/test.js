@@ -55,7 +55,7 @@ const fsc = (str, _enclosure, _order, _output) => {
           let iOfnxtCL = str.indexOf(CLO_BR)
           let snip = str.slice(snipIdx, iOfnxtCL)
           let begStr = str.slice(0, snipIdx-1)
-          let endStr = str.slice(iOfnxtCL)
+          let endStr = str.slice(iOfnxtCL+1)
           let group = `||${order}||`
           newStr = begStr + group + endStr
           output[group] = snip

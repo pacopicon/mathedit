@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "server": "node app.js",
-    "mon": "nodemon app.js"
+    "mon": "nodemon app.js",
+    "calc": "node test.js"
   },
   "dependencies": {
     "algebra.js": "^0.2.6",

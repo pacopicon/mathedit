@@ -4,7 +4,25 @@ let ar = '9+8-7\\cdot 6\\left(5+4-3\\left(2\\right)\\left(6\\right)\\right)8-\\l
 
 let ar2 = '\\left(1a+2b-aa\\cdot 3c+45\\div 4d-21\\right)\\div \\left(\\left(abcd+1234-5678\\cdot qwer\\cdot 9\\right)\\left(abcd+1234-5678\\cdot qwer\\div 9\\right)\\right)\\div abcd+1234-5678\\cdot qwer\\cdot 9\\div \\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)'
 
-let fs = '\\frac{\\frac{1-ab+22\\left(\\left(3\\cdot se+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(jl\\right)}{\\frac{85+b-9\\cdot dd\\left(13+fr-2\\left(h\\right)\\left(43\\right)\\right)4-\\left(ai\\right)65\\left(j\\right)}{\\frac{6+xb-77\\cdot d\\left(e+8-gd\\left(\\left(39\\right)\\left(d\\right)\\right)\\right)b-\\left(i\\right)h\\left(12\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(9\\div a\\right)}}}}}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{\\frac{a\\div 3+b-c\\cdot d\\left(e+f-g\\left(9\\div a\\right)\\left(d\\right)\\right)9\\div a-\\left(i\\right)h\\left(j\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div a\\left(j\\right)}{\\frac{a+b-9\\div a\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div 3}{\\left(a\\left(b\\left(c\\left(d\\left(e\\left(f\\cdot g\\right)h\\right)i\\right)j\\right)k\\right)l\\right)m\\left(a\\right)\\left(b\\right)\\left(c\\right)\\left(\\left(d\\right)\\right)\\left(\\left(\\left(e\\right)\\right)\\right)}}}}}'
+let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}*1a+2b`
+
+let ar3Exp = `1a+2b-(  5a**q(34*5**(3**2)+3**2) * nthroot(3**9,27**5) * getBaseLog(10,1000) * Math.log(9) * summate(3,6,'i**2') * Math.sin(2))*1a+2b`
+
+let fs = `\\frac{\\frac{1-ab+22\\left(\\left(3\\cdot se+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(jl\\right)}{\\frac{85+b-9\\cdot dd\\left(13+fr-2\\left(h\\right)\\left(43\\right)\\right)4-\\left(ai\\right)65\\left(j\\right)}{\\frac{6+xb-77\\cdot d\\left(e+8-gd\\left(\\left(39\\right)\\left(d\\right)\\right)\\right)b-\\left(i\\right)h\\left(12\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(9\\div a\\right)}}}}}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{\\frac{a\\div 3+b-c\\cdot d\\left(e+f-g\\left(9\\div a\\right)\\left(d\\right)\\right)9\\div a-\\left(i\\right)h\\left(j\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div a\\left(j\\right)}{\\frac{a+b-9\\div a\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div 3}{\\left(a\\left(b\\left(c\\left(d\\left(e\\left(f\\cdot g\\right)h\\right)i\\right)j\\right)k\\right)l\\right)m\\left(a\\right)\\left(b\\right)\\left(c\\right)\\left(\\left(d\\right)\\right)\\left(\\left(\\left(e\\right)\\right)\\right)}}}}}`
+
+let fr = `\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)-\\frac{4\\left(3\\cdot 5^{6^7}\\sqrt[3]{27}\\log _{10}\\left(100\\right)\\right)}{5\\ln \\left(9\\right)}+\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\cdot \\frac{4\\left(3\\cdot 5^{6^7}\\sqrt[3]{27}\\log _{10}\\left(100\\right)\\right)}{5\\ln \\left(9\\right)}\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}`
+
+let frExp = ``
+
+let par = `\\left(\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\left(\\sqrt[3^9]{27^5}\\right)\\left(\\log _{10}\\left(1000\\right)\\right)-\\left(\\frac{4\\left(3\\cdot 5^{6^7}\\sqrt[3]{27}\\log _{10}\\left(100\\right)\\right)}{\\ln \\left(9\\right)}\\right)+\\left(\\ln \\left(9\\right)\\right)\\left(\\sum _{i=3}^6\\right)\\left(i^2\\right)sin\\left(2\\right)}{\\left(5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\cdot 4\\left(3\\cdot 5^{6^7}\\sqrt[3]{27}\\log _{10}\\left(1000\\right)\\right)5\\ln \\left(9\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)\\right)}\\right)`
+
+let parExp = ``
+
+let nthrt = `\\sqrt[1+3-5^5]{\\frac{\\left(4+\\log _{10}\\left(1000\\right)\\right)^5-\\left(7^3\\right)\\cdot \\frac{8^5}{3}}{5-\\sum _{i=3}^6\\left(i^2\\right)}\\cdot \\cos \\left(2\\right)-\\log _{10}\\left(1000\\right)\\left(\\ln \\left(2\\right)\\right)}`
+
+let pow = `2^{3=4-5\\cdot \\frac{7}{3}\\left(3\\right)\\left(\\sqrt[3]{27-5^2}\\right)\\log _{10}\\left(1000\\right)\\cos \\left(2\\right)\\left(\\ln \\left(10\\right)\\right)\\left(\\sum _{i=3}^6\\left(i^2\\right)\\right)}`
+
+let log = `\\log _{3+4-5\\cdot \\frac{7}{3}\\left(3\\right)\\left(\\sqrt[3]{27-5^2}\\right)\\log _{10}\\left(1000\\right)\\cos \\left(2\\right)\\left(\\ln \\left(10\\right)\\right)\\left(\\sum _{i=3}^6\\left(i^2\\right)\\right)}\\left(3+4-5\\cdot \\frac{7}{3}\\left(3\\right)\\left(\\sqrt[3]{27-5^2}\\right)\\log _{10}\\left(1000\\right)\\cos \\left(2\\right)\\left(\\ln \\left(10\\right)\\right)\\left(\\sum _{i=3}^6\\left(i^2\\right)\\right)\\right)`
   
 
   
@@ -52,18 +70,6 @@ const parsIntoMult = (str) => {
   return str
 }
 
-const arith = (str) => {
-  str = str.replace('\\cdot', '*')
-  str = str.replace('\\cdot ', '*')
-  str = str.replace('\\div', '/')
-  str = str.replace('\\div ', '/')
-
-  if (str.includes('\\cdot')) {
-    str = arith(str)
-  }
-  return str
-}
-
 const processPars = (str) => {
   str = str.replace('\\left(', '(')
   str = str.replace('\\right)', ')')
@@ -73,7 +79,17 @@ const processPars = (str) => {
   return str
 }
 
-let expStr = '9+8-(7)*6*(5+4-3*(2)*(6))*8-(4)*2*(3)'
+const processArith = (str) => {
+  str = str.replace('\\cdot', '*')
+  str = str.replace('\\cdot ', '*')
+  str = str.replace('\\div', '/')
+  str = str.replace('\\div ', '/')
+
+  if (str.includes('\\cdot')) {
+    str = processArith(str)
+  }
+  return str
+}
 
 const processSimpleFracs = (str) => {
   let patt = /\\frac\{(\d+|\w+|\W+)\}\{(?!\\frac\{)(\d+|\w+|\W+)\}/g
@@ -86,8 +102,6 @@ const processSimpleFracs = (str) => {
   let processedFrac = str.replace(nestedFrac, processedDenom)
   return processedFrac
 }
-
-let patt = /(?:(frac\{|\{))((\()?)+(\d+|\w+)((\))?)+((\+|\-|\*|\*\*|\\cdot\s|\\cdot|\\div\s|\\div|)((\()?)+(\d+|\w+)((\))?)+)+(?:\})/g
 
 const processComplexFracs = (obj) => {
   let str = obj.str
@@ -107,9 +121,9 @@ const processComplexFracs = (obj) => {
   }
   let match = matchWithRightBrac.replace('}', '')
   let strWithRef = str.replace(match, `||${order}||`)
-  refs[`||${order}||`] = arith(match)
+  refs[`||${order}||`] = processArith(match)
 
-  const pos = strWithRef.search(arithPatt)
+  const pos = strWithRef.search(processArithPatt)
   
   if (pos > -1) {
     order++
@@ -190,162 +204,204 @@ const production = (i, n) => {
   return total
 }
 
-const cot = (x) => 1 / Math.tan(x)
+let trig = ['sin', 'cos', 'tan', 'cot', 'csc', 'sec']
 
-const csc = (x) => 1 / Math.sin(x)
-
-const sec = (x) => 1 / Math.cos(x)
-
-let rest = '\\frac{\\frac{||0||}{\\frac{||1||}{\\frac{||2||}{\\frac{||3||}||4||}}}}}{\\frac{||5||}{\\frac{||6||}{\\frac{||7||}{\\frac{||8||}{(a(b(c(d(e(f\\cdot g)h)i)j)k)l)m(a)(b)(c)((d))(((e)))}}}}}'
-
-let arithPatt = /(?:(\\frac\{|\{))\(*(\d+|\w+)((\))?)+((\+|\-|\*|\*\*|\\cdot\s|\\cdot|\\div\s|\\div|)\(*(\d+|\w+)\)*)+(?:\})/g
-
-let arithPatt2 = /(?:(\\\\frac\{|\{))\(*(\d+|\w+)((\))?)+((\+|\-|\*|\*\*|\\\\cdot\s|\\\\cdot|\\\\div\s|\\\\div|)\(*(\d+|\w+)\)*)+(?:\})/g
-// latex strings
-// 1
-let ari = '1a+2b-aa\cdot 3c+45/4d-21'
-// 2
-let fr = '\\frac{1}{2}'
-// 3
-let par = '\\left(2\\right)'
-// 4
-let sqrt = '\\sqrt{4}'
-// 5
-let nthrt = '\\\\sqrt[3]{27}'
-// 6
-let pow = '1^{2^{3^{4^5}}}'
-// 7
-let log = '\\log _2\\left(4\\right)'
-// 8
-let ln = '\\ln \\left(2\right)'
-// 9
-let sum = '\sum _{i=3}^6\left(i^2\right)'
-
-// 10
-let sin = '\\sin \\left(5\\right)'
-let cos = '\\cos \\left(5\\right)'
-let tan = '\\tan \\left(5\\right)'
-let cot1 = '\\cot \\left(5\\right)'
-let csc1 = '\\csc \\left(5\\right)'
-let sec1 = '\\sec \\left(5\\right)'
-
-// js strings
-// 1
-let ariJS = '1a + 2b - aa * 3c + 45/4d - 21'
-// 2
-let frJS = '1/2'
-// 3
-let parJS = '(2)'
-// 4
-let sqrtJS = 'nthroot(2,4)'
-// 5
-let nthrtJS = 'nthroot(3,27)'
-// 6
-let powJS = '1**(2**(3**(4**5)))'
-// 7
-let logJS = 'getBaseLog(2,4)'
-// 8
-let lnJS = 'Math.log(2)'
-// 9
-let sumJS = 'iTerm(i) => i**2 && summation(3,6)'
-
-// 10
-let sinJS = 'Math.sin(5)'
-let cosJS = 'Math.cos(5)'
-let tanJS = 'Math.tan(5)'
-let cotJS = 'cot(5)'
-let cscJS = '\\csc \\left(5\\right)'
-let secJS = '\\sec \\left(5\\right)'
-
-
-// constants
-
-// Euler's number
-let e = Math.E
-let pi = Math.PI 
-
-
-
-let obj = convertLatexStrIntoJSmathStr(fs)
-
-console.log(JSON.stringify(obj))
-
-const findUnnestedExp = (str) => {
-  let arith = /(\\\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\\\right\)|\\\\left\()*((\+|\-|\\\\cdot\s|\\\\cdot)*(\\\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\\\right\))*)*/g
-  let simpFrac = /\\\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g
-  let simpSqrt = /\\\\sqrt\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g
-  let simpNthrt = /\\\\sqrt\[(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\]\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g
-  let compPow = /\^\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g
-  let simpPow = /(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)/g
-  let simpLog = /\\\\log\s\_(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\\\right\)/g
-  let simpLn = /\\\\ln\s\\\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\\\right\)/g
-  let 
-
-
+trigPatt = (op) => {
+  let template = `\\${op}\\s\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)`
+  return new RegExp(template, 'g')
 }
 
-// regexr
 
-let current_regexp = /\\\\sum\s\_\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)((\=)(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))?\}\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\\\left\(){1,}(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\\\right\)|\\\\left\()*((\+|\-|\\\\cdot\s|\\\\cdot)*(\\\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\\\right\))*)*\\\\right\)/g
+const patterns = [
+    {
+      pattern: /(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\)|\\left\()*((\+|\-|\\cdot\s|\\cdot)*(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*/g,
+      name: 'arith',
+      disqualifiers: ['frac']
+    },
+    {
+      pattern: /\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+      name: 'simpFrac'
+    },
+    {
+      pattern: /\\sqrt\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+      name: 'simpSqrt'
+    },
+    {
+      pattern: /\\sqrt\[(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\]\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+      name: 'simpNthrt'
+    },
+    {
+      pattern: /\^\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+      name: 'compPow'
+    },
+    {
+      pattern: /(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)/g,
+      name: 'simpPow'
+    },
+    {
+      pattern: /\\log\s\_(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)/g,
+      name: 'simpLog'
+    },
+    {
+      pattern: /\\ln\s\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)/g,
+      name: 'simpLn'
+    },
+    {
+      pattern: /\\sum\s\_\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)((\=)(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))?\}\^(\{\\infty\s\}|(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\left\(){1,}(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\)|\\left\()*((\+|\-|\\cdot\s|\\cdot)*(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*\\right\))/g,
+      name: 'sum'
+    },
+    {
+      pattern: trigPatt('sin'),
+      name: 'sin'
+    },
+    {
+      pattern: trigPatt('cos'),
+      name: 'cos'
+    },
+    {
+      pattern: trigPatt('tan'),
+      name: 'tan'
+    },
+    {
+      pattern: trigPatt('cot'),
+      name: 'cot'
+    },
+    {
+      pattern: trigPatt('csc'),
+      name: 'csc'
+    },
+    {
+      pattern: trigPatt('sec'),
+      name: 'sec'
+    }
+  ]
+  // currently there are >> 15 << patterns.  Please update every time you add another pattern.
+
+const searchStrForPattern = (str, arrOfPattObjByIndex) => {
+  let patt = arrOfPattObjByIndex.pattern
+  let disq = arrOfPattObjByIndex.disqualifiers
+  for (let i=0; i<str.length; i++) {
+     let patternPosition = str.search(patt)
+
+    if (patternPosition > -1) {
+      let checkedSection = str.slice(i)
+      let matchArr      = patt.exec(checkedSection)
+      let patternStr    = matchArr[0]
+      console.log('patternStr = ', patternStr)
+      let disqualified = false
+
+      for (let k=0; k<patternStr.length; k++) {
+        if (patternStr.includes(disq[k])) {
+          disqualified = true
+        }
+      }
+
+      if (patternStr && !disqualified) {
+        return patternStr
+      } 
+    } else {
+      return false
+    }
+  } 
+}
+
+const isKeyValueObject = (obj) => {
+  let res = false
+  obj.test = ''
+  if (obj.hasOwnProperty('test') && !Array.isArray(obj)) {
+    res = true
+    delete obj.test
+  }
+  return res
+}
+
+const findUnnestedExp = (input) => {
+  // input is composed of 4 properties: 
+  let str = input.str // (1) string to be processed and also updated
+  let checkStep = input.checkStep ? input.checkStep : 0 // (2) checkStep correlates to pattern string is checked against
+  let refs = input.refs && isKeyValueObject(input.refs) ? {...input.refs} : {}  // (3) the refs object contains every subchild
+  let order = input.order ? input.order : 0 // (4) each subchild is stored as a prop ID'ed by order in the refs object
+
+
+  let currentPattern = patterns[checkStep].pattern
+  let res = ''
+  let patternPosition = str.search(currentPattern)
+  let patternStr = ''
+
+  if (patternPosition > -1) {
+    
+
+    patternStr    = searchStrForPattern(str, patterns[checkStep])
+    
+    let strWithRef = str.replace(patternStr, `||${order}||`) // update (1) string
+                                                             // checkstep (2) is updated by recursively calling findUnnestedExp (see below)
+    let processedStr = processPars(processArith(patternStr))
+    refs[`||${order}||`] = processedStr                     // update (3) refs
+    order++                                                  // update (4) order
+    
+    input = { 
+      str: strWithRef,
+      checkStep,
+      order,
+      refs
+    }
+
+    console.log(`\n\n str = ${str}, \n\n strWithRef = ${strWithRef}, \n\n checkStep = ${checkStep}, \n\n order = ${order}, \n\n refs = ${JSON.stringify(refs)}\n`)
+
+    if (order < 5) {
+      res = findUnnestedExp(input)
+    } else {
+      res = {...input}
+    }
+ 
+  } else if (patternPosition == -1 && checkStep < 14) {
+    input.checkStep++ // update (2) checkStep
+    if (order < 5) {
+      res = findUnnestedExp(input)
+    } else {
+      res = {...input}
+    }
+  }
+
+  return res
+
+} // END findUnnestedExp
 
 
 
-let pow = 1^{2^{3^{4^{5^{6^7}}}}}
-let pow = ||1||^{||2||^{||3||^{||4||^{||5||^{||6||^||7||}}}}}
+let input = {
+  str: fs
+}
+
+let res = findUnnestedExp(input)
+console.log('result = ', JSON.stringify(res))
+
+let p1 = `1^{2^{3^{4^{5^{6^7}}}}}`
+let p2 = `||1||^{||2||^{||3||^{||4||^{||5||^{||6||^||7||}}}}}`
 // 7
-let log = \\log _2\\left(4\\right)
-let log = \\log _||2||\\left(||4||\\right)
+let lg1 = `\\log _2\\left(4\\right)`
+let lg2 = `\\log _||2||\\left(||4||\\right)`
 // 8
-let ln = \\ln \\left(2\\right)
-let ln = \\ln \\left(||2||\\right)
+let ln1 = `\\ln \\left(2\\right)`
+let ln2 = `\\ln \\left(||2||\\right)`
 // 9
-let sum = \\sum _{i=3}^6\\left(1-i+22\\left(\\left(3\\cdot i+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(i\\right)\\right)
-let sum = \\sum _{i}^6\\left(1-i+22\\left(\\left(3\\cdot i+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(i\\right)\\right)
-let sum = \\sum _{i=||3||}^||6||\\left(||1||-||2||+||3||\\left(\\left(||4||\\cdot ||5||+||6||-||7||\\left(||8||\\right)\\right)\\left(||9||\\right)\\right)||10||-\\left(||11||\\right)||12||\\left(||13||\\right)\\right)
-let sum = \\sum _{||3||}^||6||\\left(||1||-||2||+||3||\\left(\\left(||4||\\cdot ||5||+||6||-||7||\\left(||8||\\right)\\right)\\left(||9||\\right)\\right)||10||-\\left(||11||\\right)||12||\\left(||13||\\right)\\right)
-
-let sum = \sum _{n=0}^{\\infty }
+let sm1 = `\\sum _{i=3}^6\\left(1-i+22\\left(\\left(3\\cdot i+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(i\\right)\\right)`
+let sm2 = `\\sum _{i}^6\\left(1-i+22\\left(\\left(3\\cdot i+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(i\\right)\\right)`
+let sm3 = `\\sum _{i=||3||}^||6||\\left(||1||-||2||+||3||\\left(\\left(||4||\\cdot ||5||+||6||-||7||\\left(||8||\\right)\\right)\\left(||9||\\right)\\right)||10||-\\left(||11||\\right)||12||\\left(||13||\\right)\\right)`
+let sm4 = `\\sum _{||3||}^||6||\\left(||1||-||2||+||3||\\left(\\left(||4||\\cdot ||5||+||6||-||7||\\left(||8||\\right)\\right)\\left(||9||\\right)\\right)||10||-\\left(||11||\\right)||12||\\left(||13||\\right)\\right)`
+let sm5 = `\\sum _{n=0}^{\\infty }`
 
 // 10
-let sin = '\\sin \\left(5\\right)'
-let cos = '\\cos \\left(5\\right)'
-let tan = '\\tan \\left(5\\right)'
+let sin1 = '\\sin \\left(5\\right)'
+let cos1 = '\\cos \\left(5\\right)'
+let tan1 = '\\tan \\left(5\\right)'
 let cot1 = '\\cot \\left(5\\right)'
 let csc1 = '\\csc \\left(5\\right)'
 let sec1 = '\\sec \\left(5\\right)'
 
-let sin = '\\sin \\left(||5||\\right)'
-let cos = '\\cos \\left(||5||\\right)'
-let tan = '\\tan \\left(||5||\\right)'
-let cot1 = '\\cot \\left(||5||\\right)'
-let csc1 = '\\csc \\left(||5||\\right)'
-let sec1 = '\\sec \\left(||5||\\right)'
-
-
-
-// 1
-let ariJS = '1a + 2b - aa * 3c + 45/4d - 21'
-// 2
-let frJS = '1/2'
-// 3
-let parJS = '(2)'
-// 4
-let sqrtJS = 'nthroot(2,4)'
-// 5
-let nthrtJS = 'nthroot(3,27)'
-// 6
-let powJS = '1**(2**(3**(4**5)))'
-// 7
-let logJS = 'getBaseLog(2,4)'
-// 8
-let lnJS = 'Math.log(2)'
-// 9
-let sumJS = 'iTerm(i) => i**2 && summation(3,6)'
-
-// 10
-let sinJS = 'Math.sin(5)'
-let cosJS = 'Math.cos(5)'
-let tanJS = 'Math.tan(5)'
-let cotJS = 'cot(5)'
-let cscJS = '\\csc \\left(5\\right)'
-let secJS = '\\sec \\left(5\\right)'
+let sin2 = '\\sin \\left(||5||\\right)'
+let cos2 = '\\cos \\left(||5||\\right)'
+let tan2 = '\\tan \\left(||5||\\right)'
+let cot2 = '\\cot \\left(||5||\\right)'
+let csc2 = '\\csc \\left(||5||\\right)'
+let sec2 = '\\sec \\left(||5||\\right)'

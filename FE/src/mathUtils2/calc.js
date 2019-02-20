@@ -8,7 +8,7 @@ let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}
 
 let ar3Exp = `1a+2b-(  5a**q(34*5**(3**2)+3**2) * nthroot(3**9,27**5) * getBaseLog(10,1000) * Math.log(9) * summate(3,6,'i**2') * Math.sin(2))*1a+2b`
 
-let fs = `\\frac{\\frac{1-ab+22\\left(\\left(3\\cdot se+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(jl\\right)}{\\frac{85+b-9\\cdot dd\\left(13+fr-2\\left(h\\right)\\left(43\\right)\\right)4-\\left(ai\\right)65\\left(j\\right)}{\\frac{6+xb-77\\cdot d\\left(e+8-gd\\left(\\left(39\\right)\\left(d\\right)\\right)\\right)b-\\left(i\\right)h\\left(12\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(9\\div a\\right)}}}}}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{\\frac{a\\div 3+b-c\\cdot d\\left(e+f-g\\left(9\\div a\\right)\\left(d\\right)\\right)9\\div a-\\left(i\\right)h\\left(j\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div a\\left(j\\right)}{\\frac{a+b-9\\div a\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div 3}{\\left(a\\left(b\\left(c\\left(d\\left(e\\left(f\\cdot g\\right)h\\right)i\\right)j\\right)k\\right)l\\right)m\\left(a\\right)\\left(b\\right)\\left(c\\right)\\left(\\left(d\\right)\\right)\\left(\\left(\\left(e\\right)\\right)\\right)}}}}}`
+let fs = '\\frac{\\frac{1-ab+22\\left(\\left(3\\cdot se+43-g\\left(5\\right)\\right)\\left(ad\\right)\\right)64-\\left(i\\right)7\\left(jl\\right)}{\\frac{85+b-9\\cdot dd\\left(13+fr-2\\left(h\\right)\\left(43\\right)\\right)4-\\left(ai\\right)65\\left(j\\right)}{\\frac{6+xb-77\\cdot d\\left(e+8-gd\\left(\\left(39\\right)\\left(d\\right)\\right)\\right)b-\\left(i\\right)h\\left(12\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(9\\div a\\right)}}}}}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{\\frac{a\\div 3+b-c\\cdot d\\left(e+f-g\\left(9\\div a\\right)\\left(d\\right)\\right)9\\div a-\\left(i\\right)h\\left(j\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div a\\left(j\\right)}{\\frac{a+b-9\\div a\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div 3}{\\left(a\\left(b\\left(c\\left(d\\left(e\\left(f\\cdot g\\right)h\\right)i\\right)j\\right)k\\right)l\\right)m\\left(a\\right)\\left(b\\right)\\left(c\\right)\\left(\\left(d\\right)\\right)\\left(\\left(\\left(e\\right)\\right)\\right)}}}}}'
 
 let fr = `\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)-\\frac{4\\left(3\\cdot 5^{6^7}\\sqrt[3]{27}\\log _{10}\\left(100\\right)\\right)}{5\\ln \\left(9\\right)}+\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\cdot \\frac{4\\left(3\\cdot 5^{6^7}\\sqrt[3]{27}\\log _{10}\\left(100\\right)\\right)}{5\\ln \\left(9\\right)}\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}`
 
@@ -148,11 +148,6 @@ const processComplexFracs = (obj) => {
  
 }
 
-const testStr = (str) => {
-  let arithPatt = /(?:(\\frac\{|\{))\(*(\d+|\w+)((\))?)+((\+|\-|\*|\*\*|\\cdot\s|\\cdot|\\div\s|\\div|)\(*(\d+|\w+)\)*)+(?:\})/g
-  return arithPatt.test(str)
-}
-
 const convertLatexStrIntoJSmathStr = (str) => {
   str = processPars(str)
   let obj = {
@@ -214,7 +209,7 @@ trigPatt = (op) => {
 
 const patterns = [
     {
-      pattern: /(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\)|\\left\()*((\+|\-|\\cdot\s|\\cdot)*(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*/g,
+      pattern: /(\-)?(\\left\()*((\-)?\d+|(\-)?\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\right\))*((\+|\-|\\cdot\s|\\cdot|\\div\s|\\div)*(\\left\()*(\-)?(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*/g,
       name: 'arith',
       disqualifiers: ['frac']
     },
@@ -277,32 +272,32 @@ const patterns = [
   ]
   // currently there are >> 15 << patterns.  Please update every time you add another pattern.
 
-const searchStrForPattern = (str, arrOfPattObjByIndex) => {
+const matchPattern = (str, arrOfPattObjByIndex) => {
+
+  // !!! THIS FUNCTION CURRENTLY WILL NOT MATCH REFS INSIDE THE STRING:
+  // WILL NOT MATCH -> '\\frac{\\frac{||0||}{\\frac{||1||}{\\frac{||2||}{\\frac{||3||}{||4||}}}}}{\\frac{||5||}{\\frac{||6||}{\\frac{||7||}{\\frac{||8||}{||9||}}}}}'
   let patt = arrOfPattObjByIndex.pattern
-  let disq = arrOfPattObjByIndex.disqualifiers
-  for (let i=0; i<str.length; i++) {
-     let patternPosition = str.search(patt)
+  let disqualifiers = arrOfPattObjByIndex.disqualifiers
 
-    if (patternPosition > -1) {
-      let checkedSection = str.slice(i)
-      let matchArr      = patt.exec(checkedSection)
-      let patternStr    = matchArr[0]
-      console.log('patternStr = ', patternStr)
-      let disqualified = false
-
-      for (let k=0; k<patternStr.length; k++) {
-        if (patternStr.includes(disq[k])) {
-          disqualified = true
+  let matches = str.match(patt)  
+  for (let i=0; i<matches.length; i++) {
+    let currMatch = matches[i]
+    if (disqualifiers.length > 0) {
+      for (let k=0; k<disqualifiers.length; k++) {
+        let disqualifier = disqualifiers[k]
+        if (currMatch != disqualifier && !currMatch.includes('||')) {
+          console.log(`currMatch = ${currMatch}`)
+          return currMatch
         }
       }
-
-      if (patternStr && !disqualified) {
-        return patternStr
-      } 
     } else {
-      return false
+      if (!currMatch.includes('||')) {
+        console.log(`currMatch = ${currMatch}`)
+        return currMatch
+      }
     }
   } 
+  return false
 }
 
 const isKeyValueObject = (obj) => {
@@ -315,6 +310,8 @@ const isKeyValueObject = (obj) => {
   return res
 }
 
+let stop = 20
+
 const findUnnestedExp = (input) => {
   // input is composed of 4 properties: 
   let str = input.str // (1) string to be processed and also updated
@@ -325,14 +322,10 @@ const findUnnestedExp = (input) => {
 
   let currentPattern = patterns[checkStep].pattern
   let res = ''
-  let patternPosition = str.search(currentPattern)
-  let patternStr = ''
+  let patternStr    = matchPattern(str, patterns[checkStep])
 
-  if (patternPosition > -1) {
-    
-
-    patternStr    = searchStrForPattern(str, patterns[checkStep])
-    
+  if (patternStr) {
+        
     let strWithRef = str.replace(patternStr, `||${order}||`) // update (1) string
                                                              // checkstep (2) is updated by recursively calling findUnnestedExp (see below)
     let processedStr = processPars(processArith(patternStr))
@@ -348,15 +341,15 @@ const findUnnestedExp = (input) => {
 
     console.log(`\n\n str = ${str}, \n\n strWithRef = ${strWithRef}, \n\n checkStep = ${checkStep}, \n\n order = ${order}, \n\n refs = ${JSON.stringify(refs)}\n`)
 
-    if (order < 5) {
+    if (order < stop) {
       res = findUnnestedExp(input)
     } else {
       res = {...input}
     }
  
-  } else if (patternPosition == -1 && checkStep < 14) {
+  } else if (!patternStr && checkStep < 14) {
     input.checkStep++ // update (2) checkStep
-    if (order < 5) {
+    if (order < stop) {
       res = findUnnestedExp(input)
     } else {
       res = {...input}
@@ -368,13 +361,6 @@ const findUnnestedExp = (input) => {
 } // END findUnnestedExp
 
 
-
-let input = {
-  str: fs
-}
-
-let res = findUnnestedExp(input)
-console.log('result = ', JSON.stringify(res))
 
 let p1 = `1^{2^{3^{4^{5^{6^7}}}}}`
 let p2 = `||1||^{||2||^{||3||^{||4||^{||5||^{||6||^||7||}}}}}`
@@ -405,3 +391,23 @@ let tan2 = '\\tan \\left(||5||\\right)'
 let cot2 = '\\cot \\left(||5||\\right)'
 let csc2 = '\\csc \\left(||5||\\right)'
 let sec2 = '\\sec \\left(||5||\\right)'
+
+let test = `\\frac{\\frac{||0||}{\\frac{85+b-9\\cdot dd\\left(13+fr-2\\left(h\\right)\\left(43\\right)\\right)4-\\left(ai\\right)65\\left(j\\right)}{\\frac{6+xb-77\\cdot d\\left(e+8-gd\\left(\\left(39\\right)\\left(d\\right)\\right)\\right)b-\\left(i\\right)h\\left(12\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(9\\div a\\right)}}}}}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{\\frac{a\\div 3+b-c\\cdot d\\left(e+f-g\\left(9\\div a\\right)\\left(d\\right)\\right)9\\div a-\\left(i\\right)h\\left(j\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div a\\left(j\\right)}{\\frac{a+b-9\\div a\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div 3}{\\left(a\\left(b\\left(c\\left(d\\left(e\\left(f\\cdot g\\right)h\\right)i\\right)j\\right)k\\right)l\\right)m\\left(a\\right)\\left(b\\right)\\left(c\\right)\\left(\\left(d\\right)\\right)\\left(\\left(\\left(e\\right)\\right)\\right)}}}}}`
+
+
+let input = {
+  str: fs
+}
+
+onOff = [true,false]
+
+if (onOff[0]) {
+  let res = findUnnestedExp(input)
+  console.log('result = ', JSON.stringify(res))
+} else {
+  let arith = patterns[0].pattern
+  let res = arith.exec(fs)
+  let res1 = fs.match(arith)
+  console.log(res1)
+  console.log(Array.isArray(res1))
+}

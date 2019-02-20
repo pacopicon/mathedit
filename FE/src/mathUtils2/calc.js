@@ -1,4 +1,3 @@
-
 // complex strings
 let ar = '9+8-7\\cdot 6\\left(5+4-3\\left(2\\right)\\left(6\\right)\\right)8-\\left(4\\right)2\\left(3\\right)'
 
@@ -84,8 +83,9 @@ const processArith = (str) => {
   str = str.replace('\\cdot ', '*')
   str = str.replace('\\div', '/')
   str = str.replace('\\div ', '/')
+  str = str.replace(' ', '')
 
-  if (str.includes('\\cdot')) {
+  if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
     str = processArith(str)
   }
   return str
@@ -279,21 +279,22 @@ const matchPattern = (str, arrOfPattObjByIndex) => {
   let patt = arrOfPattObjByIndex.pattern
   let disqualifiers = arrOfPattObjByIndex.disqualifiers
 
-  let matches = str.match(patt)  
-  for (let i=0; i<matches.length; i++) {
-    let currMatch = matches[i]
-    if (disqualifiers.length > 0) {
-      for (let k=0; k<disqualifiers.length; k++) {
-        let disqualifier = disqualifiers[k]
-        if (currMatch != disqualifier && !currMatch.includes('||')) {
-          console.log(`currMatch = ${currMatch}`)
+  let matches = str.match(patt)
+  console.log(`\n+---------------\n|pattern name = ${arrOfPattObjByIndex.name}\n|matches = ${matches}\n+---------------\n`)  
+  if (matches && matches.length > 0) {
+    for (let i=0; i<matches.length; i++) {
+      let currMatch = matches[i]
+      if (disqualifiers && disqualifiers.length > 0) {
+        for (let k=0; k<disqualifiers.length; k++) {
+          let disqualifier = disqualifiers[k]
+          if (currMatch != disqualifier && !currMatch.includes('||')) {
+            return currMatch
+          }
+        }
+      } else if (!disqualifiers || disqualifier.length == 0) {
+        if (!currMatch.includes('||')) {
           return currMatch
         }
-      }
-    } else {
-      if (!currMatch.includes('||')) {
-        console.log(`currMatch = ${currMatch}`)
-        return currMatch
       }
     }
   } 
@@ -310,7 +311,7 @@ const isKeyValueObject = (obj) => {
   return res
 }
 
-let stop = 20
+let stop = 50
 
 const findUnnestedExp = (input) => {
   // input is composed of 4 properties: 
@@ -323,6 +324,8 @@ const findUnnestedExp = (input) => {
   let currentPattern = patterns[checkStep].pattern
   let res = ''
   let patternStr    = matchPattern(str, patterns[checkStep])
+
+  // console.log(`\n+----------------\n|pattern name = ${patterns[checkStep].name},\n|patternStr = ${patternStr},\n+----------------\n`)
 
   if (patternStr) {
         
@@ -349,11 +352,15 @@ const findUnnestedExp = (input) => {
  
   } else if (!patternStr && checkStep < 14) {
     input.checkStep++ // update (2) checkStep
+    console.log(`!!!!!!!!!!!!!upping the checkStep -> input = ${JSON.stringify(input)}`)
+    
     if (order < stop) {
       res = findUnnestedExp(input)
     } else {
       res = {...input}
     }
+  } else {
+    res = {...input}
   }
 
   return res

@@ -1,4 +1,5 @@
-
+let verbose = true
+let stop = 20
 // complex strings
 let ar = '9+8-7\\cdot 6\\left(5+4-3\\left(2\\right)\\left(6\\right)\\right)8-\\left(4\\right)2\\left(3\\right)'
 
@@ -79,20 +80,21 @@ const processPars = (str) => {
   return str
 }
 
-const processArith = (str) => {
+const processArithmetic = (str) => {
   str = str.replace('\\cdot', '*')
   str = str.replace('\\cdot ', '*')
   str = str.replace('\\div', '/')
   str = str.replace('\\div ', '/')
+  str = str.replace(' ', '')
 
-  if (str.includes('\\cdot')) {
-    str = processArith(str)
+  if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
+    str = processArithmetic(str)
   }
   return str
 }
 
 const processSimpleFracs = (str) => {
-  let patt = /\\frac\{(\d+|\w+|\W+)\}\{(?!\\frac\{)(\d+|\w+|\W+)\}/g
+  let patt = /\\frac\{\|\|\d+\|\|\}\{(?!\\frac\{)(\|\|\d+\|\|)\}/g
   // str = str.replace(patt, )
   let nestedFracArr = patt.exec(str)
   let nestedFrac = nestedFracArr[0]
@@ -103,61 +105,27 @@ const processSimpleFracs = (str) => {
   return processedFrac
 }
 
-const processComplexFracs = (obj) => {
-  let str = obj.str
-  let order = obj.order
-  let refs = obj.refs
-
-  let arithPatt = /(?:(\\frac\{|\{))\(*(\d+|\w+)((\))?)+((\+|\-|\*|\*\*|\^|\\cdot\s|\\cdot|\\div\s|\\div|)\(*(\d+|\w+)\)*)+(?:\})/gm
-  let matchArr = arithPatt.exec(str)
-  let bookEndedMatch = matchArr[0] 
-  let matchWithRightBrac = ''
-  let fracBrac =  '\\frac{'
-  let brac = '{'
-  if (bookEndedMatch.includes(fracBrac)) {
-    matchWithRightBrac = bookEndedMatch.replace(fracBrac, '')
-  } else if (bookEndedMatch.includes(brac)) {
-    matchWithRightBrac = bookEndedMatch.replace(brac, '')
-  }
-  let match = matchWithRightBrac.replace('}', '')
-  let strWithRef = str.replace(match, `||${order}||`)
-  refs[`||${order}||`] = processArith(match)
-
-  const pos = strWithRef.search(processArithPatt)
-  
-  if (pos > -1) {
-    order++
-    let _obj = {}
-    _obj.str = strWithRef
-    _obj.order = order
-    _obj.refs = {...refs}
-
-    // console.log('_obj = ', JSON.stringify(_obj))
-
-    let res = processComplexFracs(_obj)
-    strWithRef = res.strWithRef 
-    order = res.order 
-    refs = res.refs
+const processRoot = (_str) => {
+  let str      = _str.replace('\\sqrt', '')
+  let radicand = str.slice(str.indexOf('{')+1, str.indexOf('}'))
+  let index    = str.includes('[') ? str.slice(1, str.indexOf(']')) : 2 
+  let isComputable = (str) => {
+    let verdict = false
+    let num = Number(str)
+    if (typeof num == 'number' && !Number.isNaN(num)) {
+      verdict = true
+    }
+    return verdict
   } 
-
-  return {
-    strWithRef, 
-    order, 
-    refs
-  }
- 
+  let outcome  = isComputable(radicand) && isComputable(index) ? nthroot(index, radicand) : `\\sqrt[${index}]{${radicand}}`
+  return outcome
 }
 
-const convertLatexStrIntoJSmathStr = (str) => {
-  str = processPars(str)
-  let obj = {
-    str,
-    order: 0,
-    refs: {}
-  }
-  obj = processComplexFracs(obj)
-  
-  return obj
+const processExponent = (str) => {
+  str = str.replace('{', '')
+  str = str.replace('}', '')
+  str = str.replace('^', '**')
+  return `(${str})`
 }
 
 const getBaseLog = (b, x) => {
@@ -209,91 +177,144 @@ trigPatt = (op) => {
 
 const patterns = [
     {
-      pattern: /(\-)?(\\left\()*((\-)?\d+|(\-)?\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\right\))*((\+|\-|\\cdot\s|\\cdot|\\div\s|\\div)*(\\left\()*(\-)?(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*/g,
-      name: 'arith',
-      disqualifiers: ['frac']
+      pattern: /((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))|((?<=\^)(\{)(?=(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}))((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))(?<=\^\{((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)))(\})/g,
+      name: 'exponent',
+      disqualifiers: []
     },
     {
-      pattern: /\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
-      name: 'simpFrac'
+      pattern: /(\-)?(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)(\\right\))*((\+|\-(?=((\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)))|\\cdot\s|\\cdot|\\div\s|\\div)*(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)*(\\right\))*)*/g,
+      name: 'arithmetic',
+      disqualifiers: ['frac', 'sqrt', ]
     },
     {
-      pattern: /\\sqrt\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
-      name: 'simpSqrt'
+      // pattern: /\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+      pattern: /(-)?\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+      name: 'fraction',
+      disqualifiers: []
     },
     {
-      pattern: /\\sqrt\[(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\]\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
-      name: 'simpNthrt'
-    },
-    {
-      pattern: /\^\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
-      name: 'compPow'
-    },
-    {
-      pattern: /(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)/g,
-      name: 'simpPow'
+      pattern: /\\sqrt(\[((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\])?\{((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\}/g,
+      name: 'root',
+      disqualifiers: []
     },
     {
       pattern: /\\log\s\_(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)/g,
-      name: 'simpLog'
+      name: 'logarithm',
+      disqualifiers: []
     },
     {
       pattern: /\\ln\s\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)/g,
-      name: 'simpLn'
+      name: 'naturalLogarithm',
+      disqualifiers: []
     },
     {
       pattern: /\\sum\s\_\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)((\=)(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))?\}\^(\{\\infty\s\}|(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\left\(){1,}(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\)|\\left\()*((\+|\-|\\cdot\s|\\cdot)*(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*\\right\))/g,
-      name: 'sum'
+      name: 'sum',
+      disqualifiers: []
     },
     {
       pattern: trigPatt('sin'),
-      name: 'sin'
+      name: 'sin',
+      disqualifiers: []
     },
     {
       pattern: trigPatt('cos'),
-      name: 'cos'
+      name: 'cos',
+      disqualifiers: []
     },
     {
       pattern: trigPatt('tan'),
-      name: 'tan'
+      name: 'tan',
+      disqualifiers: []
     },
     {
       pattern: trigPatt('cot'),
-      name: 'cot'
+      name: 'cot',
+      disqualifiers: []
     },
     {
       pattern: trigPatt('csc'),
-      name: 'csc'
+      name: 'csc',
+      disqualifiers: []
     },
     {
       pattern: trigPatt('sec'),
-      name: 'sec'
+      name: 'sec',
+      disqualifiers: []
     }
   ]
   // currently there are >> 15 << patterns.  Please update every time you add another pattern.
 
-const matchPattern = (str, arrOfPattObjByIndex) => {
 
-  // !!! THIS FUNCTION CURRENTLY WILL NOT MATCH REFS INSIDE THE STRING:
-  // WILL NOT MATCH -> '\\frac{\\frac{||0||}{\\frac{||1||}{\\frac{||2||}{\\frac{||3||}{||4||}}}}}{\\frac{||5||}{\\frac{||6||}{\\frac{||7||}{\\frac{||8||}{||9||}}}}}'
+const filterMatch = (matches, disqualifiers, order, lastOrder) => {
+  let filtered = false
+  for (let i=0; i<matches.length; i++) {
+    let match = matches[i]
+    for (let j=0; j<disqualifiers.length; j++) {
+      let disqualifier = disqualifiers[j]
+      if (match != disqualifier) {
+        // console.log(`match = ${match}, disqualifier = ${disqualifier}, match != disqualifier = ${match != disqualifier}`)
+        filtered = match
+      }
+    }
+    // console.log('filtered = ', filtered)
+    return filtered
+  }
+}
+
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.split(search).join(replacement);
+};
+
+matches = [`||0||`, `||1||`, `||2||`, `||3||`, `||4||`, `||5||`, `||6||`]
+
+let extractNumFromRef = (match) => {
+  let numStr = match.replaceAll('||', '')
+  return Number(numStr)
+}
+
+const isCurrMatchAProhibitedRef = (order, lastOrderOfLastStep, currMatch) => {
+  let outcome = false
+  if (currMatch.includes('||')) {
+
+    let prohibitedOrder = extractNumFromRef(currMatch)
+
+    if (!lastOrderOfLastStep) {
+      outcome = true
+    } else if (prohibitedOrder > lastOrderOfLastStep) {
+      outcome = true
+    } else {
+      outcome = false
+    }
+  } 
+  return outcome
+}
+
+const matchPattern = (str, arrOfPattObjByIndex, order, lastOrderOfLastStep, currentPatternName) => {
+
   let patt = arrOfPattObjByIndex.pattern
   let disqualifiers = arrOfPattObjByIndex.disqualifiers
 
-  let matches = str.match(patt)  
-  for (let i=0; i<matches.length; i++) {
-    let currMatch = matches[i]
-    if (disqualifiers.length > 0) {
-      for (let k=0; k<disqualifiers.length; k++) {
-        let disqualifier = disqualifiers[k]
-        if (currMatch != disqualifier && !currMatch.includes('||')) {
-          console.log(`currMatch = ${currMatch}`)
+  let matches = str.match(patt)
+  if (verbose) console.log(`\n+-------PATTERN-NAME--------\n|pattern name = ${arrOfPattObjByIndex.name}\n|matches = ${matches}\n+------------------`)
+  if (matches && matches.length > 0) {
+    for (let i=0; i<matches.length; i++) {
+      let currMatch = matches[i]
+      
+      if (disqualifiers && disqualifiers.length > 0) {
+        for (let k=0; k<disqualifiers.length; k++) {
+          let disqualifier = disqualifiers[k]
+          let verdict = isCurrMatchAProhibitedRef(order, lastOrderOfLastStep, currMatch)
+          if ( currMatch != disqualifier && !verdict ) {
+            return currMatch
+          }
+        }
+      } else if (!disqualifiers || disqualifiers.length == 0) {
+        let verdict = isCurrMatchAProhibitedRef(order, lastOrderOfLastStep, currMatch)
+        if (!verdict || currentPatternName == 'exponent') {
           return currMatch
         }
-      }
-    } else {
-      if (!currMatch.includes('||')) {
-        console.log(`currMatch = ${currMatch}`)
-        return currMatch
       }
     }
   } 
@@ -310,50 +331,87 @@ const isKeyValueObject = (obj) => {
   return res
 }
 
-let stop = 20
+const checkIfStrIsOnlyRef = (str) => {
+  let _str = str.slice(2, str.length-2)
+  let num = Number(_str)
+  return Number.isInteger(num) && Number.isFinite(num) && !Number.isNaN(num)
+}
 
+
+
+// START findUnnestedExp
 const findUnnestedExp = (input) => {
   // input is composed of 4 properties: 
   let str = input.str // (1) string to be processed and also updated
-  let checkStep = input.checkStep ? input.checkStep : 0 // (2) checkStep correlates to pattern string is checked against
+  let checkStep = input.checkStep ? input.checkStep : 0 // (2) checkStep correlates to pattern string being checked against
   let refs = input.refs && isKeyValueObject(input.refs) ? {...input.refs} : {}  // (3) the refs object contains every subchild
   let order = input.order ? input.order : 0 // (4) each subchild is stored as a prop ID'ed by order in the refs object
-
-
+  let lastOrderOfLastStep = input.lastOrderOfLastStep ? input.lastOrderOfLastStep : false
   let currentPattern = patterns[checkStep].pattern
+  let currentPatternName = patterns[checkStep].name
   let res = ''
-  let patternStr    = matchPattern(str, patterns[checkStep])
+
+  let patternStr    = matchPattern(str, patterns[checkStep], order, lastOrderOfLastStep, currentPatternName)
+
+  if (verbose) console.log(`\n+------STRING-W/-REF---------\n|str = ${str}, \n|checkStep = ${checkStep}, \n|order = ${order}, \n|refs = ${JSON.stringify(refs)}\n+---------------`)
 
   if (patternStr) {
         
     let strWithRef = str.replace(patternStr, `||${order}||`) // update (1) string
                                                              // checkstep (2) is updated by recursively calling findUnnestedExp (see below)
-    let processedStr = processPars(processArith(patternStr))
+    let processedStr = ''
+
+    switch(currentPatternName) {
+      case 'arithmetic':
+        processedStr = processPars(processArithmetic(patternStr))
+        break;
+      case 'fraction':
+        processedStr = processSimpleFracs(patternStr)
+        break;
+      case 'exponent':
+        processedStr = processExponent(patternStr)
+        break;
+      case 'root':
+        processedStr = processRoot(patternStr)
+        break;
+      default:
+        // code block
+    }
+
     refs[`||${order}||`] = processedStr                     // update (3) refs
-    order++                                                  // update (4) order
-    
+
+    order++                                                 // update (4) order
     input = { 
       str: strWithRef,
       checkStep,
       order,
+      lastOrderOfLastStep,
       refs
     }
-
-    console.log(`\n\n str = ${str}, \n\n strWithRef = ${strWithRef}, \n\n checkStep = ${checkStep}, \n\n order = ${order}, \n\n refs = ${JSON.stringify(refs)}\n`)
-
-    if (order < stop) {
-      res = findUnnestedExp(input)
+  
+    if (checkIfStrIsOnlyRef(strWithRef)) {
+      return input
     } else {
-      res = {...input}
+                                                         
+      if (order < stop) {
+        res = findUnnestedExp(input)
+      } else {
+        res = {...input}
+      }
+
     }
  
   } else if (!patternStr && checkStep < 14) {
     input.checkStep++ // update (2) checkStep
+    if (verbose) console.log(`!!!!!!!!!!!!!upping the checkStep -> input = ${JSON.stringify(input)}`)
+    input.lastOrderOfLastStep = order
     if (order < stop) {
       res = findUnnestedExp(input)
     } else {
       res = {...input}
     }
+  } else {
+    res = {...input}
   }
 
   return res
@@ -395,19 +453,41 @@ let sec2 = '\\sec \\left(||5||\\right)'
 let test = `\\frac{\\frac{||0||}{\\frac{85+b-9\\cdot dd\\left(13+fr-2\\left(h\\right)\\left(43\\right)\\right)4-\\left(ai\\right)65\\left(j\\right)}{\\frac{6+xb-77\\cdot d\\left(e+8-gd\\left(\\left(39\\right)\\left(d\\right)\\right)\\right)b-\\left(i\\right)h\\left(12\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(9\\div a\\right)}}}}}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)h\\left(j\\right)}{\\frac{a\\div 3+b-c\\cdot d\\left(e+f-g\\left(9\\div a\\right)\\left(d\\right)\\right)9\\div a-\\left(i\\right)h\\left(j\\right)}{\\frac{a+b-c\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div a\\left(j\\right)}{\\frac{a+b-9\\div a\\cdot d\\left(e+f-g\\left(h\\right)\\left(d\\right)\\right)b-\\left(i\\right)9\\div 3}{\\left(a\\left(b\\left(c\\left(d\\left(e\\left(f\\cdot g\\right)h\\right)i\\right)j\\right)k\\right)l\\right)m\\left(a\\right)\\left(b\\right)\\left(c\\right)\\left(\\left(d\\right)\\right)\\left(\\left(\\left(e\\right)\\right)\\right)}}}}}`
 
 
-let input = {
-  str: fs
+const unzipRefs = (_str, refs) => {
+  let str = _str
+  for (let p in refs) {
+    if (str.includes(p)) {
+      str = str.replace(p, refs[p])
+    }
+  }
+
+  if (str.includes('||')) {
+    str = unzipRefs(str, refs)
+  }
+  return str
 }
 
-onOff = [true,false]
-
-if (onOff[0]) {
+let convertLatexToJS = (input) => {
   let res = findUnnestedExp(input)
-  console.log('result = ', JSON.stringify(res))
-} else {
-  let arith = patterns[0].pattern
-  let res = arith.exec(fs)
-  let res1 = fs.match(arith)
-  console.log(res1)
-  console.log(Array.isArray(res1))
+  res = unzipRefs(res.str, res.refs)
+  return parsIntoMult(res)
 }
+let input = ''
+let res = ''
+
+
+// input = { str: ar }
+// res = convertLatexToJS(input)
+// console.log(`ar result = ${JSON.stringify(res)}\n`)
+
+// input = { str: ar2 }
+// res = convertLatexToJS(input)
+// console.log(`ar2 result = ${JSON.stringify(res)}\n`)
+
+input = { str: ar3 }
+res = convertLatexToJS(input)
+console.log(`ar3 result = ${JSON.stringify(res)}\n`)
+
+// input = { str: fs }
+// res = convertLatexToJS(input)
+// console.log(`fs result = ${JSON.stringify(res)}\n`)

@@ -1,3 +1,4 @@
+
 let verbose = true
 let stop = 40
 // complex strings
@@ -5,7 +6,7 @@ let ar = '9+8-7\\cdot 6\\left(5+4-3\\left(2\\right)\\left(6\\right)\\right)8-\\l
 
 let ar2 = '\\left(1a+2b-aa\\cdot 3c+45\\div 4d-21\\right)\\div \\left(\\left(abcd+1234-5678\\cdot qwer\\cdot 9\\right)\\left(abcd+1234-5678\\cdot qwer\\div 9\\right)\\right)\\div abcd+1234-5678\\cdot qwer\\cdot 9\\div \\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)'
 
-let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10^6}\\left(1000^2\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}*1a+2b`
+let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10^6}\\left(1000^2\\right)\\ln \\left(9^7\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}*1a+2b`
 
 let ar3Exp = `1a+2b-(  5a**q(34*5**(3**2)+3**2) * nthroot(3**9,27**5) * getBaseLog(10,1000) * Math.log(9) * summate(3,6,'i**2') * Math.sin(2))*1a+2b`
 
@@ -182,6 +183,15 @@ const processLogarithm = (str) => {
   let xNum      = Number(xStr)
   let outcome   = isComputable(baseNum) && isComputable(xNum) ? getBaseLog(baseNum, xNum) : `\\log _{${baseStr}}\\left(${xStr}\\right)`
   return `(${outcome})`
+}
+
+const processNaturalLogarithm = (str) => {
+  let xStart    = str.indexOf('(') + 1
+  let xEnd      = str.indexOf('\\right')
+  let xStr      = str.slice(xStart, xEnd)
+  let xNum      = Number(xStr)
+  let outcome   = isComputable(xNum) ? Math.log(xNum) : `\\ln \\left(${xStr}\\right)`
+  return outcome
 }
 
 let trig = ['sin', 'cos', 'tan', 'cot', 'csc', 'sec']
@@ -410,6 +420,9 @@ const findUnnestedExp = (input) => {
         break;
       case 'logarithm':
         processedStr = processLogarithm(patternStr)
+        break;
+      case 'naturalLogarithm':
+        processedStr = processNaturalLogarithm(patternStr)
         break;
       default:
         // code block

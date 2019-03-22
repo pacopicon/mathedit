@@ -1,4 +1,3 @@
-
 let verbose = true
 let stop = 40
 // complex strings
@@ -130,7 +129,7 @@ const processArithmetic = (str) => {
   if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
     str = processArithmetic(str)
   }
-  return str
+  return `(${str})`
 }
 
 const processSimpleFracs = (str) => {
@@ -142,7 +141,7 @@ const processSimpleFracs = (str) => {
   let processedDivisor = processedNum.replace('}{', '/')
   let processedDenom = processedDivisor.replace('}', ')')
   let processedFrac = str.replace(nestedFrac, processedDenom)
-  return processedFrac
+  return `(${processedFrac})`
 }
 
 const isComputable = (numCandidate) => {
@@ -191,7 +190,7 @@ const processNaturalLogarithm = (str) => {
   let xStr      = str.slice(xStart, xEnd)
   let xNum      = Number(xStr)
   let outcome   = isComputable(xNum) ? Math.log(xNum) : `\\ln \\left(${xStr}\\right)`
-  return outcome
+  return `(${outcome})`
 }
 
 let trig = ['sin', 'cos', 'tan', 'cot', 'csc', 'sec']

@@ -1,11 +1,11 @@
 let verbose = true
-let stop = 20
+let stop = 40
 // complex strings
 let ar = '9+8-7\\cdot 6\\left(5+4-3\\left(2\\right)\\left(6\\right)\\right)8-\\left(4\\right)2\\left(3\\right)'
 
 let ar2 = '\\left(1a+2b-aa\\cdot 3c+45\\div 4d-21\\right)\\div \\left(\\left(abcd+1234-5678\\cdot qwer\\cdot 9\\right)\\left(abcd+1234-5678\\cdot qwer\\div 9\\right)\\right)\\div abcd+1234-5678\\cdot qwer\\cdot 9\\div \\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)'
 
-let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}*1a+2b`
+let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10^6}\\left(1000^2\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}*1a+2b`
 
 let ar3Exp = `1a+2b-(  5a**q(34*5**(3**2)+3**2) * nthroot(3**9,27**5) * getBaseLog(10,1000) * Math.log(9) * summate(3,6,'i**2') * Math.sin(2))*1a+2b`
 
@@ -71,63 +71,6 @@ const parsIntoMult = (str) => {
   return str
 }
 
-const processPars = (str) => {
-  str = str.replace('\\left(', '(')
-  str = str.replace('\\right)', ')')
-  if (str.includes('\\left(') || str.includes('\\right)')) {
-    str = processPars(str)
-  }
-  return str
-}
-
-const processArithmetic = (str) => {
-  str = str.replace('\\cdot', '*')
-  str = str.replace('\\cdot ', '*')
-  str = str.replace('\\div', '/')
-  str = str.replace('\\div ', '/')
-  str = str.replace(' ', '')
-
-  if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
-    str = processArithmetic(str)
-  }
-  return str
-}
-
-const processSimpleFracs = (str) => {
-  let patt = /\\frac\{\|\|\d+\|\|\}\{(?!\\frac\{)(\|\|\d+\|\|)\}/g
-  // str = str.replace(patt, )
-  let nestedFracArr = patt.exec(str)
-  let nestedFrac = nestedFracArr[0]
-  let processedNum = nestedFrac.replace('\\frac{', '(')
-  let processedDivisor = processedNum.replace('}{', '/')
-  let processedDenom = processedDivisor.replace('}', ')')
-  let processedFrac = str.replace(nestedFrac, processedDenom)
-  return processedFrac
-}
-
-const processRoot = (_str) => {
-  let str      = _str.replace('\\sqrt', '')
-  let radicand = str.slice(str.indexOf('{')+1, str.indexOf('}'))
-  let index    = str.includes('[') ? str.slice(1, str.indexOf(']')) : 2 
-  let isComputable = (str) => {
-    let verdict = false
-    let num = Number(str)
-    if (typeof num == 'number' && !Number.isNaN(num)) {
-      verdict = true
-    }
-    return verdict
-  } 
-  let outcome  = isComputable(radicand) && isComputable(index) ? nthroot(index, radicand) : `\\sqrt[${index}]{${radicand}}`
-  return outcome
-}
-
-const processExponent = (str) => {
-  str = str.replace('{', '')
-  str = str.replace('}', '')
-  str = str.replace('^', '**')
-  return `(${str})`
-}
-
 const getBaseLog = (b, x) => {
   return Math.log(x) / Math.log(b);
 }
@@ -167,153 +110,241 @@ const production = (i, n) => {
   return total
 }
 
+const processPars = (str) => {
+  str = str.replace('\\left(', '(')
+  str = str.replace('\\right)', ')')
+  if (str.includes('\\left(') || str.includes('\\right)')) {
+    str = processPars(str)
+  }
+  return str
+}
+
+const processArithmetic = (str) => {
+  str = str.replace('\\cdot', '*')
+  str = str.replace('\\cdot ', '*')
+  str = str.replace('\\div', '/')
+  str = str.replace('\\div ', '/')
+  str = str.replace(' ', '')
+
+  if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
+    str = processArithmetic(str)
+  }
+  return str
+}
+
+const processSimpleFracs = (str) => {
+  let patt = /\\frac\{\|\|\d+\|\|\}\{(?!\\frac\{)(\|\|\d+\|\|)\}/g
+  // str = str.replace(patt, )
+  let nestedFracArr = patt.exec(str)
+  let nestedFrac = nestedFracArr[0]
+  let processedNum = nestedFrac.replace('\\frac{', '(')
+  let processedDivisor = processedNum.replace('}{', '/')
+  let processedDenom = processedDivisor.replace('}', ')')
+  let processedFrac = str.replace(nestedFrac, processedDenom)
+  return processedFrac
+}
+
+const isComputable = (numCandidate) => {
+  let verdict = false
+  if (typeof numCandidate == 'number' && !Number.isNaN(numCandidate)) {
+    verdict = true
+  }
+  return verdict
+}
+
+const processRoot = (_str) => {
+  let str         = _str.replace('\sqrt', '')
+  let indexStr    = str.includes('[') ? str.slice(2, str.indexOf(']')) : 2 
+  let radicandStr = str.slice(str.indexOf('{')+1, str.indexOf('}'))
+  let radicandNum = Number(radicandStr)
+  let indexNum    = Number(indexStr)
+  let outcome     = isComputable(radicandNum) && isComputable(indexNum) ? nthroot(indexNum, radicandNum) : `\\sqrt[${indexStr}]{${radicandStr}}`
+  return `(${outcome})`
+}
+
+const processExponent = (str) => {
+  str = str.replace('{', '')
+  str = str.replace('}', '')
+  str = str.replace('^', '**')
+  return `(${str})`
+}
+
+const processLogarithm = (str) => {
+  let baseStart = str.indexOf('{') + 1
+  let baseEnd   = str.indexOf('}')
+  let baseStr   = str.slice(baseStart, baseEnd)
+  let xStart    = str.indexOf('(') + 1
+  let xEnd      = str.indexOf('\\right')
+  let xStr      = str.slice(xStart, xEnd)
+  console.log('baseStr = ', baseStr)
+  console.log('xStr = ', xStr)
+  let baseNum   = Number(baseStr)
+  let xNum      = Number(xStr)
+  let outcome   = isComputable(baseNum) && isComputable(xNum) ? getBaseLog(baseNum, xNum) : `\\log _{${baseStr}}\\left(${xStr}\\right)`
+  return `(${outcome})`
+}
+
 let trig = ['sin', 'cos', 'tan', 'cot', 'csc', 'sec']
 
-trigPatt = (op) => {
+buildTrigPatt = (op) => {
   let template = `\\${op}\\s\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)`
   return new RegExp(template, 'g')
 }
 
+const buildArithPatt = () => {
+  let VAR = `((\\-)?\\d+\\w*|(\\-)?\\w+\\d*|\\|\\|\\d+\\|\\|)`
+  let OP = `(\\+|\\-|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)`
+  let OPEX = `(\\+|\\^|\\-|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)`
+  let VAR_or_EXPR = `(${VAR})(${OP}?(${VAR}))*`
+  let VAR_or_EXPREX = `(${VAR})(${OPEX}?(${VAR}))*`
+  let NOT = `(\\}|ln\\s|\\}\\^${VAR_or_EXPR}|sin|cos|tan|cot|csc|sec)`
+  let N_BF_L = `((?<!${NOT})\\\\left\\()*`
+  let N_BF_R = `((?<!(${NOT}\\\\left\\(${VAR_or_EXPREX}))\\\\right\\))*`
+  let template = `(\\-)?${N_BF_L}${VAR}${N_BF_R}((\\+|\\-(?=(${N_BF_L}${VAR}))|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)*${N_BF_L}${VAR}*${N_BF_R})*`
+  return new RegExp(template, 'g')
+}
 
 const patterns = [
-    {
-      pattern: /((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))|((?<=\^)(\{)(?=(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}))((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))(?<=\^\{((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\^(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)))(\})/g,
-      name: 'exponent',
-      disqualifiers: []
-    },
-    {
-      pattern: /(\-)?(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)(\\right\))*((\+|\-(?=((\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)))|\\cdot\s|\\cdot|\\div\s|\\div)*(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)*(\\right\))*)*/g,
-      name: 'arithmetic',
-      disqualifiers: ['frac', 'sqrt', ]
-    },
-    {
-      // pattern: /\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
-      pattern: /(-)?\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
-      name: 'fraction',
-      disqualifiers: []
-    },
-    {
-      pattern: /\\sqrt(\[((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\])?\{((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\}/g,
-      name: 'root',
-      disqualifiers: []
-    },
-    {
-      pattern: /\\log\s\_(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)/g,
-      name: 'logarithm',
-      disqualifiers: []
-    },
-    {
-      pattern: /\\ln\s\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)/g,
-      name: 'naturalLogarithm',
-      disqualifiers: []
-    },
-    {
-      pattern: /\\sum\s\_\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)((\=)(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))?\}\^(\{\\infty\s\}|(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\left\(){1,}(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\)|\\left\()*((\+|\-|\\cdot\s|\\cdot)*(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*\\right\))/g,
-      name: 'sum',
-      disqualifiers: []
-    },
-    {
-      pattern: trigPatt('sin'),
-      name: 'sin',
-      disqualifiers: []
-    },
-    {
-      pattern: trigPatt('cos'),
-      name: 'cos',
-      disqualifiers: []
-    },
-    {
-      pattern: trigPatt('tan'),
-      name: 'tan',
-      disqualifiers: []
-    },
-    {
-      pattern: trigPatt('cot'),
-      name: 'cot',
-      disqualifiers: []
-    },
-    {
-      pattern: trigPatt('csc'),
-      name: 'csc',
-      disqualifiers: []
-    },
-    {
-      pattern: trigPatt('sec'),
-      name: 'sec',
-      disqualifiers: []
-    }
-  ]
-  // currently there are >> 15 << patterns.  Please update every time you add another pattern.
-
-
-const filterMatch = (matches, disqualifiers, order, lastOrder) => {
-  let filtered = false
-  for (let i=0; i<matches.length; i++) {
-    let match = matches[i]
-    for (let j=0; j<disqualifiers.length; j++) {
-      let disqualifier = disqualifiers[j]
-      if (match != disqualifier) {
-        // console.log(`match = ${match}, disqualifier = ${disqualifier}, match != disqualifier = ${match != disqualifier}`)
-        filtered = match
-      }
-    }
-    // console.log('filtered = ', filtered)
-    return filtered
+  {
+    pattern: /((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\^((?<!\])(\{)?((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|))(\^((?<!\])(\{)?((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)(\})*))*/g,
+    name: 'exponent',
+    disqualifiers: []
+  },
+  {
+    pattern: buildArithPatt(),
+    name: 'arithmetic',
+    disqualifiers: ['frac', 'sqrt', 'log', '_', 'right', 'left', 'ln', 'sum', 'tan', 'cos', 'sin', 'cot', 'csc', 'sec']
+  },
+  {
+    // pattern: /\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+    pattern: /(-)?\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+    name: 'fraction',
+    disqualifiers: []
+  },
+  {
+    pattern: /\\sqrt(\[((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\])?\{((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\}/g,
+    name: 'root',
+    disqualifiers: []
+  },
+  {
+    pattern: /(\-)?\\log\s\_\{(\-)?(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)(\\right\))*((\+|\-(?=((\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)))|\\cdot\s|\\cdot|\\div\s|\\div)*(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)*(\\right\))*)*\}\\left\((\-)?(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)(\\right\))*((\+|\-(?=((\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)))|\\cdot\s|\\cdot|\\div\s|\\div)*(\\left\()*((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)*(\\right\))*)*\\right\)/g,
+    name: 'logarithm',
+    disqualifiers: []
+  },
+  {
+    pattern: /\\ln\s\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)/g,
+    name: 'naturalLogarithm',
+    disqualifiers: []
+  },
+  {
+    pattern: /\\sum\s\_\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)((\=)(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))?\}\^(\{\\infty\s\}|(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\left\(){1,}(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\)|\\left\()*((\+|\-|\\cdot\s|\\cdot)*(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*\\right\))/g,
+    name: 'sum',
+    disqualifiers: []
+  },
+  {
+    pattern: buildTrigPatt('sin'),
+    name: 'sin',
+    disqualifiers: []
+  },
+  {
+    pattern: buildTrigPatt('cos'),
+    name: 'cos',
+    disqualifiers: []
+  },
+  {
+    pattern: buildTrigPatt('tan'),
+    name: 'tan',
+    disqualifiers: []
+  },
+  {
+    pattern: buildTrigPatt('cot'),
+    name: 'cot',
+    disqualifiers: []
+  },
+  {
+    pattern: buildTrigPatt('csc'),
+    name: 'csc',
+    disqualifiers: []
+  },
+  {
+    pattern: buildTrigPatt('sec'),
+    name: 'sec',
+    disqualifiers: []
   }
-}
+]
+  // currently there are >> 15 << patterns.  Please update every time you add another pattern.
 
 String.prototype.replaceAll = function(search, replacement) {
   var target = this;
   return target.split(search).join(replacement);
 };
 
-matches = [`||0||`, `||1||`, `||2||`, `||3||`, `||4||`, `||5||`, `||6||`]
-
 let extractNumFromRef = (match) => {
   let numStr = match.replaceAll('||', '')
   return Number(numStr)
 }
 
-const isCurrMatchAProhibitedRef = (order, lastOrderOfLastStep, currMatch) => {
+const isCurrMatchAsimpleRef = (match) => {
   let outcome = false
-  if (currMatch.includes('||')) {
-
-    let prohibitedOrder = extractNumFromRef(currMatch)
-
-    if (!lastOrderOfLastStep) {
-      outcome = true
-    } else if (prohibitedOrder > lastOrderOfLastStep) {
-      outcome = true
-    } else {
-      outcome = false
-    }
-  } 
+  let numStr = match.replaceAll('||', '')
+  let numCandidate = Number(numStr)
+  if (!Number.isNaN(numCandidate)) {
+    outcome = true
+  }
   return outcome
 }
 
-const matchPattern = (str, arrOfPattObjByIndex, order, lastOrderOfLastStep, currentPatternName) => {
+const getAllMatchesAndPositions = (str, patt) => {
+  let output = []
+  while (match = patt.exec(str)) {
+    let obj = {}
+    obj.start = match.index
+    obj.end   = patt.lastIndex
+    obj.match = match[0]
+    output.push(obj)
+    // console.log(`\nmatch[0] = ${match[0]}\nstr.slice(start, obj.end) = ${str.slice(obj.start, obj.end)}\nobj.start = ${obj.start}\nobj.end = ${obj.end}\n`);
+  }
+  return output
+}
+
+const switchOutMatchedSubstrWithRef = (str, begin, end, order) => {
+  let ref = `||${order}||`
+  return str.slice(0, begin) + ref + str.slice(end)
+}
+
+const matchPattern = (str, arrOfPattObjByIndex, order, lastOrderOfLastStep) => {
 
   let patt = arrOfPattObjByIndex.pattern
+  let pattName = arrOfPattObjByIndex.name
   let disqualifiers = arrOfPattObjByIndex.disqualifiers
 
-  let matches = str.match(patt)
-  if (verbose) console.log(`\n+-------PATTERN-NAME--------\n|pattern name = ${arrOfPattObjByIndex.name}\n|matches = ${matches}\n+------------------`)
+  let matches = getAllMatchesAndPositions(str, patt)
+  // let matches = str.match(patt)
   if (matches && matches.length > 0) {
     for (let i=0; i<matches.length; i++) {
-      let currMatch = matches[i]
+      let matchAndPos = matches[i]
+      let currMatch   = matchAndPos.match
+      let currStart   = matchAndPos.start
+      let currEnd     = matchAndPos.end
       
       if (disqualifiers && disqualifiers.length > 0) {
+        let conditions = disqualifiers.length
         for (let k=0; k<disqualifiers.length; k++) {
           let disqualifier = disqualifiers[k]
-          let verdict = isCurrMatchAProhibitedRef(order, lastOrderOfLastStep, currMatch)
+          let verdict = isCurrMatchAsimpleRef(currMatch)
           if ( currMatch != disqualifier && !verdict ) {
-            return currMatch
+            conditions--
+            if (conditions == 0) {
+              if (verbose) console.log(`\n(1)-------PATTERN-SUBBED-WITH-REF-----\n|pattern name = ${pattName}\n|verdict = ${verdict}\n|order = ${order}\n|currMatch = ${currMatch}\n|currStart = ${currStart}\n|lastOrderOfLastStep = ${lastOrderOfLastStep}\n|disqualifiers = ${disqualifiers}\n+------------------`)
+              return matchAndPos
+            }
           }
         }
       } else if (!disqualifiers || disqualifiers.length == 0) {
-        let verdict = isCurrMatchAProhibitedRef(order, lastOrderOfLastStep, currMatch)
-        if (!verdict || currentPatternName == 'exponent') {
-          return currMatch
+        let verdict = isCurrMatchAsimpleRef(currMatch)
+        if (!verdict || pattName == 'exponent') {
+          if (verbose) console.log(`\n(1)-------PATTERN-SUBBED-WITH-REF--------\n|pattern name = ${pattName}\n|verdict = ${verdict}\n|order = ${order}\n|currMatch = ${currMatch}\n|lastOrderOfLastStep = ${lastOrderOfLastStep}\n|disqualifiers = ${disqualifiers}\n+------------------`)
+          return matchAndPos
         }
       }
     }
@@ -351,14 +382,17 @@ const findUnnestedExp = (input) => {
   let currentPatternName = patterns[checkStep].name
   let res = ''
 
-  let patternStr    = matchPattern(str, patterns[checkStep], order, lastOrderOfLastStep, currentPatternName)
-
-  if (verbose) console.log(`\n+------STRING-W/-REF---------\n|str = ${str}, \n|checkStep = ${checkStep}, \n|order = ${order}, \n|refs = ${JSON.stringify(refs)}\n+---------------`)
+  // match object properties:
+  let matchAndPos = matchPattern(str, patterns[checkStep], order, lastOrderOfLastStep, currentPatternName)
+  let patternStr = matchAndPos.match
+  let matchStart = matchAndPos.start
+  let matchEnd   = matchAndPos.end
 
   if (patternStr) {
-        
-    let strWithRef = str.replace(patternStr, `||${order}||`) // update (1) string
+
+    let strWithRef = switchOutMatchedSubstrWithRef(str, matchStart, matchEnd, order)// update (1) string
                                                              // checkstep (2) is updated by recursively calling findUnnestedExp (see below)
+     
     let processedStr = ''
 
     switch(currentPatternName) {
@@ -374,11 +408,16 @@ const findUnnestedExp = (input) => {
       case 'root':
         processedStr = processRoot(patternStr)
         break;
+      case 'logarithm':
+        processedStr = processLogarithm(patternStr)
+        break;
       default:
         // code block
     }
 
     refs[`||${order}||`] = processedStr                     // update (3) refs
+
+    if (verbose) console.log(`\n(2)------RESULT---------\n|strWithRef = ${strWithRef}\n|processedStr = ${processedStr}\n+---------------`)
 
     order++                                                 // update (4) order
     input = { 
@@ -403,7 +442,7 @@ const findUnnestedExp = (input) => {
  
   } else if (!patternStr && checkStep < 14) {
     input.checkStep++ // update (2) checkStep
-    if (verbose) console.log(`!!!!!!!!!!!!!upping the checkStep -> input = ${JSON.stringify(input)}`)
+    if (verbose) console.log(`>>>>>>>>>checkStep++`)
     input.lastOrderOfLastStep = order
     if (order < stop) {
       res = findUnnestedExp(input)

@@ -1,11 +1,11 @@
 let verbose = true
-let stop = 40
+let stop = 30
 // complex strings
 let ar = '9+8-7\\cdot 6\\left(5+4-3\\left(2\\right)\\left(6\\right)\\right)8-\\left(4\\right)2\\left(3\\right)'
 
 let ar2 = '\\left(1a+2b-aa\\cdot 3c+45\\div 4d-21\\right)\\div \\left(\\left(abcd+1234-5678\\cdot qwer\\cdot 9\\right)\\left(abcd+1234-5678\\cdot qwer\\div 9\\right)\\right)\\div abcd+1234-5678\\cdot qwer\\cdot 9\\div \\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)\\left(a+b-c\\div d\\cdot e\\left(a+b-c\\div d\\cdot e\\right)\\right)'
 
-let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10^6}\\left(1000^2\\right)\\ln \\left(9^7\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}*1a+2b`
+let ar3 = `1a+2b-\\frac{5a^q\\left(34\\cdot 5^{3^2}+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10}\\left(1000\\right)cot\\left(2\\right)\\ln \\left(9\\right)\\sum _{i=3}^6\\left(i^2\\right)sin\\left(2\\right)}{5a^q\\left(34\\cdot 5^3+3^2\\right)\\sqrt[3^9]{27^5}\\log _{10^6}\\left(1000^2\\right)\\ln \\left(9^7\\right)\\sum _{i=3}^6\\left(i^2\\right)tan\\left(2\\right)}*1a+2b`
 
 let ar3Exp = `1a+2b-(  5a**q(34*5**(3**2)+3**2) * nthroot(3**9,27**5) * getBaseLog(10,1000) * Math.log(9) * summate(3,6,'i**2') * Math.sin(2))*1a+2b`
 
@@ -79,29 +79,6 @@ const nthroot = (root, n) => {
   return Math.pow(n, 1/root)
 }
 
-const iTerm = (i) => i**2
-
-const summation = (i, n) => {
-  let total = 0
-  for (i; i<n+1; i++) {
-    total += iTerm(i)
-  }
-  return total
-}
-
-const summate = (i, n, exp) => {
-  const iTerm = (i) => eval(exp)
-
-  const summation = (i, n) => {
-    let total = 0
-    for (i; i<n+1; i++) {
-      total += iTerm(i)
-    }
-      return total
-    }
-  return summation(i,n)
-}
-
 const production = (i, n) => {
   let total = iTerm(i)
   for (i; i<n; i++) {
@@ -133,14 +110,11 @@ const processArithmetic = (str) => {
 }
 
 const processSimpleFracs = (str) => {
-  let patt = /\\frac\{\|\|\d+\|\|\}\{(?!\\frac\{)(\|\|\d+\|\|)\}/g
-  // str = str.replace(patt, )
-  let nestedFracArr = patt.exec(str)
-  let nestedFrac = nestedFracArr[0]
-  let processedNum = nestedFrac.replace('\\frac{', '(')
+  let isNegated = str.indexOf('-') == 0
+  let processedNum = str.replace(`${isNegated ? '-\\frac{' : '\\frac{'}`, '')
   let processedDivisor = processedNum.replace('}{', '/')
-  let processedDenom = processedDivisor.replace('}', ')')
-  let processedFrac = str.replace(nestedFrac, processedDenom)
+  let processedDenom = processedDivisor.replace('}', '')
+  let processedFrac = str.replace(str, processedDenom)
   return `(${processedFrac})`
 }
 
@@ -176,8 +150,6 @@ const processLogarithm = (str) => {
   let xStart    = str.indexOf('(') + 1
   let xEnd      = str.indexOf('\\right')
   let xStr      = str.slice(xStart, xEnd)
-  console.log('baseStr = ', baseStr)
-  console.log('xStr = ', xStr)
   let baseNum   = Number(baseStr)
   let xNum      = Number(xStr)
   let outcome   = isComputable(baseNum) && isComputable(xNum) ? getBaseLog(baseNum, xNum) : `\\log _{${baseStr}}\\left(${xStr}\\right)`
@@ -193,10 +165,79 @@ const processNaturalLogarithm = (str) => {
   return `(${outcome})`
 }
 
-let trig = ['sin', 'cos', 'tan', 'cot', 'csc', 'sec']
+const summate = (lowerBound, upperBound, term) => {
+  // term must have an 'i' variable
+  const iTerm = (i) => eval(term)
+
+  const summation = (lowerBound, upperBound) => {
+    let total = 0
+    let n = upperBound
+    let i = lowerBound
+    for (i; i<n+1; i++) {
+      total += iTerm(i)
+    }
+    return total
+  }
+  return summation(lowerBound, upperBound)
+}
+
+const processSummation = (str) => {
+  let lowBoundStart = str.indexOf('=') + 1
+  let lowBoundEnd   = str.indexOf('}')
+  let upBoundStart  = str.indexOf('^') + 1
+  let upBoundEnd    = str.indexOf('\\left')
+  let termStart     = str.indexOf('(') + 1
+  let termEnd       = str.indexOf('\\right')
+  let upperBound    = str.slice(upBoundStart, upBoundEnd)
+  let lowerBound    = str.slice(lowBoundStart, lowBoundEnd)
+  let term          = str.slice(termStart, termEnd)
+  let outcome       = isComputable(upperBound) && isComputable(lowerBound) && isAlgebraicallyComputable(term) ? summate(lowerBound, upperBound, term) : `\\sum _{i=${lowerBound}}^${upperBound}\\left(${term}\\right)`
+  // console.log('sum outcome = ', outcome)
+  return outcome
+
+}
+
+const getTrigonometricValue = (_value, unit, op) => {
+  // _value input needs to be in Radians or Degrees
+  let value = unit == 'degrees' ? (_value * Math.PI)/180 : _value
+  let output = ''
+  switch (op) {
+    case 'tan':
+      output = Math.tan(value)
+      break;
+    case 'cos':
+      output = Math.cos(value)
+      break;
+    case 'sin':
+      output = Math.sin(value)
+      break;
+    case 'cot':
+      output = 1 / Math.tan(value)
+      break;
+    case 'sec':
+      output = 1 / Math.cos(value)
+      break;
+    case 'csc':
+      output = 1 / Math.sin(value)
+      break;
+    default:
+      console.log('no trigonometric operation was specified')
+  }
+  return `(${output})`
+}
+
+
+const processTrig = (str, unit) => {
+  let op = str.slice(0,3)
+  let end = str.indexOf('\\right')
+  let value = str.slice(9, end)
+  return getTrigonometricValue(value, unit, op)
+}
+
+// let trig = ['sin', 'cos', 'tan', 'cot', 'csc', 'sec']
 
 buildTrigPatt = (op) => {
-  let template = `\\${op}\\s\\left\((\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\\right\)`
+  let template = `${op}\\\\left\\(((\\-)?\\d+\\w*|(\\-)?\\w+\\d*|\\|\\|\\d+\\|\\|)\\\\right\\)`
   return new RegExp(template, 'g')
 }
 
@@ -222,11 +263,11 @@ const patterns = [
   {
     pattern: buildArithPatt(),
     name: 'arithmetic',
-    disqualifiers: ['frac', 'sqrt', 'log', '_', 'right', 'left', 'ln', 'sum', 'tan', 'cos', 'sin', 'cot', 'csc', 'sec']
+    disqualifiers: ['frac', 'sqrt', 'log', '_', 'right', 'left', 'ln', 'sum', 'tan', 'cos', 'sin', 'cot', 'csc', 'sec', 'i']
   },
   {
     // pattern: /\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
-    pattern: /(-)?\\frac\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)\}/g,
+    pattern: /(-)?\\frac\{((\-)?\d+\w*|(\-)?\w+\d*|(\|\|\d+\|\|)+)\}\{((\-)?\d+\w*|(\-)?\w+\d*|(\|\|\d+\|\|)+)\}/g,
     name: 'fraction',
     disqualifiers: []
   },
@@ -246,42 +287,17 @@ const patterns = [
     disqualifiers: []
   },
   {
-    pattern: /\\sum\s\_\{(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)((\=)(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|))?\}\^(\{\\infty\s\}|(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)(\\left\(){1,}(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\)|\\left\()*((\+|\-|\\cdot\s|\\cdot)*(\\left\()*(\d+|\w+|\|\|\d+\|\||\|\|\w+\|\|)*(\\right\))*)*\\right\))/g,
+    pattern: /(\-)?\\sum\s\_\{((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)((\=)((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|))?\}\^(\{\\infty\s\}|((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)(\\left\()((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)(\\right\)))/g,
     name: 'sum',
     disqualifiers: []
   },
   {
-    pattern: buildTrigPatt('sin'),
-    name: 'sin',
-    disqualifiers: []
-  },
-  {
-    pattern: buildTrigPatt('cos'),
-    name: 'cos',
-    disqualifiers: []
-  },
-  {
-    pattern: buildTrigPatt('tan'),
-    name: 'tan',
-    disqualifiers: []
-  },
-  {
-    pattern: buildTrigPatt('cot'),
-    name: 'cot',
-    disqualifiers: []
-  },
-  {
-    pattern: buildTrigPatt('csc'),
-    name: 'csc',
-    disqualifiers: []
-  },
-  {
-    pattern: buildTrigPatt('sec'),
-    name: 'sec',
+    pattern: /(sin|cos|tan|cot|csc|sec)\\left\(((\-)?\d+\w*|(\-)?\w+\d*|\|\|\d+\|\|)\\right\)/g,
+    name: 'trigFunction',
     disqualifiers: []
   }
 ]
-  // currently there are >> 15 << patterns.  Please update every time you add another pattern.
+  // currently there are >> 8 << patterns.  Please update every time you add another pattern.
 
 String.prototype.replaceAll = function(search, replacement) {
   var target = this;
@@ -321,7 +337,7 @@ const switchOutMatchedSubstrWithRef = (str, begin, end, order) => {
   return str.slice(0, begin) + ref + str.slice(end)
 }
 
-const matchPattern = (str, arrOfPattObjByIndex, order, lastOrderOfLastStep) => {
+const matchPattern = (str, arrOfPattObjByIndex, order) => {
 
   let patt = arrOfPattObjByIndex.pattern
   let pattName = arrOfPattObjByIndex.name
@@ -344,7 +360,7 @@ const matchPattern = (str, arrOfPattObjByIndex, order, lastOrderOfLastStep) => {
           if ( currMatch != disqualifier && !verdict ) {
             conditions--
             if (conditions == 0) {
-              if (verbose) console.log(`\n(1)-------PATTERN-SUBBED-WITH-REF-----\n|pattern name = ${pattName}\n|verdict = ${verdict}\n|order = ${order}\n|currMatch = ${currMatch}\n|currStart = ${currStart}\n|lastOrderOfLastStep = ${lastOrderOfLastStep}\n|disqualifiers = ${disqualifiers}\n+------------------`)
+              if (verbose) console.log(`(1)-------PATTERN-SUBBED-WITH-REF-----\n|pattern name = ${pattName}\n|verdict = ${verdict}\n|order = ${order}\n|currMatch = ${currMatch}\n|currStart = ${currStart}\n|disqualifiers = ${disqualifiers}\n+------------------`)
               return matchAndPos
             }
           }
@@ -352,7 +368,7 @@ const matchPattern = (str, arrOfPattObjByIndex, order, lastOrderOfLastStep) => {
       } else if (!disqualifiers || disqualifiers.length == 0) {
         let verdict = isCurrMatchAsimpleRef(currMatch)
         if (!verdict || pattName == 'exponent') {
-          if (verbose) console.log(`\n(1)-------PATTERN-SUBBED-WITH-REF--------\n|pattern name = ${pattName}\n|verdict = ${verdict}\n|order = ${order}\n|currMatch = ${currMatch}\n|lastOrderOfLastStep = ${lastOrderOfLastStep}\n|disqualifiers = ${disqualifiers}\n+------------------`)
+          if (verbose) console.log(`(1)-------PATTERN-SUBBED-WITH-REF--------\n|pattern name = ${pattName}\n|verdict = ${verdict}\n|order = ${order}\n|currMatch = ${currMatch}\n|disqualifiers = ${disqualifiers}\n+------------------`)
           return matchAndPos
         }
       }
@@ -386,13 +402,11 @@ const findUnnestedExp = (input) => {
   let checkStep = input.checkStep ? input.checkStep : 0 // (2) checkStep correlates to pattern string being checked against
   let refs = input.refs && isKeyValueObject(input.refs) ? {...input.refs} : {}  // (3) the refs object contains every subchild
   let order = input.order ? input.order : 0 // (4) each subchild is stored as a prop ID'ed by order in the refs object
-  let lastOrderOfLastStep = input.lastOrderOfLastStep ? input.lastOrderOfLastStep : false
   let currentPattern = patterns[checkStep].pattern
   let currentPatternName = patterns[checkStep].name
   let res = ''
-
   // match object properties:
-  let matchAndPos = matchPattern(str, patterns[checkStep], order, lastOrderOfLastStep, currentPatternName)
+  let matchAndPos = matchPattern(str, patterns[checkStep], order)
   let patternStr = matchAndPos.match
   let matchStart = matchAndPos.start
   let matchEnd   = matchAndPos.end
@@ -423,27 +437,34 @@ const findUnnestedExp = (input) => {
       case 'naturalLogarithm':
         processedStr = processNaturalLogarithm(patternStr)
         break;
+      case 'sum':
+        processedStr = processSummation(patternStr)
+        break;
+      case 'trigFunction':
+        processedStr = processTrig(patternStr, 'degrees')
+        break;
       default:
-        // code block
+        console.log('no operation was specified to process the given match')
     }
+
 
     refs[`||${order}||`] = processedStr                     // update (3) refs
 
-    if (verbose) console.log(`\n(2)------RESULT---------\n|strWithRef = ${strWithRef}\n|processedStr = ${processedStr}\n+---------------`)
+    if (verbose) console.log(`\n(2)------RESULT---------\n|strWithRef = ${strWithRef}\n|processedStr = ${processedStr}\n+---------------\n`)
 
     order++                                                 // update (4) order
     input = { 
       str: strWithRef,
       checkStep,
       order,
-      lastOrderOfLastStep,
       refs
     }
   
     if (checkIfStrIsOnlyRef(strWithRef)) {
+          console.log('this path was chosen -> 1')
       return input
     } else {
-                                                         
+            console.log('this path was chosen -> 2')                                      
       if (order < stop) {
         res = findUnnestedExp(input)
       } else {
@@ -452,17 +473,18 @@ const findUnnestedExp = (input) => {
 
     }
  
-  } else if (!patternStr && checkStep < 14) {
+  } else if (!patternStr && checkStep < 7) {
     input.checkStep++ // update (2) checkStep
-    if (verbose) console.log(`>>>>>>>>>checkStep++`)
-    input.lastOrderOfLastStep = order
+    if (verbose) console.log(`>>>>>>>>>checkStep -> ${input.checkStep} (${patterns[input.checkStep].name})\n`)
     if (order < stop) {
       res = findUnnestedExp(input)
     } else {
       res = {...input}
     }
-  } else {
-    res = {...input}
+  } else if (!patternStr && checkStep == 7) {
+    console.log('this path was chosen -> 3')
+    input.checkStep = 0 // update (2) checkStep
+    res = findUnnestedExp(input)
   }
 
   return res

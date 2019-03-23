@@ -16,8 +16,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "calc": "cd src && cd mathUtils && node callerLogger",
-    "cal": "cd src && cd mathUtils2 && node calc"
+    "calc": "cd src && cd mathUtils && node calc",
+    "alg": "cd src && cd mathUtils && node algebra"
   },
   "eslintConfig": {
     "extends": "react-app"

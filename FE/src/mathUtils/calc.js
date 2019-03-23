@@ -5,7 +5,7 @@ const { spliceStr, parsIntoMult, log, baseLog, nthroot, production, processPars,
 const { patterns} = require('./patterns')
 
 let verbose = true
-let stop = 30
+let stop = 20
 
 
 

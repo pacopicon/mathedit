@@ -1,3 +1,5 @@
+var algebra = require('algebra.js');
+
 exports.spliceStr = (str, i, numToReplace, newStr) => {
   let strArr = str.split('')
   strArr.splice(i, numToReplace, newStr)

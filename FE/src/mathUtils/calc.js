@@ -99,6 +99,16 @@ const isKeyValueObject = (obj) => {
   return res
 }
 
+const isObjEmpty = (obj) => {
+  let outcome = true
+  for (let p in obj) {
+    if (obj.hasOwnProperty(p)) {
+      outcome = false
+    }
+  }
+  return outcome
+}
+
 const checkIfStrIsOnlyRef = (str) => {
   let _str = str.slice(2, str.length-2)
   let num = Number(_str)
@@ -123,7 +133,7 @@ const findUnnestedExp = (input) => {
   let matchStart = matchAndPos.start
   let matchEnd   = matchAndPos.end
 
-  if (patternStr) {
+  if ((patternStr)) {
 
     let strWithRef = switchOutMatchedSubstrWithRef(str, matchStart, matchEnd, order)// update (1) string
                                                              // checkstep (2) is updated by recursively calling findUnnestedExp (see below)
@@ -132,37 +142,37 @@ const findUnnestedExp = (input) => {
 
     switch(currentPatternName) {
       case 'arithmetic':
-        processedStr = processPars(processArithmetic(patternStr))
+        processedObj = processPars(processArithmetic(patternStr))
         break;
       case 'fraction':
-        processedStr = processSimpleFracs(patternStr)
+        processedObj = processSimpleFracs(patternStr)
         break;
       case 'exponent':
-        processedStr = processExponent(patternStr)
+        processedObj = processExponent(patternStr)
         break;
       case 'root':
-        processedStr = processRoot(patternStr)
+        processedObj = processRoot(patternStr)
         break;
       case 'logarithm':
-        processedStr = processLogarithm(patternStr)
+        processedObj = processLogarithm(patternStr)
         break;
       case 'naturalLogarithm':
-        processedStr = processNaturalLogarithm(patternStr)
+        processedObj = processNaturalLogarithm(patternStr)
         break;
       case 'sum':
-        processedStr = processSummation(patternStr)
+        processedObj = processSummation(patternStr)
         break;
       case 'trigFunction':
-        processedStr = processTrig(patternStr, 'degrees')
+        processedObj = processTrig(patternStr, 'degrees')
         break;
       default:
         console.log('no operation was specified to process the given match')
     }
+    
+    refs[`||${order}||`] = processedObj                     // update (3) refs
+    // { string: processedStr, algebra: '', latex: '' }
 
-
-    refs[`||${order}||`] = processedStr                     // update (3) refs
-
-    if (verbose) console.log(`\n(2)------RESULT---------\n|strWithRef = ${strWithRef}\n|processedStr = ${processedStr}\n+---------------\n`)
+    if (verbose) console.log(`\n(2)------RESULT---------\n|strWithRef = ${strWithRef}\n|processedStr = ${JSON.stringify(processedObj)}\n+---------------\n`)
 
     order++                                                 // update (4) order
     input = { 

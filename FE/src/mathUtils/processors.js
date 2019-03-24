@@ -46,7 +46,20 @@ exports.processPars = (str) => {
   return str
 }
 
-exports.processArithmetic = (str) => {
+const isAlgebraic = (str) => {
+  const alpha = 'abcdefghijklmnopqrstuvwzyz'
+  let outcome = false
+  for (let k=0; k<alpha.length; k++) {
+    let letter = alpha[k]
+    if (str.includes(letter)) {
+      outcome = true
+    }
+  }
+  return outcome
+}
+
+exports.processArithmetic = (_str) => {
+  let str = _str
   str = str.replace('\\cdot', '*')
   str = str.replace('\\cdot ', '*')
   str = str.replace('\\div', '/')
@@ -54,9 +67,22 @@ exports.processArithmetic = (str) => {
   str = str.replace(' ', '')
 
   if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
-    str = exports.processArithmetic(str)
+    str = processArithmetic(str)
   }
-  return `(${str})`
+  let leadingOp = ''
+  if (str[0] == '*' || str[0] == '+' || str[0] == '-' || str[0] == '/') {
+    leadingOp = str[0]
+    str = str.replace(str[0], '')
+  }
+
+  let string = `${leadingOp}(${str})`
+
+  let output = {
+    string,
+    algebra: '',
+    latex: ''
+  }
+  return output
 }
 
 exports.processSimpleFracs = (str) => {

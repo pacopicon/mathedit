@@ -17,7 +17,7 @@ const buildArithPatt = () => {
   const NOT = `(\\}|ln\\s|\\}\\^${VAR_or_EXPR}|sin|cos|tan|cot|csc|sec)`
   const N_BF_L = `((?<!${NOT})\\\\left\\()*`
   const N_BF_R = `((?<!(${NOT}\\\\left\\(${VAR_or_EXPREX}))\\\\right\\))*`
-  const template = `(\\-)?${N_BF_L}${VAR}${N_BF_R}((\\+|\\-(?=(${N_BF_L}${VAR}))|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)*${N_BF_L}${VAR}*${N_BF_R})*`
+  const template = `(${OP})?${N_BF_L}${VAR}${N_BF_R}((\\+|\\-(?=(${N_BF_L}${VAR}))|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)*${N_BF_L}${VAR}*${N_BF_R})*`
   return new RegExp(template, 'g')
 }
 

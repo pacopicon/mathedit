@@ -220,7 +220,7 @@ const unzipRefs = (_str, refs) => {
   let str = _str
   for (let p in refs) {
     if (str.includes(p)) {
-      str = str.replace(p, refs[p])
+      str = str.replace(p, refs[p].string)
     }
   }
 

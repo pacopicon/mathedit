@@ -4,13 +4,14 @@ const letter = `\\w|${GREEK}`
 
 const VAR = `((\\-)?\\d+(${letter})*|(\\-)?(${letter})+\\d*|\\|\\|\\d+\\|\\|)`
 
+const OP = `(\\+|\\-|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)`
+
 const buildExponentPattern = () => {
-  const template = `(\\-)?(?<!(\\}\\^${VAR}))(\\\\left\\(|\\()?${VAR}(\\\\right\\)|\\))?\\^((?<!\\])(\\{)?${VAR})(\\^((?<!\\])(\\{)?${VAR}(\\})*))*`
+  const template = `(${OP})?(?<!(\\}\\^${VAR}))(\\\\left\\(|\\()?${VAR}(\\\\right\\)|\\))?\\^((?<!\\])(\\{)?${VAR})(\\^((?<!\\])(\\{)?${VAR}(\\})*))*`
   return new RegExp(template, 'g')
 }
 
 const buildArithPatt = () => {
-  const OP = `(\\+|\\-|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)`
   const OPEX = `(\\+|\\^|\\-|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)`
   const VAR_or_EXPR = `(${VAR})(${OP}?(${VAR}))*`
   const VAR_or_EXPREX = `(${VAR})(${OPEX}?(${VAR}))*`
@@ -22,34 +23,34 @@ const buildArithPatt = () => {
 }
 
 const buildFractionPattern = () => {
-  const template = `(\\-)?\\\\frac\\{((\\-)?\\d+(${letter})*|(\\-)?(${letter})+\\d*|(\\|\\|\\d+\\|\\|)+)\\}\\{((\\-)?\\d+(${letter})*|(\\-)?(${letter})+\\d*|(\\|\\|\\d+\\|\\|)+)\\}`
+  const template = `(${OP})?\\\\frac\\{((\\-)?\\d+(${letter})*|(\\-)?(${letter})+\\d*|(\\|\\|\\d+\\|\\|)+)\\}\\{((\\-)?\\d+(${letter})*|(\\-)?(${letter})+\\d*|(\\|\\|\\d+\\|\\|)+)\\}`
   return new RegExp(template, 'g')
 }
 
 const buildRootPattern = () => {
-  const template = `(\\-)?(\\\\sqrt(\\[${VAR}\\])?\\{${VAR}\\})`
+  const template = `(${OP})?(\\\\sqrt(\\[${VAR}\\])?\\{${VAR}\\})`
   return new RegExp(template, 'g')
 }
 
 const buildLogarithmPattern = () => {
   const logVar = `(\\-)?(\\\\left\\()*${VAR}(\\\\right\\))*((\\+|\\-(?=((\\\\left\\()*${VAR}))|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)*(\\\\left\\()*${VAR}*(\\\\right\\))*)*
   (\\-)?(\\\\left\\()*${VAR}(\\\\right\\))*((\\+|\\-(?=((\\\\left\\()*${VAR}))|\\\\cdot\\s|\\\\cdot|\\\\div\\s|\\\\div)*(\\\\left\\()*${VAR}*(\\\\right\\))*)*`
-  const template = `(\\-)?\\\\log\\s\\_\\{${logVar}\\}\\\\left\\(${logVar}\\\\right\\)`
+  const template = `(${OP})?\\\\log\\s\\_\\{${logVar}\\}\\\\left\\(${logVar}\\\\right\\)`
   return new RegExp(template, 'g')
 }
 
 const buildNaturalLogarithm = () => {
-  const template = `(\\-)?(\\\\ln\\s\\\\left\\(${VAR}\\\\right\\))`
+  const template = `(${OP})?(\\\\ln\\s\\\\left\\(${VAR}\\\\right\\))`
   return new RegExp(template, 'g')
 }
 
 const buildSummationPattern = () => {
-  const template = `(\-)?\\sum\s\_\{${VAR}((\=)${VAR})?\}\^(\{\\infty\s\}|${VAR}(\\left\()${VAR}(\\right\)))`
+  const template = `(${OP})?\\sum\s\_\{${VAR}((\=)${VAR})?\}\^(\{\\infty\s\}|${VAR}(\\left\()${VAR}(\\right\)))`
   return new RegExp(template, 'g')
 }
 
 const buildTrigPatt = () => {
-  const template = `(\\-)?((sin|cos|tan|cot|csc|sec)\\\\left\\(${VAR}\\\\right\\))`
+  const template = `(${OP})?((sin|cos|tan|cot|csc|sec)\\\\left\\(${VAR}\\\\right\\))`
   return new RegExp(template, 'g')
 }
 

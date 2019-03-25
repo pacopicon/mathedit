@@ -57,8 +57,7 @@ const isAlgebraic = (str) => {
   }
   return outcome
 }
-
-exports.processArithmetic = (_str) => {
+const subLeadingOps = (_str) => {
   let str = _str
   str = str.replace('\\cdot', '*')
   str = str.replace('\\cdot ', '*')
@@ -66,15 +65,28 @@ exports.processArithmetic = (_str) => {
   str = str.replace('\\div ', '/')
   str = str.replace(' ', '')
 
-  if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
-    str = processArithmetic(str)
-  }
   let leadingOp = ''
   if (str[0] == '*' || str[0] == '+' || str[0] == '-' || str[0] == '/') {
     leadingOp = str[0]
     str = str.replace(str[0], '')
   }
 
+  return {
+    leadingOp,
+    str
+  }
+}
+
+
+exports.processArithmetic = (_str) => {
+  let res = subLeadingOps(_str)
+  let leadingOp = res.leadingOp
+  let str = res.str
+
+  if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
+    str = processArithmetic(str)
+  }
+  
   let string = `${leadingOp}(${str})`
 
   let output = {
@@ -85,13 +97,23 @@ exports.processArithmetic = (_str) => {
   return output
 }
 
-exports.processSimpleFracs = (str) => {
-  let isNegated = str.indexOf('-') == 0
-  let processedNum = str.replace(`${isNegated ? '-\\frac{' : '\\frac{'}`, '')
+exports.processSimpleFracs = (_str) => {
+  let res = subLeadingOps(_str)
+  let leadingOp = res.leadingOp
+  let str = res.str
+
+  let processedNum = str.replace('\\frac{', '')
   let processedDivisor = processedNum.replace('}{', '/')
   let processedDenom = processedDivisor.replace('}', '')
   let processedFrac = str.replace(str, processedDenom)
-  return `(${processedFrac})`
+  let string = `${leadingOp}(${processedFrac})`
+
+  let output = {
+    string,
+    algebra: '',
+    latex: ''
+  }
+  return output
 }
 
 exports.isComputable = (numCandidate) => {

@@ -1,35 +1,13 @@
 const { ar, ar2, ar3, arExp, fs, fr, frExp, par, parExp, nthrt, power, logar} = require('./testStrings')
 
-const { spliceStr, parsIntoMult, log, baseLog, nthroot, production, processPars, processArithmetic, processSimpleFracs, isComputable, processRoot, pow, processExponent, processLogarithm, processNaturalLogarithm, summateOrProduce, processSummation, tan, cos, cot, sin, sec, scs, getTrigonometricValue, processTrig} = require('./processors')
+const { isCurrMatchAsimpleRef, parsIntoMult, log, baseLog, nthroot, production, processPars, processArithmetic, processSimpleFracs, processRoot, pow, processExponent, processLogarithm, processNaturalLogarithm, summateOrProduce, processSummation, tan, cos, cot, sin, sec, scs, getTrigonometricValue, processTrig} = require('./processors')
 
 const { patterns} = require('./patterns')
 
 let verbose = true
 let stop = 20
 
-
-
   // currently there are >> 8 << patterns.  Please update every time you add another pattern.
-
-String.prototype.replaceAll = function(search, replacement) {
-  var target = this;
-  return target.split(search).join(replacement);
-};
-
-let extractNumFromRef = (match) => {
-  let numStr = match.replaceAll('||', '')
-  return Number(numStr)
-}
-
-const isCurrMatchAsimpleRef = (match) => {
-  let outcome = false
-  let numStr = match.replaceAll('||', '')
-  let numCandidate = Number(numStr)
-  if (!Number.isNaN(numCandidate)) {
-    outcome = true
-  }
-  return outcome
-}
 
 const getAllMatchesAndPositions = (str, patt) => {
   let output = []

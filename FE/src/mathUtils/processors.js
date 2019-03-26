@@ -1,6 +1,33 @@
 var algebra = require('algebra.js');
 
-exports.spliceStr = (str, i, numToReplace, newStr) => {
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.split(search).join(replacement);
+};
+
+const subLeadingOps = (_str) => {
+  let str = _str
+  str = str.replaceAll('\\cdot', '*')
+  str = str.replaceAll('\\cdot ', '*')
+  str = str.replaceAll('\\div', '/')
+  str = str.replaceAll('\\div ', '/')
+  str = str.replaceAll(' ', '')
+
+  
+
+  let leadingOp = ''
+  if (str[0] == '*' || str[0] == '+' || str[0] == '-' || str[0] == '/') {
+    leadingOp = str[0]
+    str = str.replace(str[0], '')
+  }
+
+  return {
+    leadingOp,
+    latex: _str
+  }
+}
+
+const spliceStr = (str, i, numToReplace, newStr) => {
   let strArr = str.split('')
   strArr.splice(i, numToReplace, newStr)
   return strArr.join('') 
@@ -11,7 +38,7 @@ exports.parsIntoMult = (str) => {
     let befCurrIdx = str.substr(i-1,1)
     let thisIdx = str.substr(i,1)
     if (befCurrIdx != '{' && befCurrIdx != '/' && befCurrIdx != '+' && befCurrIdx != '-' && befCurrIdx != '*' && befCurrIdx != '(' && thisIdx == '(') {
-      str = exports.spliceStr(str, i, 1, '*(')
+      str = spliceStr(str, i, 1, '*(')
     }
   }
   for (let i=0; i<str.length; i++) {
@@ -19,10 +46,44 @@ exports.parsIntoMult = (str) => {
     thisIdx = str.substr(i,1)
     let nextIdx = str.substr(i+1,1)
     if (thisIdx != '}' && thisIdx == ')' && i != last && nextIdx != '-' && nextIdx != '+' && nextIdx != '*' && nextIdx != ')') {
-      str = exports.spliceStr(str, i, 1, ')*')
+      str = spliceStr(str, i, 1, ')*')
     }
   }
   return str
+}
+
+const isComputable = (numCandidate) => {
+  let verdict = false
+  if (typeof numCandidate == 'number' && !Number.isNaN(numCandidate)) {
+    verdict = true
+  }
+  return verdict
+}
+
+const isAlgebraic = (str) => {
+  const alpha = 'abcdefghijklmnopqrstuvwzyz'
+  let outcome = false
+  for (let k=0; k<alpha.length; k++) {
+    let letter = alpha[k]
+    if (str.includes(letter)) {
+      outcome = true
+    }
+  }
+  return outcome
+}
+
+const returnAlgebraicStructure = (str) => {
+  
+}
+
+exports.isCurrMatchAsimpleRef = (match) => {
+  let outcome = false
+  let numStr = match.replaceAll('||', '')
+  let numCandidate = Number(numStr)
+  if (!Number.isNaN(numCandidate)) {
+    outcome = true
+  }
+  return outcome
 }
 
 exports.log = (x) => {
@@ -46,52 +107,22 @@ exports.processPars = (str) => {
   return str
 }
 
-const isAlgebraic = (str) => {
-  const alpha = 'abcdefghijklmnopqrstuvwzyz'
-  let outcome = false
-  for (let k=0; k<alpha.length; k++) {
-    let letter = alpha[k]
-    if (str.includes(letter)) {
-      outcome = true
-    }
-  }
-  return outcome
-}
-const subLeadingOps = (_str) => {
-  let str = _str
-  str = str.replace('\\cdot', '*')
-  str = str.replace('\\cdot ', '*')
-  str = str.replace('\\div', '/')
-  str = str.replace('\\div ', '/')
-  str = str.replace(' ', '')
-
-  let leadingOp = ''
-  if (str[0] == '*' || str[0] == '+' || str[0] == '-' || str[0] == '/') {
-    leadingOp = str[0]
-    str = str.replace(str[0], '')
-  }
-
-  return {
-    leadingOp,
-    str
-  }
-}
-
-
 exports.processArithmetic = (_str) => {
   let res = subLeadingOps(_str)
   let leadingOp = res.leadingOp
   let str = res.str
-
-  if (str.includes('\\cdot') || str.includes('\\div') || str.includes(' ')) {
-    str = processArithmetic(str)
-  }
   
   let string = `${leadingOp}(${str})`
 
+  let JSmathStr = exports.parsIntoMult(string)
+  let algebra = ''
+  if (isAlgebraic(JSmathStr)) {
+
+  }
+
   let output = {
     string,
-    algebra: '',
+    algebra,
     latex: ''
   }
   return output
@@ -116,22 +147,26 @@ exports.processSimpleFracs = (_str) => {
   return output
 }
 
-exports.isComputable = (numCandidate) => {
-  let verdict = false
-  if (typeof numCandidate == 'number' && !Number.isNaN(numCandidate)) {
-    verdict = true
-  }
-  return verdict
-}
-
 exports.processRoot = (_str) => {
-  let str         = _str.replace('\sqrt', '')
+  let res = subLeadingOps(_str)
+  let leadingOp = res.leadingOp
+  let str = res.str
+
+  let str         = str.replace('\sqrt', '')
   let indexStr    = str.includes('[') ? str.slice(2, str.indexOf(']')) : 2 
   let radicandStr = str.slice(str.indexOf('{')+1, str.indexOf('}'))
   let radicandNum = Number(radicandStr)
   let indexNum    = Number(indexStr)
-  let outcome     = exports.isComputable(radicandNum) && exports.isComputable(indexNum) ? exports.nthroot(indexNum, radicandNum) : `\\sqrt[${indexStr}]{${radicandStr}}`
-  return `(${outcome})`
+  // return `(${outcome})`
+
+  let string = `${leadingOp}(${processedFrac})`
+
+  let output = {
+    string: isComputable(radicandNum) && isComputable(indexNum) ? exports.nthroot(indexNum, radicandNum) : '',
+    algebra: '',
+    latex: !isComputable(radicandNum) || !isComputable(indexNum) ? `\\sqrt[${indexStr}]{${radicandStr}}` : ''
+  }
+  return output
 }
 
 exports.pow = (base, power) => {
@@ -171,7 +206,7 @@ exports.processLogarithm = (str) => {
   let xStr      = str.slice(xStart, xEnd)
   let baseNum   = Number(baseStr)
   let xNum      = Number(xStr)
-  let outcome   = exports.isComputable(baseNum) && exports.isComputable(xNum) ? exports.baseLog(baseNum, xNum) : `\\log _{${baseStr}}\\left(${xStr}\\right)`
+  let outcome   = isComputable(baseNum) && isComputable(xNum) ? exports.baseLog(baseNum, xNum) : `\\log _{${baseStr}}\\left(${xStr}\\right)`
   return `(${outcome})`
 }
 
@@ -180,7 +215,7 @@ exports.processNaturalLogarithm = (str) => {
   let xEnd      = str.indexOf('\\right')
   let xStr      = str.slice(xStart, xEnd)
   let xNum      = Number(xStr)
-  let outcome   = exports.isComputable(xNum) ? Math.log(xNum) : `\\ln \\left(${xStr}\\right)`
+  let outcome   = isComputable(xNum) ? Math.log(xNum) : `\\ln \\left(${xStr}\\right)`
   return `(${outcome})`
 }
 
@@ -214,7 +249,7 @@ exports.processSummation = (str) => {
   let upperBound    = str.slice(upBoundStart, upBoundEnd)
   let lowerBound    = str.slice(lowBoundStart, lowBoundEnd)
   let term          = str.slice(termStart, termEnd)
-  let outcome       = exports.isComputable(upperBound) && exports.isComputable(lowerBound) && exports.isAlgebraicallyComputable(term) ? exports.summate(lowerBound, upperBound, term) : `\\sum _{i=${lowerBound}}^${upperBound}\\left(${term}\\right)`
+  let outcome       = isComputable(upperBound) && isComputable(lowerBound) && exports.isAlgebraicallyComputable(term) ? exports.summate(lowerBound, upperBound, term) : `\\sum _{i=${lowerBound}}^${upperBound}\\left(${term}\\right)`
   // console.log('sum outcome = ', outcome)
   return outcome
 

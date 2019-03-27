@@ -33,6 +33,19 @@ const spliceStr = (str, i, numToReplace, newStr) => {
   return strArr.join('') 
 }
 
+exports.getAllMatchesAndPositions = (str, patt) => {
+  let output = []
+  while (match = patt.exec(str)) {
+    let obj = {}
+    obj.start = match.index
+    obj.end   = patt.lastIndex
+    obj.match = match[0]
+    output.push(obj)
+    // console.log(`\nmatch[0] = ${match[0]}\nstr.slice(start, obj.end) = ${str.slice(obj.start, obj.end)}\nobj.start = ${obj.start}\nobj.end = ${obj.end}\n`);
+  }
+  return output
+}
+
 exports.parsIntoMult = (str) => {
   for (let i=1; i<str.length; i++) {
     let befCurrIdx = str.substr(i-1,1)
@@ -66,14 +79,44 @@ const isAlgebraic = (str) => {
   for (let k=0; k<alpha.length; k++) {
     let letter = alpha[k]
     if (str.includes(letter)) {
-      outcome = true
+      outcome = letter
     }
   }
   return outcome
 }
 
 const returnAlgebraicStructure = (str) => {
-  
+  let opPatt = /(\+|\^|\-|\*|\/)/g
+  let mathArr = str.split(opPatt)
+  let mathStr = ''
+  for (let i=0; i<mathArr.length; i++) {
+    let item = mathArr[i]
+    let letter = isAlgebraic(item)
+    if (opPatt.test(item)) {
+      switch(item) {
+        case '+':
+          processedObj = processPars(processArithmetic(patternStr))
+          break;
+        case '-':
+          processedObj = processTrig(patternStr, 'degrees')
+          break;
+        case '*':
+          processedObj = processTrig(patternStr, 'degrees')
+          break;
+        case '/':
+          processedObj = processTrig(patternStr, 'degrees')
+          break;
+        case '^':
+          processedObj = processTrig(patternStr, 'degrees')
+          break;
+        default:
+          console.log('no operation was specified to process the given match')
+      }
+      if (item.includes('+')) {
+
+      }
+    }
+  }
 }
 
 exports.isCurrMatchAsimpleRef = (match) => {

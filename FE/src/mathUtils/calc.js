@@ -1,26 +1,11 @@
 const { ar, ar2, ar3, arExp, fs, fr, frExp, par, parExp, nthrt, power, logar} = require('./testStrings')
 
-const { isCurrMatchAsimpleRef, parsIntoMult, log, baseLog, nthroot, production, processPars, processArithmetic, processSimpleFracs, processRoot, pow, processExponent, processLogarithm, processNaturalLogarithm, summateOrProduce, processSummation, tan, cos, cot, sin, sec, scs, getTrigonometricValue, processTrig} = require('./processors')
+const { getAllMatchesAndPositions, isCurrMatchAsimpleRef, parsIntoMult, log, baseLog, nthroot, production, processPars, processArithmetic, processSimpleFracs, processRoot, pow, processExponent, processLogarithm, processNaturalLogarithm, summateOrProduce, processSummation, tan, cos, cot, sin, sec, scs, getTrigonometricValue, processTrig} = require('./processors')
 
 const { patterns} = require('./patterns')
 
 let verbose = true
 let stop = 20
-
-  // currently there are >> 8 << patterns.  Please update every time you add another pattern.
-
-const getAllMatchesAndPositions = (str, patt) => {
-  let output = []
-  while (match = patt.exec(str)) {
-    let obj = {}
-    obj.start = match.index
-    obj.end   = patt.lastIndex
-    obj.match = match[0]
-    output.push(obj)
-    // console.log(`\nmatch[0] = ${match[0]}\nstr.slice(start, obj.end) = ${str.slice(obj.start, obj.end)}\nobj.start = ${obj.start}\nobj.end = ${obj.end}\n`);
-  }
-  return output
-}
 
 const switchOutMatchedSubstrWithRef = (str, begin, end, order) => {
   let ref = `||${order}||`

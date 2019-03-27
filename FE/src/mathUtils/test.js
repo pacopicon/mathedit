@@ -54,33 +54,38 @@ const organizeVars = (str) => {
   let num = ''
 
   for (let i=0; i<algarr.length; i++) {
-    let item = algarr[i]
-    if ((isNum(item) || (i == 0 && item == '-')) && item != ' ') {
-      num += item
+    if ((isNum(algarr[i]) || (i == 0 && algarr[i] == '-')) && algarr[i] != ' ') {
+      num += algarr[i]
       mode = 'num'
+			if (isLetter(algarr[i-1]) && algarr[i-1] != ' ') {
+				output.push('*')
+			}
       if (i == algarr.length - 1) {
         output.push(num)
       }   
-    } else if (isLetter(item) && item != ' ') {
+    } else if (isLetter(algarr[i]) && algarr[i] != ' ') {
       if (mode == 'num' && num != '') {
         output.push(num)
         num = ''
       }
-      output.push(item)
+			if (isAlphaNum(algarr[i-1]) && algarr[i-1] != ' ') {
+				output.push('*')
+			}
+      output.push(algarr[i])
       mode = 'lett'
-    } else if (isOp(item) && item != ' ') {
+    } else if (isOp(algarr[i]) && algarr[i] != ' ') {
       if (mode == 'num' && num != '') {
         output.push(num)
         num = ''
       }
-      output.push(item)
+      output.push(algarr[i])
       mode = 'opp'
     }
   }
   return output
 }
 
-const createExpression = (prev, opp, curr, beginPar, isPar) => {
+const createExpression = (prev, opp, curr) => {
   let obj = ''
   switch(opp) {
     case '+':
@@ -113,69 +118,62 @@ const createExpression = (prev, opp, curr, beginPar, isPar) => {
         item: prev.pow(curr)
       }
       break;
-    case '(':
-      if (!beginPar) {
-        beginPar = true
-      }
-      isPar = true
-      break;
-    case ')':
-      isPar = false
-      break;
     default:
       console.log('not an operator')
   }
-  return {
-    obj,
-    isPar,
-    beginPar
-  }
+  return obj
 }
 
 const returnAlgebraicStructure = (str) => {
  
   const varArr = organizeVars(str)
-  const algObj = {}
-  let beginPar = false
-  let isPar = false
+  const algFormula = []
+  let wasParDeclared = false
   for (let i=0; i<varArr.length; i++) {
-
+    let exp = ''
+    let recepticle = ''
+    
     if (isAlphaNum(varArr[i])) {
-      if (beginPar) {
-        beginPar = false
+
+      if (wasParDeclared || (varArr[i-1] == '(' && (isAlphaNum(varArr[i-2]) || (varArr[i-2] == '-' && varArr[i-3])))) {
+        if (!wasParDeclared) {
+          wasParDeclared = true
+          algFormula.push('')
+        }
+        let last = algFormula.length - 1
+        recepticle = algFormula[last]
+
+      } 
+      if (!wasParDeclared) {
+        let last = algFormula.length - 1
+        recepticle = algFormula[last-1]
       }
 
-      if (isAlphaNum(varArr[i-2]) && isOp(varArr[i-1])) {
-        let prev     = varArr[i-2]
-        let opp      = arArr[i-1]
-        let curr     = varArr[i]
-        let res      = createExpression(prev, opp, curr, beginPar, isPar)
-            exp      = res.obj.item
-            beginPar = res.beginPar
-            isPar    = res.isPar
-        algObj[`${i}`] = {
-          type: 'exp',
-          item: exp
-        }
+      if (isAlphaNum(varArr[i-2]) && isOp(varArr[i-1]) && varArr[i-1] != '(' && varArr[i-1] != ')') {
+        let prev = varArr[i-2]
+        let opp  = arArr[i-1]
+        let curr = varArr[i]
+        let obj  = createExpression(prev, opp, curr)
+            exp  = obj.item
+        
       } else {
-        algObj[`${i}`] = {
-          type: 'exp',
-          item: new Expression(Number(varArr[i]))
-        }
+            exp  = new Expression(Number(varArr[i]))
       }
-      
-    }
-    if (isLetter(item)) {
-      algObj[`${i}`] = {
+
+      recepticle.push({
         type: 'exp',
-        item: new Expression(item)
-      }
-    }
-    if (isOp(item)) {
-      algObj[`${i}`] = {
-        type: 'opp',
-        item: item
-      }  
+        item: exp
+      })
+      
+    } else if (isOp(varArr[i])) {
+      if (varArr[i] == ')') {
+        wasParDeclared = false
+      } else if (varArr[i] == '(' && (isAlphaNum(varArr[i-1]) || varArr[i-1] == '-')) {
+        wasParDeclared = true
+
+        // modify organizeVars in order to put a '*' between AlphaNum and '(' and/or replace '-' with '-1' and add a '*' after
+        
+      } 
     }
   }
 }

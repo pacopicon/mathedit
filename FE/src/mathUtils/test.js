@@ -38,7 +38,7 @@ const isNum = (x) => {
   return /\d+/g.test(Number(x))
 }
 const isLetter = (x) => {
-  return /\w+/g.test(x)
+  return /[a-zA-Z]/g.test(x)
 }
 const isOp = (x) => {
   return /(\+|\^|\(|\)|\-|\*|\/)/g.test(x)
@@ -180,18 +180,62 @@ const returnAlgebraicStructure = (str) => {
 
 
 
-const one = new Expression(1)
-const two = new Expression(2)
-const a = new Expression('a')
-const b = new Expression('b')
+// const one = new Expression(1)
+// const two = new Expression(2)
+// const a = new Expression('a')
+// const b = new Expression('b')
 
-let ex1 = one.multiply(1)
-let ex2 = two.multiply(ex1)
-let ex3 = a.multiply(ex2)
-let ex4 = b.multiply(ex3)
-ex4 = ex4.simplify()
+// let ex1 = one.multiply(1)
+// let ex2 = two.multiply(ex1)
+// let ex3 = a.multiply(ex2)
+// let ex4 = b.multiply(ex3)
+// ex4 = ex4.simplify()
 
-console.log(ex1.toString())
-console.log(ex2.toString())
-console.log(ex3.toString())
-console.log(ex4.toString())
+// console.log(ex1.toString())
+// console.log(ex2.toString())
+// console.log(ex3.toString())
+// console.log(ex4.toString())
+
+const encodeAlgebra = (str) => {
+  let output = {}
+  let order = -1
+  let mode = ''
+  let num = ''
+  let extra = ''
+
+  for (let i=0; i<str.length; i++) {
+    if (isLetter(str[i]) && isAlphaNum(str[i+1])) {
+      if (mode == 'num') {
+        order++
+        output[`||${order}||`] = num
+        num = ''
+      }
+      order++
+      extra = str[i-1] == '-' ? str[i-1] : ''
+      output[`||${order}||`] = extra + str[i]
+      order++
+      output[`||${order}||`] = '*'
+    } else if (isNum(str[i])) {
+      mode = 'num'
+      num += str[i]
+    } else if (isOp(str[i])) {
+      if (str[i] == '-' && str[i+1] != '(') {
+        order++
+        output[`||${order}||`] = str[i]
+      } else if (str[i] == '-' && str[i+1] == '(') {
+        
+      }
+    }
+  }
+  return output
+}
+
+let str = `-x11y+xy2-(45xy*2y4x/7y-8x)`
+
+let res1 = encodeAlgebra(str)
+
+console.log(str)
+console.log(res1)
+for (let i=0; i<str.length; i++) {
+  console.log(`str[${i}] = ${str[i]}`)
+}

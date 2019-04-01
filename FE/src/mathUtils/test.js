@@ -198,33 +198,61 @@ const returnAlgebraicStructure = (str) => {
 
 const encodeAlgebra = (str) => {
   let output = {}
-  let order = -1
+  let order = 0
   let mode = ''
   let num = ''
   let extra = ''
 
+	const encode = (order, sym) => {
+		if (sym) {
+			output[`||${order}||`].push(sym)
+		}
+	}
+
   for (let i=0; i<str.length; i++) {
-    if (isLetter(str[i]) && isAlphaNum(str[i+1])) {
+		if (!Array.isArray(output[`||${order}||`])) {
+			output[`||${order}||`] = []
+		}
+    if (isLetter(str[i])) {
       if (mode == 'num') {
-        order++
-        output[`||${order}||`] = num
+        encode(order, num)
         num = ''
       }
-      order++
-      extra = str[i-1] == '-' ? str[i-1] : ''
-      output[`||${order}||`] = extra + str[i]
-      order++
-      output[`||${order}||`] = '*'
+			if (isAlphaNum(str[i+1])) {
+				encode(order, str[i])
+      	encode(order, '*')
+			} else {
+        encode(order, str[i])
+			}
+      
     } else if (isNum(str[i])) {
       mode = 'num'
       num += str[i]
+			if (isLetter(str[i+1])) {
+				encode(order, num)
+				num = ''
+      	encode(order, '*')
+			}
     } else if (isOp(str[i])) {
-      if (str[i] == '-' && str[i+1] != '(') {
-        order++
-        output[`||${order}||`] = str[i]
-      } else if (str[i] == '-' && str[i+1] == '(') {
-        
+			if (mode == 'num') {
+				encode(order, num)
+        num = ''
       }
+			if ((!str[i-1] && str[i] == '-')) {
+				encode(order, '-1')
+				encode(order, '*')
+			} else if ((str[i] == '-' && str[i+1] == '(')) {
+				encode(order, '-')
+				encode(order, '1')
+				encode(order, '*')
+			} else if (str[i] == '(') {
+				order++
+				encode(order-1, `||${order}||`)
+			} else if (str[i] == ')') {
+				order--
+			} else {
+				encode(order, str[i])
+			}
     }
   }
   return output

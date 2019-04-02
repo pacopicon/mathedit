@@ -198,60 +198,69 @@ const returnAlgebraicStructure = (str) => {
 
 const encodeAlgebra = (str) => {
   let output = {}
-  let order = 0
+  let level = 0
+	let ref = 0
   let mode = ''
   let num = ''
   let extra = ''
 
-	const encode = (order, sym) => {
+	const encode = (level, sym) => {
 		if (sym) {
-			output[`||${order}||`].push(sym)
+			output[`||${level}||`].push(sym)
 		}
 	}
 
   for (let i=0; i<str.length; i++) {
-		if (!Array.isArray(output[`||${order}||`])) {
-			output[`||${order}||`] = []
+		if (!Array.isArray(output[`||${level}||`])) {
+			output[`||${level}||`] = []
 		}
     if (isLetter(str[i])) {
       if (mode == 'num') {
-        encode(order, num)
+        encode(level, num)
         num = ''
+				mode = 'not num'
       }
-			if (isAlphaNum(str[i+1])) {
-				encode(order, str[i])
-      	encode(order, '*')
+			if (str[i+1] && isAlphaNum(str[i+1])) {
+				encode(level, str[i])
+      	encode(level, '*')
 			} else {
-        encode(order, str[i])
+        encode(level, str[i])
 			}
       
     } else if (isNum(str[i])) {
+			// console.log(`||${level}|| -> str[${i}] = ${str[i]}`)
       mode = 'num'
       num += str[i]
-			if (isLetter(str[i+1])) {
-				encode(order, num)
+			if ((str[i+1] && isLetter(str[i+1]) || !str[i+1])) {
+				encode(level, num)
 				num = ''
-      	encode(order, '*')
+				mode = 'not num'
+      	if (str[i+1]) {
+					encode(level, '*')
+				}
 			}
     } else if (isOp(str[i])) {
 			if (mode == 'num') {
-				encode(order, num)
+				encode(level, num)
         num = ''
+				mode = 'not num'
       }
 			if ((!str[i-1] && str[i] == '-')) {
-				encode(order, '-1')
-				encode(order, '*')
-			} else if ((str[i] == '-' && str[i+1] == '(')) {
-				encode(order, '-')
-				encode(order, '1')
-				encode(order, '*')
+				encode(level, '-1')
+				encode(level, '*')
+			} else if ((str[i] == '-' && str[i+1] && str[i+1] == '(')) {
+				encode(level, '-')
+				encode(level, '1')
+				encode(level, '*')
 			} else if (str[i] == '(') {
-				order++
-				encode(order-1, `||${order}||`)
+				ref++
+				encode(level, `||${ref}||`)
+				level++
+				console.log(`ref = ${ref}, level = ${level}, str[${i}}] = ${str[i]} `)
 			} else if (str[i] == ')') {
-				order--
+				level--
 			} else {
-				encode(order, str[i])
+				encode(level, str[i])
 			}
     }
   }

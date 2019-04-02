@@ -203,6 +203,7 @@ const encodeAlgebra = (str) => {
   let mode = ''
   let num = ''
   let extra = ''
+	let closedParDeclared = false
 
 	const encode = (level, sym) => {
 		if (sym) {
@@ -254,11 +255,18 @@ const encodeAlgebra = (str) => {
 				encode(level, '*')
 			} else if (str[i] == '(') {
 				ref++
+				// if (closedParDeclared) ref++
 				encode(level, `||${ref}||`)
 				level++
+				if (closedParDeclared) level++
 				console.log(`ref = ${ref}, level = ${level}, str[${i}}] = ${str[i]} `)
 			} else if (str[i] == ')') {
 				level--
+				closedParDeclared = true
+				if (!isOp(str[i+1]) && str[i+1]) {
+					encode(level, '*')
+				}
+				console.log(`ref = ${ref}, level = ${level}, str[${i}}] = ${str[i]} `)
 			} else {
 				encode(level, str[i])
 			}

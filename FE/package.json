@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "algebra-latex": "^1.1.4",
+    "algebra-latex": "^1.1.5",
     "algebra.js": "^0.2.6",
     "axios": "^0.18.0",
     "coffeequate": "^1.3.0",

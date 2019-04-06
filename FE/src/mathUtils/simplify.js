@@ -1,14 +1,15 @@
 // SIMPLIFICATION TODO
-// (1) Follow the simplification steps from Symbolab for the string below
-// (2) Buy book on Math (e.g., the GRE book) in order to get a full set of simplification rules
-// (3) First simplification strategy to tackle: add like terms
-// (4) Figure out if Regular Expressions can addentify which terms are candidates for the adding like terms
+// (1) implement simplification steps in this order:
+//		(a) Resolve all (nested) exponents
+//		(b) get product of all adjacent factors
+//		(c) Add like terms
+// (2) Make sure to test strings with only one match for simplification type.  You want to ascertain that getAllMatchesAndPositions() will get matches and positions for singleton strings with the 'g' flag.  If not, you will have to take the flag out of all the RegExp patterns and derive the 'lastIndex' of the matched string from its length and its starting position. 
 // (5) The end goal: Type Latex in, get simplified latex out 
 
 let verbose = true
 
-let str1 = `-x11y+xy2-\\left(\\frac{\\left(45xy\\cdot 2y4x\\right)}{\\left(7yx-8xy-8xy\\right)}\\right)98xy`
-let corr1 = `-9xy+3920x^2y^2`
+let str1 = `-x^{2^{2^4}}\\sqrt[3]{x}11y^{3^{2^4}}\\sqrt[3]{27}+x^{4^2}\\sqrt[y]{27}y^{5^2}2+y^{3^{2^4}}x^{2^{2^4}}2-\\left(\\frac{\\left(45x^{4^4}y\\cdot 2y^{x^4}4x^{x^y}\\cdot 6y^3x^2\\right)}{\\left(7yx-8xy-8xy\\cdot \\sqrt{25}\\right)}\\right)98xy+\\left(-5\\right)^6`
+let regexr1 = `-x^{2^{2^4}}\sqrt[3]{x}11y^{3^{2^4}}\sqrt[3]{27}+x^{4^2}\sqrt[y]{27}y^{5^2}2+y^{3^{2^4}}x^{2^{2^4}}2-\left(\frac{\left(45x^{4^4}y\cdot 2y^{x^4}4x^{x^y}\cdot 6y^3x^2\right)}{\left(7yx-8xy-8xy\cdot \sqrt{25}\right)}\right)98xy+\left(-5\right)^6`
 
 const isLetter = (x) => {
   return /[a-zA-Z]/g.test(x)
@@ -27,7 +28,48 @@ const spliceString = (str, start, end, insert) => {
 	}
 } 
 
-const processAddLikeTerms = (matchObjArr, str) => {
+const resolveExponents = (str) => {
+	let origStr  = str
+	let wBrack   = /\{\d+\^\d+\}/
+	let WObrack  = /\d+\^\d+/
+	let wPar     = /\\left\((\-)?\d+\\right\)\^\d+/
+	let patt     = ''
+	let isBracks = false
+	let isPars   = false
+	if (wBrack.test(str)) {
+		patt     = wBrack
+		isBracks = true
+	} else if (WObrack.test(str)) {
+		patt     = WObrack
+	} else if (wPar.test(str)) {
+		patt     = wPar
+		isPars   = true
+	}
+	let match  = patt.exec(str);
+	let start  = match.index
+			match  = match[0]
+	let end    = match.length + start
+			match  = match.replace('{', '')
+			match  = match.replace('}', '')
+	let beg    = isPars ? 6 : 0
+	let base   = match.slice(beg, match.indexOf(isPars ? '\\right' : '^'))
+	let expon  = match.slice(match.indexOf('^') + 1)
+	let power  = Math.pow(base, expon)
+	let head   = str.slice(0, start)
+	let tail   = str.slice(end)	
+	let output = `${head}${power}${tail}`
+	let output2 = `${head}!!!!!${power}!!!!!${tail}`  		
+	// console.log(`+-------------\n|origStr = ${origStr}\n|start = ${start}\n|end = ${end}\n|match = ${match}\n|base = ${base}\n|expon = ${expon}\n|power = ${power}\n|head = ${head}\n|\n|tail = ${tail}\n|\n|output2 = ${output2}\n|\n|wBrack.test(output) || WObrack.test(output) = ${wBrack.test(output) || WObrack.test(output)}\n+-------------`)
+	if (wBrack.test(output) || WObrack.test(output) || wPar.test(output)) {
+		output = resolveExponents(output)
+	} 
+	if (!wBrack.test(output) && !WObrack.test(output) && !wPar.test(output)) {
+		// console.log('output = ', output)
+		return output
+	}
+}
+
+const processlikeTerms = (matchObjArr, str) => {
 	// console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
 	let mathString = ''
 	let setOfLetters = new Set()
@@ -80,7 +122,15 @@ const processAddLikeTerms = (matchObjArr, str) => {
 
 const simplificationPatterns = [
 	{
-		name: 'addLikeTerms',
+		name:'exponents',
+		patt: /((((\\left\()(?=((\+|\-)?\w+\\right\))))?(\+|\-)?\w+((?<=((\\left\()(\+|\-)?\w+))(\\right\)))?)(?=\^)(?<!\}(\^))\^(\{)?)*(?<=\^)(\w+)(\})?((?<=\})(\}))?/g
+	},
+	{
+		name: 'likeTerms',
+		patt: /(\+|\-)*(\d*(x\d*y|y\d*x)\d*)/g
+	},
+	{
+		name: 'consolidate',
 		patt: /(\+|\-)*(\d*(x\d*y|y\d*x)\d*)/g
 	}
 ]
@@ -148,7 +198,6 @@ const isKeyValueObject = (obj) => {
 // }
 
 const simplify = (_str, _step) => {
-	console.log(`\nLATEX STRING = ${_str}`)
   let res = ''
 	let str = _str
 	let step = _step ? _step : 0
@@ -160,19 +209,29 @@ const simplify = (_str, _step) => {
 		}
 	}
 	let name = pattObj.name
-	let patt = pattObj.patt
-	let isStepDone = true
-  // match object properties:
-  let matchObjArr = getAllMatchesAndPositions(str, patt)
-	console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
-			filtArr     = filterAdjacentMatches(matchObjArr) || []
+	let patt = ''
+	let matchObjArr = ''
+	let isStepDone  = true
+  
+	if (name != 'exponents') {
+			patt        = pattObj.patt
+		// match object properties:
+  		matchObjArr = getAllMatchesAndPositions(str, patt)
+		// console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
+			matchObjArr = filterAdjacentMatches(matchObjArr) || []
 			isStepDone  = areAdjacentMatchesExhausted(matchObjArr)
-
-  if (filtArr.length > 0) {
+	} else {
+		  
+	}
+	console.log(`+-----(1) BEFORE PROCESSING ---\n|LATEX STRING = ${_str}\n|step name = ${name}\n|matchObjArr = ${JSON.stringify(matchObjArr)}\n+-----(1) BEFORE PROCESSING ---\n`)
+  if (matchObjArr.length > 0 || name == 'exponents') {
 
     switch(name) {
-      case 'addLikeTerms':
-        str = processAddLikeTerms(filtArr, str)
+      case 'exponents':
+        str = resolveExponents(str)
+        break;
+      case 'likeTerms':
+        str = processlikeTerms(matchObjArr, str)
         break;
       default:
         console.log('no operation was specified to process the given match')
@@ -194,13 +253,13 @@ const simplify = (_str, _step) => {
 			}
 		}
 
-  } else if (filtArr.length == 0 && step < simplificationPatterns.length - 1) {
+  } else if (matchObjArr.length == 0 && step < simplificationPatterns.length - 1) {
     step++ // update (2) step
     if (verbose) console.log(`>>>>>>>>>step -> ${step} (${patterns[step].name})\n`)
     res  = simplify(str, step)
 		str  = res.str
 		step = res.step
-  } else if (filtArr.length == 0 && step == simplificationPatterns.length - 1) {
+  } else if (matchObjArr.length == 0 && step == simplificationPatterns.length - 1) {
     res = {
 			str,
 			step
@@ -217,4 +276,4 @@ const simplify = (_str, _step) => {
 } // END simplify
 
 let res = simplify(str1)
-console.log(`\n+-------------\n|input   = ${str1}\n|\nresult   = ${res.str}\n|correct = ${corr1}\n+-------------`)
+console.log(`\n+-------------\n|input   = ${str1}\n|\nresult   = ${res.str}`)

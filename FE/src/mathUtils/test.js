@@ -1,4 +1,3 @@
-
 let str1 = '3x^3x\\left(y^4\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^4y^4\\sqrt[3]{27}-\\sin \\left(x^4-yx^4\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5\\cdot 2x^{x^y}\\cdot 3x^{3+y}x}\\right)'
 
 let matchObjArr1 = [ { start: 0, end: 5, match: '3x^3x' },
@@ -75,7 +74,7 @@ const spliceString = (str, start, end, insert) => {
 	let tail    = str.slice(end)
 	let res     = `${head}${insert}${tail}`
 	let offset  = origStr.length - res.length
-	console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
+	// console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
 	return { 
 		str: res,
 		offset 
@@ -87,97 +86,6 @@ const spliceString = (str, start, end, insert) => {
 // 	(b) {x4y3x^{3xx}x} (the match within the external brackets is fine, but filter out the right closing bracket)
 // 	(c) yx and 7yx (8xy)
 // 	(d) 2x^{x^y}
-
-const isLetter = (x) => {
-  return /[a-zA-Z]/g.test(x)
-}
-
-const isNum = (x) => {
-  return /\d+/g.test(Number(x))
-}
-
-const canBeEvaled = (str) => {
-	try {
-		return typeof eval(str) == 'number'
-	} catch (err) {
-		return false
-	}
-}
-
-const resolveProximateFactors = (matchObjArr, _str) => {
-	let str    = _str
-	let brackPatt = /\{(\w+(\+|\-|\^)\w+)\}/
-	let offset = 0
-	let coefficients = []
-	const processBracket = (currStr) => {
-		let exponent = ''
-		let match = brackPatt.exec(currStr)
-			let brackContents = match[0]
-					brackContents = brackContents.replace('{', '')
-					brackContents = brackContents.replace('}', '')
-			if (canBeEvaled(brackContents)) {
-				exponent += eval(brackContents)
-			} else {
-				exponent += brackContents
-			}
-			currStr.replace(match[0], '')
-			if (brackPatt.test(currStr)) {
-				res      = processBracket(currStr)
-				currStr  = res.currStr
-				exponent = res.exponent
-			} 
-			if (!brackPatt.test(currStr)) {
-				return {
-					currStr,
-					exponent
-				}
-			}
-	}
-	for (let i=0; i<matchObjArr.length; i++) {
-		let currStr   = matchObjArr[i].match
-		let currStart = matchObjArr[i].start
-		let currEnd		= matchObjArr[i].end
-		let exponent  = ''
-
-		if (brackPatt.test(currStr)) {
-			let res  = processBracket(currStr)
-			currStr  = res.currStr
-			exponent += res.exponent
-		} else if (currStr.includes('^')) {
-			exponent += currStr[currStr.indexOf('^') + 1]
-		}
-		
-		for (let k=0; k<currStr.length; k++) {
-			let char = currStr[i]
-			if (isNum(char)) {
-				coefficients.push(char)
-			}
-		}
-		
-		let numInstan = currStr.length
-		let solution  = `${currStr[0]}^${numInstan}`
-		let res       = spliceString(str, currStart-offset, currEnd-offset, solution)
-				str       = res.str
-				offset += res.offset 
-	}
-	return str
-}
-
-console.log('matchObjArr1 = ', matchObjArr1)
-
-let res1 = resolveProximateFactors(matchObjArr1, str1)
-console.log('res1 = ', res1)
-
-const buildProxFactorPatt = () => {
-  let VAR = `(\1(\^\w+)?)?`.repeat(10)
-  let template = `(\w)(\^\w+)?(\1(\^\w+)?)` 
-  return new RegExp(template)
-}
-
-let res = buildProxFactorPatt()
-console.log(res)
-
-
 
 const isNum = (x) => {
   return /\d+/g.test(Number(x))
@@ -191,4 +99,180 @@ const isOp = (x) => {
 const isAlphaNum = (x) => {
   return (isNum(x) || isLetter(x))
 }
+
+const canBeEvaled = (str) => {
+	try {
+		return typeof eval(str) == 'number'
+	} catch (err) {
+		return false
+	}
+}
+
+const sliceString = (str, start, end) => {
+  let strArr = str.split('')
+      strArr = end ? strArr.slice(start, end) : strArr.slice(start)
+  return strArr.join('')
+}
+
+const spliceOut = (str, start, end) => {
+	let head = sliceString(str, 0, start)
+	let tail = sliceString(str, end)
+	return head + tail
+}
+
+let setOfVariables = ['x', 'y']
+
+const packageVars = (varArr) => {
+	let obj = {}
+	for (let i=0; i<varArr.length; i++) {
+		let letter = varArr[i]
+		obj[letter] = {
+			coeff: [],
+			varsOrTerms: ''
+		}
+	}
+	return obj
+}
+
+const addPowersToVars = (letterVars, baseVar, _exponent) => {
+  let exponent = _exponent
+  for (let VAR in letterVars) {
+    if (VAR == baseVar) {
+      if (canBeEvaled(exponent)) {
+        exponent     = eval(exponent)
+        letterVars[VAR]['coeff'].push(exponent)
+      } else {
+        if (letterVars[VAR]['varsOrTerms'].length > 0 && exponent[0] != '-') {
+          letterVars[VAR]['varsOrTerms'] += `+${exponent}`
+        } else {
+          letterVars[VAR]['varsOrTerms'] += exponent
+        }
+      }
+    }
+  }
+}
+
+const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
+	let str              = _str
+	let brackPatt        = /\{(\w+(\+|\-|\^)\w+)\}/
+	let offset           = 0
+  let letterVars       = packageVars(setOfVariables)
+  let baseVar          = ''
+
+	const processBracket = (currStr) => {
+		let match          = brackPatt.exec(currStr)
+		let brackContents  = match[0]
+		    baseVar        = match.index - 2
+				brackContents  = brackContents.replace('{', '')
+        brackContents  = brackContents.replace('}', '')
+        
+    addPowersToVars(letterVars, baseVar, brackContents)
+		currStr.replace(match[0], '')
+		
+		if (brackPatt.test(currStr)) {
+			currStr          = processBracket(currStr)
+		} 
+		if (!brackPatt.test(currStr)) {
+			return currStr
+		}
+	}
+	const product        = (accumulator, currVal) => {
+    // console.log(`\accumulator = ${accumulator}\n`)
+    // console.log(`\ncurrVal = ${currVal}\n`)
+    return accumulator * currVal
+  }
+
+	for (let i=0; i<matchObjArr.length; i++) {
+		let currStr        = matchObjArr[i].match
+		let currStart      = matchObjArr[i].start
+    let currEnd		     = matchObjArr[i].end
+    let coefficients   = []
+
+		if (brackPatt.test(currStr)) {
+			// (1) split away exponent substrings from matched proximate factors string
+			currStr          = processBracket(currStr)
+		} else if (currStr.includes('^')) {
+      carrotPos        = currStr.indexOf('^')
+      baseVarPos       = carrotPos - 1
+      exponentPos      = carrotPos + 1
+      baseVar          = currStr[carrotPos - 1]
+      let exponent     = currStr[carrotPos + 1]
+      
+      addPowersToVars(letterVars, baseVar, exponent)
+      // console.log(`\ncurrStr = ${currStr}\n`)
+      currStr          = spliceOut(currStr, baseVarPos, exponentPos + 1)
+      // console.log(`\ncurrStr = ${currStr}\n`)
+		}
+    
+		let digits         = currStr.split('')
+
+			// (2) split away variables from coefficients
+		for (let k=0; k<digits.length; k++) {
+			let digit        = digits[k]
+			if (isLetter(digit)) {
+				for (let VAR in letterVars) {
+          // console.log(`letterVars[VAR] = ${JSON.stringify(letterVars[VAR])}`)
+					if (VAR == digit) {
+						letterVars[VAR]['coeff'].push(digit)
+						currStr    = currStr.replace(digit, '')
+					}
+				}
+			} else if (isNum(digit)) {
+        coefficients.push(Number(digit))
+				currStr        = currStr.replace(digit, '')
+			}
+		}
+
+		let coefficient    = coefficients.reduce(product)
+    let mathStr = `${coefficient}`
+    console.log(`\ncoefficients = ${coefficients}\n`)
+		for (let VAR in letterVars) {
+			let power = ''
+			if (letterVars[VAR]['coeff'].length > 0) {
+				power += letterVars[VAR]['coeff'].length
+			} 
+			if (letterVars[VAR]['varsOrTerms'].length > 0) {
+				let varPower = letterVars[VAR]['varsOrTerms']
+				if (power.length > 0 && varPower[0] != '-') {
+					mathStr += `+${varPower}`
+				} else {
+					mathStr += varPower
+				}
+			}
+			if (power.length > 0) {
+				mathStr += `${VAR}^${power}`
+			}			
+		}
+
+    let solution       = mathStr
+    
+		let res            = spliceString(str, currStart-offset, currEnd-offset, solution)
+				str            = res.str
+				offset        += res.offset 
+	}
+	return str
+}
+
+console.log('matchObjArr1 = ', matchObjArr1)
+
+let res1 = resolveProximateFactors(matchObjArr1, str1, setOfVariables)
+console.log('res1 = ', res1)
+
+
+
+
+////////////////////////////////////////////////////
+
+const buildProxFactorPatt = () => {
+  // let VAR = `(\1(\^\w+)?)?`.repeat(10)
+  // let template = `(\w)(\^\w+)?(\1(\^\w+)?)` 
+  // return new RegExp(template)
+}
+
+// let res2 = buildProxFactorPatt()
+// console.log(res2)
+
+
+
+
 

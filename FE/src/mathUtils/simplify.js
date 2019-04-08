@@ -1,15 +1,32 @@
 // SIMPLIFICATION TODO
 // (1) implement simplification steps in this order:
-//		(a) Resolve all (nested) exponents
-//		(b) get product of all adjacent factors
-//		(c) Add like terms
-// (2) Make sure to test strings with only one match for simplification type.  You want to ascertain that getAllMatchesAndPositions() will get matches and positions for singleton strings with the 'g' flag.  If not, you will have to take the flag out of all the RegExp patterns and derive the 'lastIndex' of the matched string from its length and its starting position. 
-// (5) The end goal: Type Latex in, get simplified latex out 
+//    (a) Get a list of all variables so they can be used in simpPatterns OR make simpPatterns be able to analyze any number of variables
+//		(b) Resolve all (nested) exponents
+//		(c) get product of all adjacent proximateFactors
+//		(d) Add like terms
+// (2) Exponents
+//    (a) The current exponent processor returns the output of its process, presupposing that there will always be exponents to process.  A Latex input without exponents will break the procedure.
+// (3) Proximate Multiplication
+// 		(a) return the product of all matched coefficients
+// 		(b) consolidate like variables into exponential notation, like variables add their exponents
+// 		(c) if variables have variable exponents, make sure to still consolidate these variable bases with other variable bases
+// 		(d) A special case of (c) is when a variable has an exponent consisting of a coefficient and a variable or an integer term and a variable term.  In terms of Latex, these complex exponents will be enclosed in brackets ('{}'), brackets that will not have been eliminated by the earlier exponent resolving process.  So you will need to handle these
+// (4) Make sure that the Add Like Terms step can handle searching polynomials with increasing variable complexity: first 2x-7x^3, then 2xy-7x^3y^2, then 2xyz - 2y + 4x + 5z, and so on.
+// (4) Make sure to test strings with only one match for simplification type.  You want to ascertain that getAllMatchesAndPositions() will get matches and positions for singleton strings with the 'g' flag.  If not, you will have to take the flag out of all the RegExp patterns and derive the 'lastIndex' of the matched string from its length and its starting position.
+// (5) Most if not all patterns will need to be constructed by a function that takes mathematical variables as inputs.  This input will need to be gathered by another pattern matching and match-processing procedure.  The matching and processing will need to occur first. 
+// (6) The end goals: 
+//    (a) Type Latex in, get simplified latex out 
+// 		(b) Solve for x, solve for y
+//    (c) Solve for 0
+//    (d) substitute var x or y for constant
 
 let verbose = true
 
-let str1 = `-x^{2^{2^4}}\\sqrt[3]{x}11y^{3^{2^4}}\\sqrt[3]{27}+x^{4^2}\\sqrt[y]{27}y^{5^2}2+y^{3^{2^4}}x^{2^{2^4}}2-\\left(\\frac{\\left(45x^{4^4}y\\cdot 2y^{x^4}4x^{x^y}\\cdot 6y^3x^2\\right)}{\\left(7yx-8xy-8xy\\cdot \\sqrt{25}\\right)}\\right)98xy+\\left(-5\\right)^6`
-let regexr1 = `-x^{2^{2^4}}\sqrt[3]{x}11y^{3^{2^4}}\sqrt[3]{27}+x^{4^2}\sqrt[y]{27}y^{5^2}2+y^{3^{2^4}}x^{2^{2^4}}2-\left(\frac{\left(45x^{4^4}y\cdot 2y^{x^4}4x^{x^y}\cdot 6y^3x^2\right)}{\left(7yx-8xy-8xy\cdot \sqrt{25}\right)}\right)98xy+\left(-5\right)^6`
+let str1 = `3x^3x\\left(y^{2^2}\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^{2^2}y^{2^2}\\sqrt[3]{27}-\\sin \\left(x^{2^2}-yx^{2^2}\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5\\cdot 2x^{x^y}\\cdot 3x^{3+y}x}\\right)`
+
+let regexr1 = `3x^3x\left(y^{2^2}\right)+\left(-y\right)^2\left(y\right)2\left(y\right)x^2\cdot x5x-x^{2^2}y^{2^2}\sqrt[3]{27}-\sin \left(x^{2^2}-yx^{2^2}\right)\left(\frac{\left(45x^2xy^3x\cdot yx-4x5y\left(2y3x\right)^2x^2y^2-yx\right)}{7yx-8xy+2x^3xx^xx\cdot 3x^5\cdot 2x^{x^y}\cdot 3x^{3+y}x}\right)`
+
+let corr1 = `\\frac{-y\\sin \\left(x^4-x^4y\\right)\\left(45x^4y^3-720x^4y^4-1\\right)+10x^4y^4\\left(36x^{x+x^y+y+13}-y\\right)}{-y+36x^{x+x^y+y+13}}`
 
 const isLetter = (x) => {
   return /[a-zA-Z]/g.test(x)
@@ -20,11 +37,11 @@ const spliceString = (str, start, end, insert) => {
 	let head = str.slice(0, start)
 	let tail   = str.slice(end)
 	let res = `${head}${insert}${tail}`
-	let reduction = origStr.length - res.length
-	console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\nreduction = ${reduction}\nresult = ${res}`)
+	let offset = origStr.length - res.length
+	console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
 	return { 
 		str: res,
-		reduction 
+		offset 
 	}
 } 
 
@@ -59,7 +76,7 @@ const resolveExponents = (str) => {
 	let tail   = str.slice(end)	
 	let output = `${head}${power}${tail}`
 	let output2 = `${head}!!!!!${power}!!!!!${tail}`  		
-	// console.log(`+-------------\n|origStr = ${origStr}\n|start = ${start}\n|end = ${end}\n|match = ${match}\n|base = ${base}\n|expon = ${expon}\n|power = ${power}\n|head = ${head}\n|\n|tail = ${tail}\n|\n|output2 = ${output2}\n|\n|wBrack.test(output) || WObrack.test(output) = ${wBrack.test(output) || WObrack.test(output)}\n+-------------`)
+	console.log(`+-------------\n|origStr = ${origStr}\n|start = ${start}\n|end = ${end}\n|match = ${match}\n|base = ${base}\n|expon = ${expon}\n|power = ${power}\n|head = ${head}\n|\n|tail = ${tail}\n|\n|output2 = ${output2}\n|\n|wBrack.test(output) || WObrack.test(output) || wPar.test(output) = ${wBrack.test(output) || WObrack.test(output) || wPar.test(output)}\n+-------------`)
 	if (wBrack.test(output) || WObrack.test(output) || wPar.test(output)) {
 		output = resolveExponents(output)
 	} 
@@ -69,11 +86,27 @@ const resolveExponents = (str) => {
 	}
 }
 
+const resolveProximateFactors = (matchObjArr, _str) => {
+	let str    = _str
+	let offset = 0
+	for (let i=0; i<matchObjArr.length; i++) {
+		let currStr   = matchObjArr[i].match
+		let currStart = matchObjArr[i].start
+		let currEnd		= matchObjArr[i].end
+		let numInstan = currStr.length
+		let solution  = `${currStr[0]}^${numInstan}`
+		let res       = spliceString(str, currStart-offset, currEnd-offset, solution)
+				str       = res.str
+				offset += res.offset 
+	}
+	return str
+}
+
 const processlikeTerms = (matchObjArr, str) => {
 	// console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
 	let mathString = ''
 	let setOfLetters = new Set()
-	let reduction = 0
+	let offset = 0
 	for (let i=0; i<matchObjArr.length; i++) {
 		let currStr   = matchObjArr[i].match
 		let currStart = matchObjArr[i].start
@@ -97,10 +130,10 @@ const processlikeTerms = (matchObjArr, str) => {
 		
 		if (i < matchObjArr.length - 1) {
 			// (3) delete the current match string from orignal latex string
-			res 			 = spliceString(str, currStart-reduction, currEnd-reduction, '')
+			res 			 = spliceString(str, currStart-offset, currEnd-offset, '')
 			str 			 = res.str
 			// console.log(`\n${i}${i == 1 ? 'st' : (i == 2 ? 'nd' : (i == 3 ? 'rd' : 'th'))} str = ${str}`)
-			reduction += res.reduction
+			offset += res.offset
 		} else {
 			// during very last iteration...
 			// (4) evaluate mathString
@@ -112,7 +145,7 @@ const processlikeTerms = (matchObjArr, str) => {
 				strRes += letter
 			})
 			// (7) delete the last match string from orignal latex string and replace it with the evaluated string.
-			res = spliceString(str, currStart-reduction, currEnd-reduction, strRes)
+			res = spliceString(str, currStart-offset, currEnd-offset, strRes)
 			str = res.str
 			// console.log(`\nlast str = ${str}`)
 		}
@@ -122,8 +155,11 @@ const processlikeTerms = (matchObjArr, str) => {
 
 const simplificationPatterns = [
 	{
-		name:'exponents',
-		patt: /((((\\left\()(?=((\+|\-)?\w+\\right\))))?(\+|\-)?\w+((?<=((\\left\()(\+|\-)?\w+))(\\right\)))?)(?=\^)(?<!\}(\^))\^(\{)?)*(?<=\^)(\w+)(\})?((?<=\})(\}))?/g
+		name:'exponents'
+	},
+	{
+		name:'proximateFactors',
+		patt: /((\^)?(\d+)?(x|y)(\d+)?(\})?((\^)?(?<=\^)(\{)?(x*|y*|\d*|(x*|y*|\d*)(?<=\^\{(x*|y*|\d*))(\-|\+)(x*|y*|\d*))*(\})?)?){2,}/g
 	},
 	{
 		name: 'likeTerms',
@@ -218,7 +254,9 @@ const simplify = (_str, _step) => {
 		// match object properties:
   		matchObjArr = getAllMatchesAndPositions(str, patt)
 		// console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
-			matchObjArr = filterAdjacentMatches(matchObjArr) || []
+			if (name != 'proximateFactors') {
+				matchObjArr = filterAdjacentMatches(matchObjArr) || []
+			}
 			isStepDone  = areAdjacentMatchesExhausted(matchObjArr)
 	} else {
 		  
@@ -229,6 +267,17 @@ const simplify = (_str, _step) => {
     switch(name) {
       case 'exponents':
         str = resolveExponents(str)
+        break;
+      case 'proximateFactors':
+				console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+				console.log('>>>> str to analyze ', str)
+				return {
+					str
+				}
+        // str = resolveProximateFactors(matchObjArr, _str)
+        break;
+      case 'parentheticalMultiplication':
+        str = processlikeTerms(matchObjArr, str)
         break;
       case 'likeTerms':
         str = processlikeTerms(matchObjArr, str)
@@ -276,4 +325,4 @@ const simplify = (_str, _step) => {
 } // END simplify
 
 let res = simplify(str1)
-console.log(`\n+-------------\n|input   = ${str1}\n|\nresult   = ${res.str}`)
+console.log(`\n+-------------\n|input   = ${str1}\n|\nresult   = ${res.str}\n|corr1 = ${corr1}`)

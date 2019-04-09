@@ -185,7 +185,7 @@ const emptyVars = (letterVars) => {
 // }
 
 const addPowersToVars = (letterVars, baseVar, _exponent) => {
-  console.log(`\nBEGIN letterVars = ${JSON.stringify(letterVars)}\n`)
+  console.log(`\nBEGIN letterVars = ${JSON.stringify(letterVars)}\n, baseVar = ${baseVar}, _exponent = ${_exponent}`)
   let exponent = _exponent
   for (let VAR in letterVars) {
     if (VAR == baseVar) {
@@ -209,21 +209,25 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 	let brackPatt        = /\{(\w+(\+|\-|\^)\w+)\}/
 	let offset           = 0
   let letterVars       = packageVars(setOfVariables)
-  let baseVar          = ''
   let counter = 0 // safety measure to stop infinite recursion
 
 	const processComplexExponent = (currStr) => {
+    // return
     counter++
     if (counter == 10) return
-		let match          = brackPatt.exec(currStr)
+    let match          = brackPatt.exec(currStr)
+    let baseVarPos     = currStr.indexOf('^') - 1
+    let baseVar        = currStr[baseVarPos]
+    console.log(`currStr = ${currStr}, baseVarPos = ${baseVarPos}, baseVar = ${baseVar}`)
 		let brackContents  = match[0]
-		    baseVar        = match.index - 2
 				brackContents  = brackContents.replace('{', '')
         brackContents  = brackContents.replace('}', '')
+
+    
         
     addPowersToVars(letterVars, baseVar, brackContents)
-		currStr.replace(match[0], '')
-		
+		currStr = currStr.replace(match[0], '')
+		console.log(`match[0] = ${match[0]}, match = ${JSON.stringify(match)}, currStr = ${currStr}`)
 		if (brackPatt.test(currStr)) {
 			currStr          = processComplexExponent(currStr)
 		} 
@@ -307,7 +311,7 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
         } 
         if (letterVars[VAR]['complex'].length > 0) {
           let varPower   = letterVars[VAR]['complex']
-          console.log('\n>>>>>>>>>>>>>>>varPower = ', varPower)
+          console.log(`\n>>>>>>>>>>>>>>>varPower = ${varPower}\n`)
           if (power> 0 && varPower[0] != '-') {
             power        = `${power}+${varPower}`
             bracks      += power.length > 1 ? 1 : 0

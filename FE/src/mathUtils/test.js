@@ -67,6 +67,14 @@ const processlikeTerms = (matchObjArr, str) => {
 	return str
 }
 
+const constructString = (start, end, str) => {
+  let string = ''
+  for (let i=start; i<end; i++) {
+    string+= str[i]
+  }
+  return string
+} 
+
 const spliceString = (str, start, end, insert) => {
 	// console.log(`\nstr = ${str}\nstart = ${start}\nend = ${end}\ninsert = ${insert}`)
 	let origStr = str
@@ -74,7 +82,7 @@ const spliceString = (str, start, end, insert) => {
 	let tail    = str.slice(end)
 	let res     = `${head}${insert}${tail}`
 	let offset  = origStr.length - res.length
-	console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
+	console.log(`+----BEGIN SPLICE${'-'.repeat(40)}\n|insert = ${insert}\n|replaced = ${constructString(start, end, str)}\n|origStr = ${origStr}\n|head = ${head}\n|tail = ${tail}\n|result = ${res}\n+----BEGIN SPLICE${'-'.repeat(40)}\n`)
 	return { 
 		str: res,
 		offset 
@@ -115,9 +123,28 @@ const sliceString = (str, start, end) => {
 }
 
 const spliceOut = (str, start, end) => {
-	let head = sliceString(str, 0, start)
-	let tail = sliceString(str, end)
+	let head = start ? sliceString(str, 0, start) : ''
+  let tail = sliceString(str, end)
+  console.log(`spliceOut -> str = ${str}, start = ${start}, end = ${end}, head = ${head}, tail = ${tail}`)
 	return head + tail
+}
+
+const separateCoefficientsFromVars = (str) => {
+	let coeff = ''
+	let output = []
+	for (let i=0; i<str.length; i++) {
+		let char = str[i]
+		if (isNum(char)) {
+			coeff += char
+		} else if (isLetter(char)) {
+			if (coeff) {
+				output.push(coeff)
+				coeff = ''
+			}
+			output.push(char)
+		}
+	}
+	return output
 }
 
 let setOfVariables = ['x', 'y']
@@ -135,33 +162,36 @@ const packageVars = (varArr) => {
 	return obj
 }
 
-const varsAreRepeated = (str) => {
-	let counter = 0
-	let outcome = false
-	for (let i=0; i<str.length; i++) {
-		if (str[0] == str[i]) {
-			counter++
-		}
-	}
-	if (counter == str.length) {
-		outcome = true
-	}
-	return outcome
+const emptyVars = (letterVars) => {
+  for (let VAR in letterVars) {
+    letterVars[VAR]['coeff'] = 0
+    letterVars[VAR]['simple'] = []
+    letterVars[VAR]['complex'] = ''
+  }
 }
 
+// const varsAreRepeated = (str) => {
+// 	let counter = 0
+// 	let outcome = false
+// 	for (let i=0; i<str.length; i++) {
+// 		if (str[0] == str[i]) {
+// 			counter++
+// 		}
+// 	}
+// 	if (counter == str.length) {
+// 		outcome = true
+// 	}
+// 	return outcome
+// }
+
 const addPowersToVars = (letterVars, baseVar, _exponent) => {
+  console.log(`\nBEGIN letterVars = ${JSON.stringify(letterVars)}\n`)
   let exponent = _exponent
   for (let VAR in letterVars) {
     if (VAR == baseVar) {
-      // console.log(`\nexponent = ${exponent}\n`)
       if (canBeEvaled(exponent)) {
         exponent     = eval(exponent)
         letterVars[VAR]['coeff'] += exponent
-      } else if (exponent.length > 1 && varsAreRepeated(exponent)) {
-        let temp = exponent.split('')
-        temp.forEach( (item) => {
-          letterVars[VAR]['simple'].push(item)
-        })
       } else {
         if (letterVars[VAR]['complex'].length > 0 && exponent[0] != '-') {
           letterVars[VAR]['complex'] += `+${exponent}`
@@ -171,7 +201,7 @@ const addPowersToVars = (letterVars, baseVar, _exponent) => {
       }
     }
   }
-  // console.log(`letterVars = ${JSON.stringify(letterVars)}`)
+  console.log(`\nEND letterVars = ${JSON.stringify(letterVars)}\n`)
 }
 
 const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
@@ -180,8 +210,11 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 	let offset           = 0
   let letterVars       = packageVars(setOfVariables)
   let baseVar          = ''
+  let counter = 0 // safety measure to stop infinite recursion
 
-	const processBracket = (currStr) => {
+	const processComplexExponent = (currStr) => {
+    counter++
+    if (counter == 10) return
 		let match          = brackPatt.exec(currStr)
 		let brackContents  = match[0]
 		    baseVar        = match.index - 2
@@ -192,15 +225,35 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 		currStr.replace(match[0], '')
 		
 		if (brackPatt.test(currStr)) {
-			currStr          = processBracket(currStr)
+			currStr          = processComplexExponent(currStr)
 		} 
 		if (!brackPatt.test(currStr)) {
 			return currStr
 		}
-	}
+  }
+  
+  const processSimpleExponent = (currStr) => {
+    counter++
+    if (counter == 10) return
+    let carrotPos    = currStr.indexOf('^')
+    let basePos      = carrotPos - 1
+    let exponentPos  = carrotPos + 2
+    let baseVar      = currStr[carrotPos - 1]
+    let exponent     = currStr[carrotPos + 1]
+    
+    addPowersToVars(letterVars, baseVar, exponent)
+    currStr          = spliceOut(currStr, basePos, exponentPos)
+    console.log(`after spliceOut currStr = ${currStr}`)
+    
+    if (currStr.includes('^')) {
+      currStr        = processSimpleExponent(currStr)
+    }
+    if (!currStr.includes('^')) {
+      return currStr
+    }
+  }
+
 	const product        = (accumulator, currVal) => {
-    // console.log(`\accumulator = ${accumulator}\n`)
-    // console.log(`\ncurrVal = ${currVal}\n`)
     return accumulator * currVal
   }
 
@@ -210,70 +263,78 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
     let currEnd		     = matchObjArr[i].end
     let coefficients   = []
 
-		if (brackPatt.test(currStr)) {
-			// (1) split away exponent substrings from matched proximate factors string
-			currStr          = processBracket(currStr)
-		} else if (currStr.includes('^')) {
-      let carrotPos    = currStr.indexOf('^')
-      let exponentPos  = carrotPos + 2
-      let baseVar      = currStr[carrotPos - 1]
-      let exponent     = currStr[carrotPos + 1]
+    // (1) ignore strings that begin with '^' (will cause infinite recursion)
+    if (currStr[0] != '^') {
+
+      // (2) separate exponent substrings (^x or ^{xx}) from matched proximate factors string
+      if (brackPatt.test(currStr)) {
+        currStr          = processComplexExponent(currStr)
+      } else if (currStr.includes('^')) {
+        currStr          = processSimpleExponent(currStr)
+        
+      }
       
-      addPowersToVars(letterVars, baseVar, exponent)
-      // console.log(`\ncurrStr = ${currStr}\n`)
-      currStr          = spliceOut(currStr, carrotPos, exponentPos)
-      // console.log(`\ncurrStr = ${currStr}\n`)
-		}
-    
-    let digits         = currStr.split('')
-    console.log(`\ndigits = ${digits}\n`)
+      let digits         = separateCoefficientsFromVars(currStr)
+      console.log(`\ndigits = ${digits}\n`)
+        // (3) split away variables from coefficients
+      for (let k=0; k<digits.length; k++) {
+        counter++
+        if (counter == 40) return
+        let digit        = digits[k]
+        if (isLetter(digit)) {
+          for (let VAR in letterVars) {
+            if (VAR == digit) {
+              letterVars[VAR]['simple'].push(digit)
+              currStr    = currStr.replace(digit, '')
+            }
+          }
+        } else if (isNum(digit)) {
+          coefficients.push(Number(digit))
+          currStr        = currStr.replace(digit, '')
+        }
+      }
 
-			// (2) split away variables from coefficients
-		for (let k=0; k<digits.length; k++) {
-			let digit        = digits[k]
-			if (isLetter(digit)) {
-				for (let VAR in letterVars) {
-          // console.log(`letterVars[VAR] = ${JSON.stringify(letterVars[VAR])}`)
-					if (VAR == digit) {
-						letterVars[VAR]['simple'].push(digit)
-						currStr    = currStr.replace(digit, '')
-					}
-				}
-			} else if (isNum(digit)) {
-        coefficients.push(Number(digit))
-        console.log(`currStr = ${currStr}`)
-        currStr        = currStr.replace(digit, '')
-        console.log(`currStr = ${currStr}`)
-			}
-		}
+      let coefficient    = coefficients.length > 0 ? coefficients.reduce(product) : ''
+      let mathStr        = `${coefficient}`
+      
+      for (let VAR in letterVars) {
+        let bracks       = 0
+        let power        = letterVars[VAR]['coeff']
+            bracks       = power > 9 ? 1 : 0
+        if (letterVars[VAR]['simple'].length > 0) {
+          power         += letterVars[VAR]['simple'].length
+          bracks        += power.length > 1 ? 1 : 0
+        } 
+        if (letterVars[VAR]['complex'].length > 0) {
+          let varPower   = letterVars[VAR]['complex']
+          console.log('\n>>>>>>>>>>>>>>>varPower = ', varPower)
+          if (power> 0 && varPower[0] != '-') {
+            power        = `${power}+${varPower}`
+            bracks      += power.length > 1 ? 1 : 0
+          } else {
+            power        =  `${power}${varPower}`
+            bracks      += power.length > 1 ? 1 : 0
+          }
+        }
+      
+        if (power == `1`) {
+          mathStr +=`${VAR}`
+        } else if (power != `0`) {
+          mathStr += bracks > 0 ? `${VAR}^{${power}}` : `${VAR}^${power}`
+        } 
+          
+        
+      }
 
-		let coefficient    = coefficients.reduce(product)
-    let mathStr        = `${coefficient}`
-    
-		for (let VAR in letterVars) {
-			let power = ''
-			if (letterVars[VAR]['simple'].length > 0) {
-				power += letterVars[VAR]['simple'].length
-			} 
-			if (letterVars[VAR]['complex'].length > 0) {
-				let varPower = letterVars[VAR]['complex']
-				if (power.length > 0 && varPower[0] != '-') {
-					mathStr += `+${varPower}`
-				} else {
-					mathStr += varPower
-				}
-			}
-			if (power.length > 0) {
-				mathStr += `${VAR}^${power}`
-			}			
-		}
+      let solution       = mathStr
+      let res            = spliceString(str, currStart-offset, currEnd-offset, solution)
+          str            = res.str
+          offset        += res.offset
+      emptyVars(letterVars)
 
-    let solution       = mathStr
-    
-		let res            = spliceString(str, currStart-offset, currEnd-offset, solution)
-				str            = res.str
-				offset        += res.offset 
-	}
+    }
+     
+  }
 	return str
 }
 

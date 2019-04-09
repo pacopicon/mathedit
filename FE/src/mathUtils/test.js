@@ -74,7 +74,7 @@ const spliceString = (str, start, end, insert) => {
 	let tail    = str.slice(end)
 	let res     = `${head}${insert}${tail}`
 	let offset  = origStr.length - res.length
-	// console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
+	console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
 	return { 
 		str: res,
 		offset 
@@ -127,29 +127,51 @@ const packageVars = (varArr) => {
 	for (let i=0; i<varArr.length; i++) {
 		let letter = varArr[i]
 		obj[letter] = {
-			coeff: [],
-			varsOrTerms: ''
+      coeff: 0,
+      simple: [],
+			complex: ''
 		}
 	}
 	return obj
+}
+
+const varsAreRepeated = (str) => {
+	let counter = 0
+	let outcome = false
+	for (let i=0; i<str.length; i++) {
+		if (str[0] == str[i]) {
+			counter++
+		}
+	}
+	if (counter == str.length) {
+		outcome = true
+	}
+	return outcome
 }
 
 const addPowersToVars = (letterVars, baseVar, _exponent) => {
   let exponent = _exponent
   for (let VAR in letterVars) {
     if (VAR == baseVar) {
+      // console.log(`\nexponent = ${exponent}\n`)
       if (canBeEvaled(exponent)) {
         exponent     = eval(exponent)
-        letterVars[VAR]['coeff'].push(exponent)
+        letterVars[VAR]['coeff'] += exponent
+      } else if (exponent.length > 1 && varsAreRepeated(exponent)) {
+        let temp = exponent.split('')
+        temp.forEach( (item) => {
+          letterVars[VAR]['simple'].push(item)
+        })
       } else {
-        if (letterVars[VAR]['varsOrTerms'].length > 0 && exponent[0] != '-') {
-          letterVars[VAR]['varsOrTerms'] += `+${exponent}`
+        if (letterVars[VAR]['complex'].length > 0 && exponent[0] != '-') {
+          letterVars[VAR]['complex'] += `+${exponent}`
         } else {
-          letterVars[VAR]['varsOrTerms'] += exponent
+          letterVars[VAR]['complex'] += exponent
         }
       }
     }
   }
+  // console.log(`letterVars = ${JSON.stringify(letterVars)}`)
 }
 
 const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
@@ -192,19 +214,19 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 			// (1) split away exponent substrings from matched proximate factors string
 			currStr          = processBracket(currStr)
 		} else if (currStr.includes('^')) {
-      carrotPos        = currStr.indexOf('^')
-      baseVarPos       = carrotPos - 1
-      exponentPos      = carrotPos + 1
-      baseVar          = currStr[carrotPos - 1]
+      let carrotPos    = currStr.indexOf('^')
+      let exponentPos  = carrotPos + 2
+      let baseVar      = currStr[carrotPos - 1]
       let exponent     = currStr[carrotPos + 1]
       
       addPowersToVars(letterVars, baseVar, exponent)
       // console.log(`\ncurrStr = ${currStr}\n`)
-      currStr          = spliceOut(currStr, baseVarPos, exponentPos + 1)
+      currStr          = spliceOut(currStr, carrotPos, exponentPos)
       // console.log(`\ncurrStr = ${currStr}\n`)
 		}
     
-		let digits         = currStr.split('')
+    let digits         = currStr.split('')
+    console.log(`\ndigits = ${digits}\n`)
 
 			// (2) split away variables from coefficients
 		for (let k=0; k<digits.length; k++) {
@@ -213,26 +235,28 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 				for (let VAR in letterVars) {
           // console.log(`letterVars[VAR] = ${JSON.stringify(letterVars[VAR])}`)
 					if (VAR == digit) {
-						letterVars[VAR]['coeff'].push(digit)
+						letterVars[VAR]['simple'].push(digit)
 						currStr    = currStr.replace(digit, '')
 					}
 				}
 			} else if (isNum(digit)) {
         coefficients.push(Number(digit))
-				currStr        = currStr.replace(digit, '')
+        console.log(`currStr = ${currStr}`)
+        currStr        = currStr.replace(digit, '')
+        console.log(`currStr = ${currStr}`)
 			}
 		}
 
 		let coefficient    = coefficients.reduce(product)
-    let mathStr = `${coefficient}`
-    console.log(`\ncoefficients = ${coefficients}\n`)
+    let mathStr        = `${coefficient}`
+    
 		for (let VAR in letterVars) {
 			let power = ''
-			if (letterVars[VAR]['coeff'].length > 0) {
-				power += letterVars[VAR]['coeff'].length
+			if (letterVars[VAR]['simple'].length > 0) {
+				power += letterVars[VAR]['simple'].length
 			} 
-			if (letterVars[VAR]['varsOrTerms'].length > 0) {
-				let varPower = letterVars[VAR]['varsOrTerms']
+			if (letterVars[VAR]['complex'].length > 0) {
+				let varPower = letterVars[VAR]['complex']
 				if (power.length > 0 && varPower[0] != '-') {
 					mathStr += `+${varPower}`
 				} else {

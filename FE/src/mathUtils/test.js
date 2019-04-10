@@ -170,20 +170,6 @@ const emptyVars = (letterVars) => {
   }
 }
 
-// const varsAreRepeated = (str) => {
-// 	let counter = 0
-// 	let outcome = false
-// 	for (let i=0; i<str.length; i++) {
-// 		if (str[0] == str[i]) {
-// 			counter++
-// 		}
-// 	}
-// 	if (counter == str.length) {
-// 		outcome = true
-// 	}
-// 	return outcome
-// }
-
 const addPowersToVars = (letterVars, baseVar, _exponent) => {
   console.log(`\nBEGIN letterVars = ${JSON.stringify(letterVars)}\n, baseVar = ${baseVar}, _exponent = ${_exponent}`)
   let exponent = _exponent
@@ -209,12 +195,9 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 	let brackPatt        = /\{(\w+(\+|\-|\^)\w+)\}/
 	let offset           = 0
   let letterVars       = packageVars(setOfVariables)
-  let counter = 0 // safety measure to stop infinite recursion
 
 	const processComplexExponent = (currStr) => {
-    // return
-    counter++
-    if (counter == 10) return
+
     let match          = brackPatt.exec(currStr)
     let baseVarPos     = currStr.indexOf('^') - 1
     let baseVar        = currStr[baseVarPos]
@@ -226,7 +209,8 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
     
         
     addPowersToVars(letterVars, baseVar, brackContents)
-		currStr = currStr.replace(match[0], '')
+    currStr = currStr.replace(match[0], '')
+    currStr = currStr.replace('^', '')
 		console.log(`match[0] = ${match[0]}, match = ${JSON.stringify(match)}, currStr = ${currStr}`)
 		if (brackPatt.test(currStr)) {
 			currStr          = processComplexExponent(currStr)
@@ -237,8 +221,6 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
   }
   
   const processSimpleExponent = (currStr) => {
-    counter++
-    if (counter == 10) return
     let carrotPos    = currStr.indexOf('^')
     let basePos      = carrotPos - 1
     let exponentPos  = carrotPos + 2
@@ -282,8 +264,7 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
       console.log(`\ndigits = ${digits}\n`)
         // (3) split away variables from coefficients
       for (let k=0; k<digits.length; k++) {
-        counter++
-        if (counter == 40) return
+
         let digit        = digits[k]
         if (isLetter(digit)) {
           for (let VAR in letterVars) {
@@ -300,7 +281,7 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 
       let coefficient    = coefficients.length > 0 ? coefficients.reduce(product) : ''
       let mathStr        = `${coefficient}`
-      
+      // console.log(`\nletterVars = ${JSON.stringify(letterVars)}\n`)
       for (let VAR in letterVars) {
         let bracks       = 0
         let power        = letterVars[VAR]['coeff']
@@ -308,11 +289,12 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
         if (letterVars[VAR]['simple'].length > 0) {
           power         += letterVars[VAR]['simple'].length
           bracks        += power.length > 1 ? 1 : 0
-        } 
+        }
         if (letterVars[VAR]['complex'].length > 0) {
+          power          = power == `1` ? '' : power 
           let varPower   = letterVars[VAR]['complex']
           console.log(`\n>>>>>>>>>>>>>>>varPower = ${varPower}\n`)
-          if (power> 0 && varPower[0] != '-') {
+          if (power > 0 && varPower[0] != '-') {
             power        = `${power}+${varPower}`
             bracks      += power.length > 1 ? 1 : 0
           } else {

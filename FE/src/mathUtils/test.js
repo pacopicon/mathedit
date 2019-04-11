@@ -190,7 +190,9 @@ const addPowersToVars = (letterVars, baseVar, _exponent) => {
   console.log(`\nEND letterVars = ${JSON.stringify(letterVars)}\n`)
 }
 
-const eliminateUnmatchedBrackets = (matchObj) => {
+let brackOffset    = 0 // this global var is "owned" by the fn below
+
+const eliminateUnmatchedBrackets = (matchObj, offset) => {
 	let str          = matchObj.match
 	let op           = /\{/g
 	let cl           = /\}/g
@@ -207,22 +209,26 @@ const eliminateUnmatchedBrackets = (matchObj) => {
 	// (3) if the conditional in (1) is true, and temp has indexes, then get the index of the last bracket.  Otherwise get the length of the string.
 	let last         = temp.length > 0 ? temp.pop() : str.length
 	// (4) record the length of the original string
-	let origLenth    = str.length
+	let origLength    = str.length
 	// (5) update the start index of the current string (within the general math string) based upon an offset that may have been updated by a processed unmatched bracket in a string prior to the current string.  If no previous unmatched brackets have been processed, offset is 0.
 	matchObj.start   = matchObj.start - offset
 	// (6) if the str is not to be changed, the "last" variable in the slice operation is the length of the string which means the string will remain the same length.  Otherwise, the operation will slice out the last bracket.
+	let tempOffset   = offset
 			str          = str.slice(0, last)
-			offset 	    += str.length - origLenth
+			offset 	    += origLength - str.length
 	matchObj.match   = str
+	let latentOffset = tempOffset != offset ? offset : 0 
 	// (7) update the end index of the string based upon either original or updated length.
-	matchObj.end     = matchObj.start + str.length 
+	matchObj.end     = matchObj.start + str.length - latentOffset
+	// console.log(`\ntempOffset = ${tempOffset}\noffset = ${offset}\nlatentOffset = ${latentOffset}\n`)
 	return matchObj
 }
 
 const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
 	let str              = _str
 	let brackPatt        = /\{(\w+(\+|\-|\^)\w+)\}/
-	let offset           = 0
+  let offset           = 0
+  let brackOffset      = 0
   let letterVars       = packageVars(setOfVariables)
 
 	const processComplexExponent = (currStr) => {
@@ -273,10 +279,11 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
   }
 
 	for (let i=0; i<matchObjArr.length; i++) {
-		let currStr        = matchObjArr[i].match
-		let currStart      = matchObjArr[i].start
-    let currEnd		     = matchObjArr[i].end
-    let coefficients   = []
+    let matchObj     = eliminateUnmatchedBrackets(matchObjArr[i], brackOffset)
+    let currStr      = matchObj.match
+    let currStart    = matchObj.start
+    let currEnd		   = matchObj.end
+    let coefficients = []
 
     // (1) ignore strings that begin with '^' (will cause infinite recursion)
     if (currStr[0] != '^') {

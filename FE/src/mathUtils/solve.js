@@ -1,5 +1,5 @@
 // contents:
-// (1) unFOILtrinomial, a function that factorizes a trinomial into the product of two binomials........line 28
+// (1) unFOILtrinomial, a function that factorizes a quadratic trinomial into the product of two binomials........line 28
 
 let trinomialPatt = ``
 
@@ -35,7 +35,7 @@ const unFOILtrinomial = (str) => {
     		obj.sign  	= match[0]
 		signs.push(obj)
 	}
-	// if signs.length == 2, that means 'a' is unsigned positive, but we still need to register its '+' sign.  if signs.length == 3, that means that 'a' is negative, and that 'b' and 'c' are signed for positive or negative
+	// if signs.length == 2, that means 'a' is an unsigned positive number, but we still need to register its '+' sign.  if signs.length == 3, that means that 'a' is negative, and that 'b' and 'c' are signed for positive or negative
 	if (signs.length == 2) {
 		let obj   			= {}
 		obj.index 			= 0

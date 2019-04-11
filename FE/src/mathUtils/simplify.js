@@ -22,7 +22,7 @@
 
 let verbose = true
 
-let str1 = `3x^3x\\left(y^{2^2}\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^{2^2}y^{2^2}\\sqrt[3]{27}-\\sin \\left(x^{2^2}-yx^{2^2}\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5\\cdot 2x^{x^y}\\cdot 3x^{3+y}x}\\right)`
+let str1 = `3x^3x\\left(y^{2^2}\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^{2^2}y^{2^2}\\sqrt[3]{27}-\\sin \\left(x^{2^2}-yx^{2^2}\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5\\cdot 2x^{x^y}\\cdot 2x^0\\cdot x^0\\cdot 3x^{3+y}x}\\right)`
 
 let regexr1 = `3x^3x\left(y^{2^2}\right)+\left(-y\right)^2\left(y\right)2\left(y\right)x^2\cdot x5x-x^{2^2}y^{2^2}\sqrt[3]{27}-\sin \left(x^{2^2}-yx^{2^2}\right)\left(\frac{\left(45x^2xy^3x\cdot yx-4x5y\left(2y3x\right)^2x^2y^2-yx\right)}{7yx-8xy+2x^3xx^xx\cdot 3x^5\cdot 2x^{x^y}\cdot 3x^{3+y}x}\right)`
 
@@ -159,7 +159,7 @@ const simplificationPatterns = [
 	},
 	{
 		name:'proximateFactors',
-		patt: /((\^)?(\d+)?(x|y)(\d+)?(\})?((\^)?(?<=\^)(\{)?(x*|y*|\d*|(x*|y*|\d*)(?<=\^\{(x*|y*|\d*))(\-|\+)(x*|y*|\d*))*(\})?)?){2,}/g
+		patt: /((\^)?(\d+)?(x|y)(\d+)?(\})?((\^)?(?<=\^)(\{)?(x*|y*|\d*|(x*|y*|\d*)(?<=\^\{(x*|y*|\d*))(\-|\+)(x*|y*|\d*))*(\})?)?)+/g
 	},
 	{
 		name: 'likeTerms',

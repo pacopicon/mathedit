@@ -1,20 +1,29 @@
-let str1 = '3x^3x\\left(y^4\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^4y^4\\sqrt[3]{27}-\\sin \\left(x^4-yx^4\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5\\cdot 2x^{x^y}\\cdot 3x^{3+y}x}\\right)'
+let str1 = '3x^3x\\left(y^4\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^4y^4\\sqrt[3]{27}-\\sin \\left(x^4-yx^4\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5\\cdot 2x^{x^y}\\cdot 2x^0\\cdot x^0\\cdot 3x^{3+y}x}\\right)'
 
 let matchObjArr1 = [ { start: 0, end: 5, match: '3x^3x' },
-  { start: 77, end: 80, match: 'x5x' },
-  { start: 81, end: 87, match: 'x^4y^4' },
-  { start: 115, end: 119, match: 'yx^4' },
-  { start: 144, end: 154, match: '45x^2xy^3x' },
-  { start: 160, end: 162, match: 'yx' },
-  { start: 163, end: 167, match: '4x5y' },
-  { start: 173, end: 177, match: '2y3x' },
-  { start: 184, end: 192, match: '^2x^2y^2' },
-  { start: 193, end: 195, match: 'yx' },
-  { start: 204, end: 207, match: '7yx' },
-  { start: 208, end: 211, match: '8xy' },
-  { start: 212, end: 221, match: '2x^3xx^xx' },
-  { start: 237, end: 245, match: '2x^{x^y}' },
-  { start: 251, end: 261, match: '3x^{3+y}x}' } ]
+{ start: 11, end: 14, match: 'y^4' },
+{ start: 29, end: 30, match: 'y' },
+{ start: 45, end: 46, match: 'y' },
+{ start: 60, end: 61, match: 'y' },
+{ start: 68, end: 71, match: 'x^2' },
+{ start: 77, end: 80, match: 'x5x' },
+{ start: 81, end: 85, match: 'x^4y' },
+{ start: 111, end: 114, match: 'x^4' },
+{ start: 115, end: 119, match: 'yx^4' },
+{ start: 144, end: 154, match: '45x^2xy^3x' },
+{ start: 160, end: 162, match: 'yx' },
+{ start: 163, end: 167, match: '4x5y' },
+{ start: 173, end: 177, match: '2y3x' },
+{ start: 184, end: 190, match: '^2x^2y' },
+{ start: 193, end: 195, match: 'yx' },
+{ start: 204, end: 207, match: '7yx' },
+{ start: 208, end: 211, match: '8xy' },
+{ start: 212, end: 221, match: '2x^3xx^xx' },
+{ start: 227, end: 231, match: '3x^5' },
+{ start: 237, end: 245, match: '2x^{x^y}' },
+{ start: 251, end: 255, match: '2x^0' },
+{ start: 261, end: 264, match: 'x^0' },
+{ start: 270, end: 280, match: '3x^{3+y}x}' } ]
 
 const processlikeTerms = (matchObjArr, str) => {
 	// console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
@@ -125,25 +134,30 @@ const sliceString = (str, start, end) => {
 const spliceOut = (str, start, end) => {
 	let head = start ? sliceString(str, 0, start) : ''
   let tail = sliceString(str, end)
-  console.log(`spliceOut -> str = ${str}, start = ${start}, end = ${end}, head = ${head}, tail = ${tail}`)
 	return head + tail
 }
 
 const separateCoefficientsFromVars = (str) => {
+  console.log(`+----BEGIN separateCoefficientsFromVars${'-'.repeat(40)}\nstr = ${str}\n+----BEGIN separateCoefficientsFromVars${'-'.repeat(40)}\n`)
 	let coeff = ''
 	let output = []
 	for (let i=0; i<str.length; i++) {
 		let char = str[i]
 		if (isNum(char)) {
-			coeff += char
-		} else if (isLetter(char)) {
+      coeff += char
+		} else {
 			if (coeff) {
 				output.push(coeff)
 				coeff = ''
 			}
 			output.push(char)
-		}
-	}
+    }
+    if (coeff && str.length < 2) {
+      output.push(coeff)
+      coeff = ''
+    }
+  }
+  console.log(`+----END separateCoefficientsFromVars${'-'.repeat(40)}\noutput = ${output}\n+----END separateCoefficientsFromVars${'-'.repeat(40)}\n`)
 	return output
 }
 
@@ -171,7 +185,7 @@ const emptyVars = (letterVars) => {
 }
 
 const addPowersToVars = (letterVars, baseVar, _exponent) => {
-  console.log(`\nBEGIN letterVars = ${JSON.stringify(letterVars)}\n, baseVar = ${baseVar}, _exponent = ${_exponent}`)
+  console.log(`+----BEGIN addPowersToVars${'-'.repeat(40)}\nbaseVar = ${baseVar}\n_exponent = ${_exponent}\n+----BEGIN addPowersToVars${'-'.repeat(40)}\n`)
   let exponent = _exponent
   for (let VAR in letterVars) {
     if (VAR == baseVar) {
@@ -187,7 +201,7 @@ const addPowersToVars = (letterVars, baseVar, _exponent) => {
       }
     }
   }
-  console.log(`\nEND letterVars = ${JSON.stringify(letterVars)}\n`)
+  console.log(`+----END addPowersToVars${'-'.repeat(40)}\nletterVars = ${JSON.stringify(letterVars)}\n+----END addPowersToVars${'-'.repeat(40)}\n`)
 }
 
 let brackOffset    = 0 // this global var is "owned" by the fn below
@@ -231,43 +245,39 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
   let brackOffset      = 0
   let letterVars       = packageVars(setOfVariables)
 
-	const processComplexExponent = (currStr) => {
+  const processExponent = (currStr) => {
 
-    let match          = brackPatt.exec(currStr)
-    let baseVarPos     = currStr.indexOf('^') - 1
-    let baseVar        = currStr[baseVarPos]
-    console.log(`currStr = ${currStr}, baseVarPos = ${baseVarPos}, baseVar = ${baseVar}`)
-		let brackContents  = match[0]
-				brackContents  = brackContents.replace('{', '')
-        brackContents  = brackContents.replace('}', '')
-
-    
-        
-    addPowersToVars(letterVars, baseVar, brackContents)
-    currStr = currStr.replace(match[0], '')
-    currStr = currStr.replace('^', '')
-		console.log(`match[0] = ${match[0]}, match = ${JSON.stringify(match)}, currStr = ${currStr}`)
-		if (brackPatt.test(currStr)) {
-			currStr          = processComplexExponent(currStr)
-		} 
-		if (!brackPatt.test(currStr)) {
-			return currStr
-		}
-  }
-  
-  const processSimpleExponent = (currStr) => {
+    let isComplex    = brackPatt.test(currStr)
+        currStr      = currStr.replace('{', '')
     let carrotPos    = currStr.indexOf('^')
     let basePos      = carrotPos - 1
-    let exponentPos  = carrotPos + 2
+    let compExpPos   = isComplex ? currStr.indexOf('}') : '' 
+    let exponentPos  = isComplex ? compExpPos : carrotPos + 2
     let baseVar      = currStr[carrotPos - 1]
-    let exponent     = currStr[carrotPos + 1]
-    
-    addPowersToVars(letterVars, baseVar, exponent)
+    let exponent     = isComplex ? currStr.slice(carrotPos + 1, compExpPos) : currStr[carrotPos + 1]
+        
+
+    console.log(`+----BEGIN processExponent${'-'.repeat(40)}\ncurrStr = ${currStr}\nbasePos = ${basePos}\nexponentPos = ${exponentPos}\nbaseVar = ${baseVar}\nexponent = ${exponent}\n+----BEGIN processExponent${'-'.repeat(40)}\n`)
+    for (let VAR in letterVars) {
+      if (VAR == baseVar) {
+        if (canBeEvaled(exponent)) {
+          exponent     = eval(exponent)
+          letterVars[VAR]['coeff'] += exponent
+        } else {
+          if (letterVars[VAR]['complex'].length > 0 && exponent[0] != '-') {
+            letterVars[VAR]['complex'] += `+${exponent}`
+          } else {
+            letterVars[VAR]['complex'] += exponent
+          }
+        }
+      }
+    }
+  
     currStr          = spliceOut(currStr, basePos, exponentPos)
-    console.log(`after spliceOut currStr = ${currStr}`)
-    
+    currStr          = currStr.replace('}', '')
+
     if (currStr.includes('^')) {
-      currStr        = processSimpleExponent(currStr)
+      currStr        = processExponent(currStr)
     }
     if (!currStr.includes('^')) {
       return currStr
@@ -286,14 +296,12 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
     let coefficients = []
 
     // (1) ignore strings that begin with '^' (will cause infinite recursion)
-    if (currStr[0] != '^') {
+    if (currStr[0] != '^' && currStr.length > 2) {
 
-      // (2) separate exponent substrings (^x or ^{xx}) from matched proximate factors string
-      if (brackPatt.test(currStr)) {
-        currStr          = processComplexExponent(currStr)
-      } else if (currStr.includes('^')) {
-        currStr          = processSimpleExponent(currStr)
-        
+      // (2) separate exponent substrings (^x or ^{xx}) from matched proximate factors string for processing
+      if (currStr.includes('^')) {
+        currStr          = processExponent(currStr)
+        // console.log(`+----END processExponent${'-'.repeat(40)}\ncurrStr = ${currStr}\nletterVars = ${JSON.stringify(letterVars)}\n+----END processExponent${'-'.repeat(40)}\n`)
       }
       
       let digits         = separateCoefficientsFromVars(currStr)
@@ -305,44 +313,68 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
         if (isLetter(digit)) {
           for (let VAR in letterVars) {
             if (VAR == digit) {
+              // collect all meaningful instances of same variable in 'simple' array, later the length of this array determines the exponent for this variable.
               letterVars[VAR]['simple'].push(digit)
               currStr    = currStr.replace(digit, '')
             }
           }
         } else if (isNum(digit)) {
+          // collect all base coefficients, later their product is derived
           coefficients.push(Number(digit))
           currStr        = currStr.replace(digit, '')
         }
       }
-
+      // get product of all base coefficients collected
       let coefficient    = coefficients.length > 0 ? coefficients.reduce(product) : ''
       let mathStr        = `${coefficient}`
-      // console.log(`\nletterVars = ${JSON.stringify(letterVars)}\n`)
+      console.log(`+----letterVars${'-'.repeat(40)}\nletterVars = ${JSON.stringify(letterVars)}\n+----letterVars${'-'.repeat(40)}\n`)
       for (let VAR in letterVars) {
+        // the bracks var keeps track of the size of the exponent, an exponent string of length > 1 needs brackets in Latex
         let bracks       = 0
-        let power        = letterVars[VAR]['coeff']
-            bracks       = power > 9 ? 1 : 0
+        let exponent     = letterVars[VAR]['coeff']
+            // is exponent single or multiple-digit, i.e. is the exponent string length > 1 ?
+            bracks       = exponent > 9 ? 1 : 0
         if (letterVars[VAR]['simple'].length > 0) {
-          power         += letterVars[VAR]['simple'].length
-          bracks        += power.length > 1 ? 1 : 0
+          // i.e. [xxxx].length == 4 => bc x^4 is the standard way of writing xxxx
+          exponent      += letterVars[VAR]['simple'].length
+          console.log(`\n>>>>>>>>>>>>>>>letterVars[VAR]['simple'] = ${letterVars[VAR]['simple']}\n`)
+          bracks        += exponent.length > 1 ? 1 : 0
         }
         if (letterVars[VAR]['complex'].length > 0) {
-          power          = power == `1` ? '' : power 
-          let varPower   = letterVars[VAR]['complex']
-          console.log(`\n>>>>>>>>>>>>>>>varPower = ${varPower}\n`)
-          if (power > 0 && varPower[0] != '-') {
-            power        = `${power}+${varPower}`
-            bracks      += power.length > 1 ? 1 : 0
+          // A zero is expressed via omission, so if exponent = 0, then we drop it.
+          exponent       = exponent == 0  ? '' : exponent 
+          let varExpo    = letterVars[VAR]['complex']
+          console.log(`\n>>>>>>>>>>>>>>>varExpo = ${varExpo}\n`)
+          
+          let termOp     = (exponent > 0 && varExpo[0] != '-') ? '+' : ''
+          // peek in varExpo to see if there is a coefficient hiding as a string, if so, add it to exponent
+          let op         = /(\+|\-|cdot\s|cdiv\s|\*|\^)/g
+          let firstOp    = varExpo.search(op)
+          // grab operand
+          let hidCoeff   = varExpo.slice(0, firstOp)
+          console.log(`\n>>>>>>>>>>>>>>>firstOp = ${firstOp}\n`)
+
+          if (isNum(hidCoeff)) {
+            // if operand is a coefficient, take it out of varExpo
+            varExpo      = varExpo.replace(hidCoeff, '') 
+            // make it and exponent into Number datatype, so that you can add them mathematically
+            hidCoeff     = Number(hidCoeff)
+            exponent     = Number(exponent)
+            // if the input string was well-formed, there should already be an operator after the hidden coefficient.  therefore, we empty the termOp variable assigned above
+            termOp       = ''
           } else {
-            power        =  `${power}${varPower}`
-            bracks      += power.length > 1 ? 1 : 0
+            // if operand is not a coefficient, let it go by reassigning its variable as empty string
+            hidCoeff     = ''
           }
+          exponent       = `${exponent + hidCoeff}${termOp}${varExpo}`
+          bracks        += exponent.length > 1 ? 1 : 0
         }
       
-        if (power == `1`) {
+        if (exponent == `1`) {
+          // numbers raised to the power of one (e.g., the entire set of whole numbers) are never written as x^1, but just as x.
           mathStr +=`${VAR}`
-        } else if (power != `0`) {
-          mathStr += bracks > 0 ? `${VAR}^{${power}}` : `${VAR}^${power}`
+        } else if (exponent != `0`) {
+          mathStr += bracks > 0 ? `${VAR}^{${exponent}}` : `${VAR}^${exponent}`
         } 
           
         

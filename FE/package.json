@@ -20,7 +20,7 @@
     "test": "cd src && cd mathUtils && node test",
     "eject": "react-scripts eject",
     "calc": "cd src && cd mathUtils && node calc",
-    "alg": "cd src && cd mathUtils && node algebra"
+    "simplify": "cd src && cd mathUtils && node simplify"
   },
   "eslintConfig": {
     "extends": "react-app"

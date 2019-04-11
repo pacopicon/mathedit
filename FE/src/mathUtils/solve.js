@@ -1,5 +1,5 @@
 // contents:
-// (1) unFOILtrinomial, a function that factorizes a quadratic trinomial into the product of two binomials........line 28
+// (1) unFOILtrinomial, a function that factors a quadratic trinomial into the product of two binomials........line 28
 
 let trinomialPatt = ``
 

@@ -1,0 +1,8 @@
+TODO:
+
+(1) Finish the resolveProximateFactors fn
+    (a) The console.log in the Splice fn gets the wrong "origStr" when the string being processed has brackets.  This isn't throwing the return off, just how the function is being logged.  It's minor, but it may make it difficult to debut the function.  Fix it
+    (b) Handle monomials raised to the power of 0.  x^0 = 1.  In binomials it doesn't matter as much because 2x^2*x^0 = 2x^2, but if x^0 is its own term and this term is added or subtracted, we still need that 1.
+(2) Add to Solve.js the following techniques:
+    (a) factoring binomials (two terms)
+    (b) factoring four or more terms by grouping

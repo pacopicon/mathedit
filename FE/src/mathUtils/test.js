@@ -19,62 +19,11 @@ let matchObjArr1 = [ { start: 0, end: 5, match: '3x^3x' },
 { start: 204, end: 207, match: '7yx' },
 { start: 208, end: 211, match: '8xy' },
 { start: 212, end: 221, match: '2x^3xx^xx' },
-{ start: 227, end: 231, match: '3x^5' },
-{ start: 237, end: 245, match: '2x^{x^y}' },
-{ start: 251, end: 255, match: '2x^0' },
-{ start: 261, end: 264, match: 'x^0' },
-{ start: 270, end: 280, match: '3x^{3+y}x}' } ]
-
-// const processlikeTerms = (matchObjArr, str) => {
-// 	// console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
-// 	let mathString = ''
-// 	let setOfLetters = new Set()
-// 	let offset = 0
-// 	for (let i=0; i<matchObjArr.length; i++) {
-// 		let currStr   = matchObjArr[i].match
-// 		let currStart = matchObjArr[i].start
-// 		let currEnd		= matchObjArr[i].end
-// 		let nextStart = matchObjArr[i+1] ? matchObjArr[i+1].start : 'NA'
-// 		let lastEnd   = matchObjArr[i-1] ? matchObjArr[i-1].end : 'NA'
-// 		let digits    = currStr.split('')
-
-
-// 		// (1) take letters out and keep a unique list of them
-// 		for (let k=0; k<digits.length; k++) {
-// 			let digit = digits[k]
-// 			if (isLetter(digit)) {
-// 				setOfLetters.add(digit)
-// 				currStr = currStr.replace(digit, '')
-				
-// 			}
-// 		}
-// 		// (2) add only numbers to running mathString
-// 		mathString += currStr
-		
-// 		if (i < matchObjArr.length - 1) {
-// 			// (3) delete the current match string from orignal latex string
-// 			res 			 = spliceString(str, currStart-offset, currEnd-offset, '')
-// 			str 			 = res.str
-// 			// console.log(`\n${i}${i == 1 ? 'st' : (i == 2 ? 'nd' : (i == 3 ? 'rd' : 'th'))} str = ${str}`)
-// 			offset += res.offset
-// 		} else {
-// 			// during very last iteration...
-// 			// (4) evaluate mathString
-// 			let mathRes = eval(mathString)
-// 			// (5) get math solution and turn it into a string
-// 			let strRes = mathRes.toString()
-// 			// (6) add the letters to the end
-// 			setOfLetters.forEach( (letter) => {
-// 				strRes += letter
-// 			})
-// 			// (7) delete the last match string from orignal latex string and replace it with the evaluated string.
-// 			res = spliceString(str, currStart-offset, currEnd-offset, strRes)
-// 			str = res.str
-// 			// console.log(`\nlast str = ${str}`)
-// 		}
-// 	}
-// 	return str
-// }
+{ start: 227, end: 232, match: '3x^5y' },
+{ start: 240, end: 248, match: '2x^{x^y}' },
+{ start: 254, end: 258, match: '2x^0' },
+{ start: 264, end: 267, match: 'x^0' },
+{ start: 273, end: 283, match: '3x^{3+y}x}' } ]
 
 let verbose = false
 let count = 0
@@ -95,7 +44,7 @@ const spliceString = (str, start, end, insert) => {
 	let res     = `${head}${insert}${tail}`
   let offset  = origStr.length - res.length
   count++
-  if (verbose) console.log(`\n(${count})----BEGIN SPLICE${'-'.repeat(40)}\n|insert = ${insert}\n|replaced = ${constructString(start, end, str)}\n|origStr = ${origStr}\n|head = ${head}\n|tail = ${tail}\n|result = ${res}\n+----${'-'.repeat(52)}`)
+  if (verbose) console.log(`\n(${count})----BEGIN SPLICE${'-'.repeat(40)}\n|RESULT = ${insert}\n|INPUT = ${constructString(start, end, str)}\n|origStr = ${origStr}\n|head = ${head}\n|tail = ${tail}\n|result = ${res}\n+----${'-'.repeat(52)}`)
   count = 0
 	return { 
 		str: res,
@@ -176,6 +125,7 @@ const packageVars = (varArr) => {
 		let letter = varArr[i]
 		obj[letter] = {
       coeff: 0,
+      zero: false,
       simple: [],
 			complex: ''
 		}
@@ -186,6 +136,7 @@ const packageVars = (varArr) => {
 const emptyVars = (letterVars) => {
   for (let VAR in letterVars) {
     letterVars[VAR]['coeff'] = 0
+    letterVars[VAR]['zero'] = false
     letterVars[VAR]['simple'] = []
     letterVars[VAR]['complex'] = ''
   }
@@ -248,7 +199,9 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
     
     for (let VAR in letterVars) {
       if (VAR == baseVar) {
-        if (canBeEvaled(exponent)) {
+        if (exponent == '0') {
+          letterVars[VAR]['zero'] = true
+        } else if (canBeEvaled(exponent)) {
           exponent     = eval(exponent)
           letterVars[VAR]['coeff'] += exponent
         } else {
@@ -286,7 +239,7 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
     let currEnd		   = matchObj.end
     let coefficients = []
 
-    if (currStr == '3x^3x') {
+    if (currStr == '2x^0') {
       verbose = true
     } else {
       verbose = false
@@ -328,6 +281,8 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
       for (let VAR in letterVars) {
         // the bracks var keeps track of the size of the exponent, an exponent string of length > 1 needs brackets in Latex
         let bracks       = 0
+        // was there a variable raised to Zeroth power?
+        let isThereAZero = letterVars[VAR]['zero']
         let exponent     = letterVars[VAR]['coeff']
             // is exponent single or multiple-digit, i.e. is the exponent string length > 1 ?
             bracks       = exponent > 9 ? 1 : 0
@@ -372,8 +327,10 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
           if (verbose) console.log(`\n(${count})----building exponent${'-'.repeat(40)}\norigExpo = ${origExpo}\nhidCoeff = ${hidCoeff}\ntermOp = ${termOp}\nvarExpo = ${varExpo}\nexponent = ${exponent}\nbracks = ${bracks}\n+----${'-'.repeat(50)}`)
         }
       
-        if (exponent == `1`) {
-          // numbers raised to the power of one (e.g., the entire set of whole numbers) are never written as x^1, but just as x.
+        if (isThereAZero && mathStr.length == 0 && !exponent) {
+          mathStr = '1'
+        } else if (exponent == `1`) {
+          // numbers raised to the power of one (e.g., one can imagine each number in the the entire set of whole numbers as being raised to the power of one) are never written as x^1, but just as x.
           mathStr +=`${VAR}`
         } else if (exponent != `0`) {
           mathStr += bracks > 0 ? `${VAR}^{${exponent}}` : `${VAR}^${exponent}`

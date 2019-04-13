@@ -1,0 +1,19 @@
+3x^3x\left(y^{2^2}\right)+\left(-y\right)^2\left(y\right)2\left(y\right)x^2\cdot x5x-x^{2^2}y^{2^2}\sqrt[3]{27}-\sin \left(x^{2^2}-yx^{2^2}\right)\left(\frac{\left(45x^2xy^3x\cdot yx-4x5y\left(2y3x\right)^2x^2y^2-yx\right)}{7yx-8xy+2x^3xx^xx\cdot 3x^5y^0\cdot 2x^{x^y}\cdot 2x^0\cdot x^0\cdot 3x^{3+y}x}\right)
+
+x5x    4x5y    2y3x    ^2x^2y^2 (only x^2y^2)    3x^{3+y}x
+
+y^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}
+
+// x(?=y)	Matches 'x' only if 'x' is followed by 'y'. 
+// x(?!y)	Matches 'x' only if 'x' is not followed by 'y'.
+// (?<=y)x	Matches x only if x is preceded by y.
+// (?<!y)x	Matches x only if x is not preceded by y
+
+(((\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?)+(\})+)|((\w+)(?<=\w+)(\^\w+)+))
+
+What should the pattern capture (YOU MAY HAVE TO ELIMINATE NESTED, EVALUABLE EXPONENTS IN JS)
+(1) the products of coefficients and variables
+(2) monomials where the the evaluable exponents are not nested.
+(3) monomials where the the evaluable exponents are nested --> these should be evaluated on the spot and simplified.
+(4) monomials where exponents are unevaluable.
+(5) monomials where exponents are unevaluable, which are raised to the power of variables.

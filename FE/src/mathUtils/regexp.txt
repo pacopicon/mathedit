@@ -1,15 +1,22 @@
 3x^3x\left(y^{2^2}\right)+\left(-y\right)^2\left(y\right)2\left(y\right)x^2\cdot x5x-x^{2^2}y^{2^2}\sqrt[3]{27}-\sin \left(x^{2^2}-yx^{2^2}\right)\left(\frac{\left(45x^2xy^3x\cdot yx-4x5y\left(2y3x\right)^2x^2y^2-yx\right)}{7yx-8xy+2x^3xx^xx\cdot 3x^5y^0\cdot 2x^{x^y}\cdot 2x^0\cdot x^0\cdot 3x^{3+y}x}\right)
 
-x5x    4x5y    2y3x    ^2x^2y^2 (only x^2y^2)    3x^{3+y}x
+x5x    4x5y    2y3x    ^2x^2y^2 (only x^2y^2)    3x^{3+y}x     xx     xxx     xxxx     xxxxx    5x    5x5    x5    5x5x5x    
+xyxy    xxyy    yyxx    yyyxxx    xxxyyy    xx5yy6    5xx6yy    5xxyy5    xyxyxyx    xyzxyzx   xxyyzz
+abcdabcd    abcdabcdabcd    abcdea    abcdeabcdeabcde    abcdefghijabcdefghij
 
-y^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}
+y^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}    x^{2^2}x^{2^2}
+y^{2^{2^{3^{4^5}}}}    y3^{y3^{y3^{y3^{y3^y3}}}}
 
 // x(?=y)	Matches 'x' only if 'x' is followed by 'y'. 
 // x(?!y)	Matches 'x' only if 'x' is not followed by 'y'.
 // (?<=y)x	Matches x only if x is preceded by y.
 // (?<!y)x	Matches x only if x is not preceded by y
 
-(((\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?)+(\})+)|((\w+)(?<=\w+)(\^\w+)+))
+((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)
+
+((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|([a-zA-Z])(?!\24)(?<=\24)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\24)(\25|\26|\27|\28|\29|\30|\31|\32|\33|\34)*)+
+
+([a-zA-Z])(?!\24)(?<=\24)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\24)(\25|\26|\27|\28|\29|\30|\31|\32|\33|\34)*)+
 
 What should the pattern capture (YOU MAY HAVE TO ELIMINATE NESTED, EVALUABLE EXPONENTS IN JS)
 (1) the products of coefficients and variables

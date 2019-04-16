@@ -1,8 +1,18 @@
 3x^3x\left(y^{2^2}\right)+\left(-y\right)^2\left(y\right)2\left(y\right)x^2\cdot x5x-x^{2^2}y^{2^2}\sqrt[3]{27}-\sin \left(x^{2^2}-yx^{2^2}\right)\left(\frac{\left(45x^2xy^3x\cdot yx-4x5y\left(2y3x\right)^2x^2y^2-yx\right)}{7yx-8xy+2x^3xx^xx\cdot 3x^5y^0\cdot 2x^{x^y}\cdot 2x^0\cdot x^0\cdot 3x^{3+y}x}\right)
 
+dot multiplication strings:
+
+45x^2x3\cdot yx-4x5y    \alpha 2\cdot 5x    x^2-56x\div 5\cdot 6    3+x^2\div 5\cdot 6    5-45x^2xy^3x\div 5\cdot 6   \sin \left(5\cdot 7\right)    34 + 4\cdot 89 - 3x
+
+proximate factor strings:
+
 x5x    4x5y    2y3x    ^2x^2y^2 (only x^2y^2)    3x^{3+y}x     xx     xxx     xxxx     xxxxx    5x    5x5    x5    5x5x5x    
-xyxy    xxyy    yyxx    yyyxxx    xxxyyy    xx5yy6    5xx6yy    5xxyy5    xyxyxyx    xyzxyzx   xxyyzz
-abcdabcd    abcdabcdabcd    abcdea    abcdeabcdeabcde    abcdefghijabcdefghij
+xyxy    xxyy    yyxx    yyyxxx    xxxyyy    xx5yy6    5xx6yy    5xxyy5    xyxyxyx    xyzxyz   xxyyzz
+abcdabcd    abcdabcdabcd    abcdea    abcdeabcdeabcde    abcdefghija
+
+\alpha 5\alpha 5\alpha ^5\alpha \alpha \beta    \alpha a\alpha     \alpha 5\alpha 5\alpha 5\alpha 5\alpha     \alpha 5\beta 5\gamma 5\alpha 5\alpha 
+
+\alpha \beta \gamma \Gamma \delta \Delta \epsilon \varepsilon \zeta \eta \theta \Theta \vartheta \iota \kappa \lambda \Lambda \mu \nu \xi \Xi \pi \Pi \varpi \rho \varrho \sigma \varsigma \Sigma \tau \upsilon \Upsilon \phi \varphi \chi \psi \Psi \omega \Omega 
 
 y^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}    x^{2^2}x^{2^2}
 y^{2^{2^{3^{4^5}}}}    y3^{y3^{y3^{y3^{y3^y3}}}}
@@ -12,11 +22,14 @@ y^{2^{2^{3^{4^5}}}}    y3^{y3^{y3^{y3^{y3^y3}}}}
 // (?<=y)x	Matches x only if x is preceded by y.
 // (?<!y)x	Matches x only if x is not preceded by y
 
-((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)
+proximate factor pattern:
 
-((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|([a-zA-Z])(?!\24)(?<=\24)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\24)(\25|\26|\27|\28|\29|\30|\31|\32|\33|\34)*)+
+((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|((\w+)*(\^)?(\w+)*(\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)+(\w+)*(\^)?(\w+)*)+|([a-zA-Z])(?!\32)(?<=\32)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\32)(\33|\34|\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57)*)+
 
-([a-zA-Z])(?!\24)(?<=\24)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\24)(\25|\26|\27|\28|\29|\30|\31|\32|\33|\34)*)+
+dot multiplication pattern:
+
+
+((([a-zA-Z](\^\d+)?))(\\cdot\s))|((\\cdot\s)([a-zA-Z]))|((?<=[a-zA-Z](\s)?\d+)(\\cdot\s))|(\\\w+\s\d+)(\\cdot\s)
 
 What should the pattern capture (YOU MAY HAVE TO ELIMINATE NESTED, EVALUABLE EXPONENTS IN JS)
 (1) the products of coefficients and variables

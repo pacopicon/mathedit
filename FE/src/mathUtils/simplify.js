@@ -86,6 +86,10 @@ const resolveExponents = (str) => {
 	}
 }
 
+const simplifyDotMultiplication = () => {
+
+}
+
 const resolveProximateFactors = (matchObjArr, _str) => {
 	let str    = _str
 	let offset = 0
@@ -156,10 +160,14 @@ const processlikeTerms = (matchObjArr, str) => {
 const simplificationPatterns = [
 	{
 		name:'exponents'
-	},
+  },
+  {
+    name:'dotMultiplication',
+    patt: /\\cdot\s/g
+  },
 	{
 		name:'proximateFactors',
-		patt: /((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|([a-zA-Z])(?!\24)(?<=\24)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\24)(\25|\26|\27|\28|\29|\30|\31|\32|\33|\34)*)+/g
+		patt: /((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|((\w+)*(\^)?(\w+)*(\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)+(\w+)*(\^)?(\w+)*)+|([a-zA-Z])(?!\32)(?<=\32)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\32)(\33|\34|\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57)*)+/g
 	},
 	{
 		name: 'likeTerms',
@@ -254,7 +262,8 @@ const simplify = (_str, _step) => {
 		// match object properties:
   		matchObjArr = getAllMatchesAndPositions(str, patt)
 		// console.log(`\nmatchObjArr = ${JSON.stringify(matchObjArr)}`)
-			if (name != 'proximateFactors') {
+			if (name == 'exponents') {
+        // get only matches that are adjacent to each other, filter non-adjacent out
 				matchObjArr = filterAdjacentMatches(matchObjArr) || []
 			}
 			isStepDone  = areAdjacentMatchesExhausted(matchObjArr)
@@ -268,12 +277,20 @@ const simplify = (_str, _step) => {
       case 'exponents':
         str = resolveExponents(str)
         break;
+      case 'dotMultiplication':
+        console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+        console.log('>>>> str to analyze ', str)
+        return {
+          str
+        }
+        // str = simplifyDotMultiplication(str)
+        break;
       case 'proximateFactors':
-				console.log('>>>> matchObjArr to analyze = ', matchObjArr)
-				console.log('>>>> str to analyze ', str)
-				return {
-					str
-				}
+				// console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+				// console.log('>>>> str to analyze ', str)
+				// return {
+				// 	str
+				// }
         // str = resolveProximateFactors(matchObjArr, _str)
         break;
       case 'parentheticalMultiplication':

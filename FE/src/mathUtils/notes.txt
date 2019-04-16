@@ -1,0 +1,45 @@
+Mathematical Operators
+
+i. Arithmetic
+    a. +
+    b. -
+    c. \pm
+    d. 2 x 4, *, x(y), (y)x, (y)(x), xy
+    e. x\cdiv y, frac{x}{y}
+    f. x^y, x^{yy}
+    g. \sqrt{x}, \sqrt[x]{y}
+    h. \left|x\right|
+    i. \ln \left(x\right), \log _x\left(y\right)
+    j. \sum _{n=0}^{\infty \:}\frac{3}{2^n}, \sum _{n=0}^{x}\frac{3}{2^n}
+    k. factorial => x!  (e.g. 10! = 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10)
+ii . algebraic
+    a. binomial coefficient => \binom{x}{y}  ///// DOES NOT WORK ON SYMBOLAB!
+iii. trigonometric
+    a. \sin \left(x\right) (e.g., all trig functions have same syntax)
+    b. cos
+    c. tan
+    d. cot
+    e. sec
+    f. csc
+    g. sinh
+    h. cosh
+    i. tanh
+    j. coth
+    k. sech
+    l. arcsin
+    m. arccos
+    n. arctan
+    o. arccot
+    p. arcsec
+    q. arccsc
+    r. arcsinh
+    s. arccosh
+    t. arctanh
+    u. arccoth
+    v. arcsech
+iv. calculus
+    a. differentiation => \frac{d}{dx}\left(\frac{3x+9}{2-x}\right)
+    b. partial differentiation => \frac{\partial}{\partialx}\left(\frac{x}{x^2+y^2}\right)
+    c. integral => \int x^2dx=\frac{x^3}{3}+C, \int _0^{\pi }\sin \left(x\right)dx
+    d. limit => \lim _{x\to \infty }\left(e^x\right)
+

@@ -30,9 +30,9 @@ let str2 = `\\frac{x^2\\cdot x5x\\left(45x^2xy^3x\\cdot yx-4x5y\\right)x\\cdot x
 
 let regexr2 = `\frac{x^2\cdot x5x\left(45x^2xy^3x\cdot yx-4x5y\right)x\cdot x\left(\alpha \cdot x\right)x^2\cdot \gamma \left(x^{2+2^{3+4}+4-6^5}\cdot x\right)}{2x^3xx^xx\cdot 3x^5y^0\cdot 2x^{x^y}\cdot 2x^0\cdot x^0\cdot 3x^{3+y}x\left(x^{2+2}\cdot x\right)x\cdot x^{2+2}\left(x\cdot 5\right)5\cdot x\left(5x\cdot x\right)x\cdot 5x\left(2x\cdot 3x\right)2x^3\cdot x\left(x\cdot 2x^3\right)2x^2\cdot 2x^3}`
 
-let str3 = `\\frac{\\alpha ^2\\cdot \\gamma 5\\delta \\left(45\\epsilon ^2\\zeta ^3\\eta \\cdot \\theta \\iota -4\\kappa 5\\lambda \\right)\\mu \\cdot \\nu \\left(\\xi \\cdot \\pi \\right)\\rho ^2\\cdot \\gamma \\:\\left(\\sigma ^{2+2^{3+4}+4-6^5}\\cdot \\tau \\right)}{2\\phi ^3\\phi \\phi ^{\\phi }\\phi \\cdot 3\\chi ^5\\upsilon ^0\\cdot 2\\chi ^{\\psi ^{\\omega }}\\cdot 2\\alpha ^0\\cdot \\beta ^0\\cdot 3\\gamma ^{3+\\gamma }\\delta \\left(\\delta ^{2+2}\\cdot \\delta \\right)\\epsilon \\cdot \\varepsilon ^{2+2}\\left(\\zeta \\cdot 5\\right)5\\cdot \\eta \\left(5\\theta \\cdot \\theta \\right)\\iota \\cdot 5\\kappa \\left(2\\lambda \\cdot 3\\mu \\right)2\\nu ^3\\cdot \\xi \\left(\\pi \\cdot 2\\rho ^3\\right)2\\varsigma ^2\\cdot 2\\tau ^3}`
+let str3 = `\\frac{\\alpha ^2\\cdot \\gamma 5\\delta \\left(45\\epsilon ^2\\zeta ^3\\eta \\cdot \\theta \\iota -4\\kappa 5\\lambda \\right)\\mu \\cdot \\nu \\left(\\xi \\cdot \\pi \\right)\\rho ^2\\cdot \\gamma \\left(\\sigma ^{2+2^{3+4}+4-6^5}\\cdot \\tau \\right)}{2\\phi ^3\\phi \\phi ^{\\phi }\\phi \\cdot 3\\chi ^5\\upsilon ^0\\cdot 2\\chi ^{\\psi ^{\\omega }}\\cdot 2\\alpha ^0\\cdot \\beta ^0\\cdot 3\\gamma ^{3+\\gamma }\\delta \\left(\\delta ^{2+2}\\cdot \\delta \\right)\\epsilon \\cdot \\varepsilon ^{2+2}\\left(\\zeta \\cdot 5\\right)5\\cdot \\eta \\left(5\\theta \\cdot \\theta \\right)\\iota \\cdot 5\\kappa \\left(2\\lambda \\cdot 3\\mu \\right)2\\nu ^3\\cdot \\xi \\left(\\pi \\cdot 2\\rho ^3\\right)2\\varsigma ^2\\cdot 2\\tau ^3}`
 
-let regexr3 = `\frac{\alpha ^2\cdot \gamma 5\delta \left(45\epsilon ^2\zeta ^3\eta \cdot \theta \iota -4\kappa 5\lambda \right)\mu \cdot \nu \left(\xi \cdot \pi \right)\rho ^2\cdot \gamma \:\left(\sigma ^{2+2^{3+4}+4-6^5}\cdot \tau \right)}{2\phi ^3\phi \phi ^{\phi }\phi \cdot 3\chi ^5\upsilon ^0\cdot 2\chi ^{\psi ^{\omega }}\cdot 2\alpha ^0\cdot \beta ^0\cdot 3\gamma ^{3+\gamma }\delta \left(\delta ^{2+2}\cdot \delta \right)\epsilon \cdot \varepsilon ^{2+2}\left(\zeta \cdot 5\right)5\cdot \eta \left(5\theta \cdot \theta \right)\iota \cdot 5\kappa \left(2\lambda \cdot 3\mu \right)2\nu ^3\cdot \xi \left(\pi \cdot 2\rho ^3\right)2\varsigma ^2\cdot 2\tau ^3}`
+// let regexr3 = `\frac{\alpha ^2\cdot \gamma 5\delta \left(45\epsilon ^2\zeta ^3\eta \cdot \theta \iota -4\kappa 5\lambda \right)\mu \cdot \nu \left(\xi \cdot \pi \right)\rho ^2\cdot \gamma \left(\sigma ^{2+2^{3+4}+4-6^5}\cdot \tau \right)}{2\phi ^3\phi \phi ^{\phi }\phi \cdot 3\chi ^5\upsilon ^0\cdot 2\chi ^{\psi ^{\omega }}\cdot 2\alpha ^0\cdot \beta ^0\cdot 3\gamma ^{3+\gamma }\delta \left(\delta ^{2+2}\cdot \delta \right)\epsilon \cdot \varepsilon ^{2+2}\left(\zeta \cdot 5\right)5\cdot \eta \left(5\theta \cdot \theta \right)\iota \cdot 5\kappa \left(2\lambda \cdot 3\mu \right)2\nu ^3\cdot \xi \left(\pi \cdot 2\rho ^3\right)2\varsigma ^2\cdot 2\tau ^3}`
 
 let corr1 = `\\frac{-y\\sin \\left(x^4-x^4y\\right)\\left(45x^4y^3-720x^4y^4-1\\right)+10x^4y^4\\left(36x^{x+x^y+y+13}-y\\right)}{-y+36x^{x+x^y+y+13}}`
 
@@ -95,7 +95,8 @@ const resolveExponents = (str) => {
 }
 
 const simplifyDotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStepDone) => {
-	let str    = _str
+  let str    = _str
+  let initIsStepDone = isStepDone
 	let offset = 0
 	for (let i=0; i<matchObjArr.length; i++) {
 		let currStr   = matchObjArr[i].match
@@ -103,11 +104,11 @@ const simplifyDotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStep
 		let currEnd		= matchObjArr[i].end
 		let solution  = currStr.replace('\\cdot ', '')
 		let res       = ''
-		if ((currStr.includes('{') && !currStr.includes('}')) || (!currStr.includes('{') && currStr.includes('}'))) {
+		if ((currStr.includes('{') && !currStr.includes('}')) || (!currStr.includes('{') && currStr.includes('}')) || str[currStart-offset-1] == '^' || str[currEnd-offset] == '^') {
 			isStepDone = false
 		} else {
 				res       = spliceString(str, currStart-offset, currEnd-offset, solution)
-				console.log(`\n+---------------PROCESSING ONE VAR MULT---------------\n|origStr = ${_str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|matchedStr = ${currStr}\n|INSERT = ${solution}\n+---------------PROCESSING ONE VAR MULT---------------`)
+				console.log(`\n+---------------PROCESSING ONE VAR MULT---------------\n|str = ${str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|initIsStepDone = ${initIsStepDone}\n|endIsStepDone = ${isStepDone}\n|matchedStr = ${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}\n|INSERT = ${solution}\n+---------------PROCESSING ONE VAR MULT---------------`)
 				str       = res.str
 				offset   += res.offset
 		}
@@ -365,7 +366,7 @@ const simplify = (_str, _step) => {
 
   } else if (matchObjArr.length == 0 && step < simplificationPatterns.length - 1) {
     step++ // update (2) step
-    if (verbose) console.log(`>>>>>>>>>step -> ${step} (${patterns[step].name})\n`)
+    if (verbose) console.log(`>>>>>>>>>step -> ${step} (${simplificationPatterns[step].name})\n`)
     res  = simplify(str, step)
 		str  = res.str
 		step = res.step
@@ -385,11 +386,11 @@ const simplify = (_str, _step) => {
 
 } // END simplify
 
-// let res = simplify(str1)
-console.log(`\n+-------------\n|input   = ${str1}\n|\nresult   = ${res.str}\n|corr1 = ${corr1}`)
+// let res1 = simplify(str1)
+// console.log(`\n+-------------\n|input   = ${str1}\n|\nresult   = ${res1.str}\n|corr1 = ${corr1}`)
 
-let res = simplify(str2)
-console.log(`\n+-------------\n|input   = ${str2}\n|\nresult   = ${res.str}\n`)
+let res2 = simplify(str2)
+console.log(`\n+-------------\n|input   = ${str2}\n|\nresult   = ${res2.str}\n`)
 
-// let res = simplify(str3)
-console.log(`\n+-------------\n|input   = ${str3}\n|\nresult   = ${res.str}\n`)
+// let res3 = simplify(str3)
+// console.log(`\n+-------------\n|input   = ${str3}\n|\nresult   = ${res3.str}\n`)

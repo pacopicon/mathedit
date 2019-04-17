@@ -26,6 +26,14 @@ let str1 = `3x^3x\\left(y^{2^2}\\right)+\\left(-y\\right)^2\\left(y\\right)2\\le
 
 let regexr1 = `3x^3x\left(y^{2^2}\right)+\left(-y\right)^2\left(y\right)2\left(y\right)x^2\cdot x5x-x^{2^2}y^{2^2}\sqrt[3]{27}-\sin \left(x^{2^2}-yx^{2^2}\right)\left(\frac{\left(45x^2xy^3x\cdot yx-4x5y\left(2y3x\right)^2x^2y^2-yx\right)}{7yx-8xy+2x^3xx^xx\cdot 3x^5y^0\cdot 2x^{x^y}\cdot 2x^0\cdot x^0\cdot 3x^{3+y}x}\right)`
 
+let str2 = `\\frac{x^2\\cdot x5x\\left(45x^2xy^3x\\cdot yx-4x5y\\right)x\\cdot x\\left(\\alpha \\cdot x\\right)x^2\\cdot \\gamma \\left(x^{2+2^{3+4}+4-6^5}\\cdot x\\right)}{2x^3xx^xx\\cdot 3x^5y^0\\cdot 2x^{x^y}\\cdot 2x^0\\cdot x^0\\cdot 3x^{3+y}x\\left(x^{2+2}\\cdot x\\right)x\\cdot x^{2+2}\\left(x\\cdot 5\\right)5\\cdot x\\left(5x\\cdot x\\right)x\\cdot 5x\\left(2x\\cdot 3x\\right)2x^3\\cdot x\\left(x\\cdot 2x^3\\right)2x^2\\cdot 2x^3}`
+
+let regexr2 = `\frac{x^2\cdot x5x\left(45x^2xy^3x\cdot yx-4x5y\right)x\cdot x\left(\alpha \cdot x\right)x^2\cdot \gamma \left(x^{2+2^{3+4}+4-6^5}\cdot x\right)}{2x^3xx^xx\cdot 3x^5y^0\cdot 2x^{x^y}\cdot 2x^0\cdot x^0\cdot 3x^{3+y}x\left(x^{2+2}\cdot x\right)x\cdot x^{2+2}\left(x\cdot 5\right)5\cdot x\left(5x\cdot x\right)x\cdot 5x\left(2x\cdot 3x\right)2x^3\cdot x\left(x\cdot 2x^3\right)2x^2\cdot 2x^3}`
+
+let str3 = `\\frac{\\alpha ^2\\cdot \\gamma 5\\delta \\left(45\\epsilon ^2\\zeta ^3\\eta \\cdot \\theta \\iota -4\\kappa 5\\lambda \\right)\\mu \\cdot \\nu \\left(\\xi \\cdot \\pi \\right)\\rho ^2\\cdot \\gamma \\:\\left(\\sigma ^{2+2^{3+4}+4-6^5}\\cdot \\tau \\right)}{2\\phi ^3\\phi \\phi ^{\\phi }\\phi \\cdot 3\\chi ^5\\upsilon ^0\\cdot 2\\chi ^{\\psi ^{\\omega }}\\cdot 2\\alpha ^0\\cdot \\beta ^0\\cdot 3\\gamma ^{3+\\gamma }\\delta \\left(\\delta ^{2+2}\\cdot \\delta \\right)\\epsilon \\cdot \\varepsilon ^{2+2}\\left(\\zeta \\cdot 5\\right)5\\cdot \\eta \\left(5\\theta \\cdot \\theta \\right)\\iota \\cdot 5\\kappa \\left(2\\lambda \\cdot 3\\mu \\right)2\\nu ^3\\cdot \\xi \\left(\\pi \\cdot 2\\rho ^3\\right)2\\varsigma ^2\\cdot 2\\tau ^3}`
+
+let regexr3 = `\frac{\alpha ^2\cdot \gamma 5\delta \left(45\epsilon ^2\zeta ^3\eta \cdot \theta \iota -4\kappa 5\lambda \right)\mu \cdot \nu \left(\xi \cdot \pi \right)\rho ^2\cdot \gamma \:\left(\sigma ^{2+2^{3+4}+4-6^5}\cdot \tau \right)}{2\phi ^3\phi \phi ^{\phi }\phi \cdot 3\chi ^5\upsilon ^0\cdot 2\chi ^{\psi ^{\omega }}\cdot 2\alpha ^0\cdot \beta ^0\cdot 3\gamma ^{3+\gamma }\delta \left(\delta ^{2+2}\cdot \delta \right)\epsilon \cdot \varepsilon ^{2+2}\left(\zeta \cdot 5\right)5\cdot \eta \left(5\theta \cdot \theta \right)\iota \cdot 5\kappa \left(2\lambda \cdot 3\mu \right)2\nu ^3\cdot \xi \left(\pi \cdot 2\rho ^3\right)2\varsigma ^2\cdot 2\tau ^3}`
+
 let corr1 = `\\frac{-y\\sin \\left(x^4-x^4y\\right)\\left(45x^4y^3-720x^4y^4-1\\right)+10x^4y^4\\left(36x^{x+x^y+y+13}-y\\right)}{-y+36x^{x+x^y+y+13}}`
 
 const isLetter = (x) => {
@@ -86,7 +94,7 @@ const resolveExponents = (str) => {
 	}
 }
 
-const simplifydotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStepDone) => {
+const simplifyDotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStepDone) => {
 	let str    = _str
 	let offset = 0
 	for (let i=0; i<matchObjArr.length; i++) {
@@ -183,7 +191,11 @@ const simplificationPatterns = [
   },
   {
     name:'dotMultiplicationOfAtLeastOneVariable',
-    patt: /(((\d+)?(\^)?(\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\\)?[a-zA-Z]+(\s)?)|(\d+)?((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)?((\\)?[a-zA-Z]+(\s)?)|(((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(?<!(\d+(\w+)?(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?))(\\cdot\s)\d+(\\)?([a-zA-Z]+)?(\s)?)/g
+    patt: /(((\d+)(\^)?(\\)?([a-zA-Z]+)?(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\\)?[a-zA-Z]+(\s)?)|(\d+)?((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)?((\\)?[a-zA-Z]+(\s)?)|(((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(?<!(\d+(\w+)?(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?))(\\cdot\s)\d+(\\)?([a-zA-Z]+)?(\s)?)/g
+  },
+  {
+    name: 'dotMultiplicationOfCoefficientsOnly',
+    patt: /(\d+[a-zA-Z]+(\^((\{)?(\+|\-|\^)?(\w+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)*)?(\\cdot\s)(\d+)(?!(\w+))(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?)|((?<!(\w+|\w+\^))(\d+)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)(\w+|\\[a-zA-Z]+\s)+(\^((\{)?(\+|\-|\^)?(\w+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)+)?)|\d+(\^((\{)?(\+|\-|\^)?([a-zA-Z]+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)+)(\\cdot\s)\d+(\41)/g
   },
 	{
 		name:'proximateVariableMultiplication',
@@ -303,9 +315,19 @@ const simplify = (_str, _step) => {
         // return {
         //   str
         // }
-        res        = simplifydotMultiplicationOfAtLeastOneVariable(matchObjArr, _str, isStepDone)
+        res        = simplifyDotMultiplicationOfAtLeastOneVariable(matchObjArr, _str, isStepDone)
         str        = res.str
         isStepDone = res.isStepDone
+        break;
+      case 'dotMultiplicationOfCoefficientsOnly':
+        console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+        console.log('>>>> str to analyze ', str)
+        return {
+          str
+        }
+        // res        = simplifyDotMultiplicationOfCoefficientsOnly(matchObjArr, _str, isStepDone)
+        // str        = res.str
+        // isStepDone = res.isStepDone
         break;
       case 'proximateVariableMultiplication':
 				console.log('>>>> matchObjArr to analyze = ', matchObjArr)
@@ -363,5 +385,11 @@ const simplify = (_str, _step) => {
 
 } // END simplify
 
-let res = simplify(str1)
+// let res = simplify(str1)
 console.log(`\n+-------------\n|input   = ${str1}\n|\nresult   = ${res.str}\n|corr1 = ${corr1}`)
+
+let res = simplify(str2)
+console.log(`\n+-------------\n|input   = ${str2}\n|\nresult   = ${res.str}\n`)
+
+// let res = simplify(str3)
+console.log(`\n+-------------\n|input   = ${str3}\n|\nresult   = ${res.str}\n`)

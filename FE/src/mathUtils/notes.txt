@@ -4,7 +4,7 @@ i. Arithmetic
     a. +
     b. -
     c. \pm
-    d. 2 x 4, *, x(y), (y)x, (y)(x), xy
+    d. 2 x 4, *, x\left(y\right), \left(y\right)x, \left(y\right)\left(x\right), xy
     e. x\cdiv y, frac{x}{y}
     f. x^y, x^{yy}
     g. \sqrt{x}, \sqrt[x]{y}
@@ -43,3 +43,57 @@ iv. calculus
     c. integral => \int x^2dx=\frac{x^3}{3}+C, \int _0^{\pi }\sin \left(x\right)dx
     d. limit => \lim _{x\to \infty }\left(e^x\right)
 
+
+
+dot mult combos:
+
+Behavior:
+(1) = simply remove \cdot\s and let proximateMult take care of it
+(2) = remove \cdot\s and render product of coefficients.  
+      This can be done by combining the strings such that 1st operand coefficient 
+      is placed next to the 2nd operand variable but away from 2nd operand coefficient.
+      It will then be picked up by proximateMult
+(3) = Resolve mathematically and render solution
+(4) = Simplify but render with dot multiplication
+
+-x * x       = x^2       => (1)
+-x^2 * x     = x^3       => (1)
+-x * x^2     = x^3       => (1)
+-x * 5       = 5x        => (1)  
+-5 * x       = 5x        => (1)
+-5x * x      = 5x^2      => (1)
+-x * 5x      = 5x^2      => (1)
+-2x * 3x     = 6x^2      => (1)
+-2x * x^3    = 2x^3      => (1)
+-2x^3 * x    = 2x^4      => (1)
+-x * 2x^3    = 2x^4      => (1)
+-2x^2 * 2x^3 = 4x^5      => (1)
+
+-2 * 3x^2    = 6x^2      => (2)
+-2x^2 * 3    = 6x^2      => (2)
+-2^x * 3^x   = 6^x       => (2)
+
+-2^2 * 3     = 12        => (3)
+-2 * 3^2     = 18        => (3)
+-2^2 * 3^2   = 36        => (3)
+
+-2^x * 3     = 3 * 2^x   => (4)
+-2 * 3^x     = 2 * 3^x   => (4)
+-2^x * 3^y   = 3^y * 2^x => (4)
+
+
+variable^{anything} * anything
+variable coefficient * anything
+anything * variable == anything * variable^anything == anything * variable^{anything} 
+    == anything * variable coefficient
+anything * coefficient variable
+
+
+(1)
+x\cdot x       x^2\cdot x     x\cdot x^2     x\cdot 5         5\cdot x       5x\cdot x      x\cdot 5x      2x\cdot 3x     2x\cdot x^3    2x^3\cdot x    x\cdot 2x^3    2x^2\cdot 2x^3 
+(2)
+2\cdot 3x^2    2x^2\cdot 3    2^x\cdot 3^x   
+(3)
+2^2\cdot 3     2\cdot 3^2     2^2\cdot 3^2   
+(4)
+2^x\cdot 3     2\cdot 3^x     2^x\cdot 3^y  

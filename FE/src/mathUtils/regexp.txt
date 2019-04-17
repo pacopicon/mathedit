@@ -2,7 +2,34 @@
 
 dot multiplication strings:
 
-45x^2x3\cdot yx-4x5y    \alpha 2\cdot 5x    x^2-56x\div 5\cdot 6    3+x^2\div 5\cdot 6    5-45x^2xy^3x\div 5\cdot 6   \sin \left(5\cdot 7\right)    34 + 4\cdot 89 - 3x
+(1)
+x\cdot x       x^2\cdot x     x^{22}\cdot x     x^{2+2}\cdot x     x\cdot x^{2+2}          x\cdot 5         
+5\cdot x       5x\cdot x      x\cdot 5x      2x\cdot 3x     2x\cdot x^3    2x^3\cdot x    x\cdot 2x^3    2x^2\cdot 2x^3 
+(2)
+2\cdot 3x^2    2\cdot 3x^{2+2}    2x^2\cdot 3    2x^{2+2}\cdot 3    2^x\cdot 3^x   
+(3)
+2^2\cdot 3     2^{2+2}\cdot 3     2\cdot 3^2     2\cdot 3^{2+2}     2^2\cdot 3^2   
+(4)
+2^x\cdot 3     2^{x+2}\cdot 3     2\cdot 3^x     2\cdot 3^{x+2}     2^x\cdot 3^y 
+
+yes																																	complicated							no
+
+x(1) variable * anything												4+x\cdot yx    4+x\cdot 5 45x^2xy^3x\cdot yx    45x^2xy^3x\cdot 5
+																				\alpha 2\cdot 5x
+x(2) variable^expo * coefficient variable^expo					2x^0\cdot x^0\cdot 3x^{3+y}x}
+(3) variable^{expo} * anything										2x^{x^y}\cdot 2x^0
+(4) variable coefficient * anything
+(5) anything * variable 
+	 == anything * variable^expo 
+	 == anything * variable^{expo} 
+    == anything * variable coefficient
+(6) anything * coefficient variable
+(7) coefficient^expo * coefficient variable^expo																		2^{x^y}\cdot 2x^0
+
+45x^2x3\cdot yx-4x5y        500\cdot 5x    x500\cdot 5x       500\cdot 5    
+x^2-56x\div 5\cdot 6    3+x^2\div 5\cdot 6    5-45x^2xy^3x\div 5\cdot 6   
+\sin \left(5\cdot 7\right)    
+34 + 4\cdot 89 - 3x
 
 proximate factor strings:
 
@@ -30,6 +57,8 @@ dot multiplication pattern:
 
 
 ((([a-zA-Z](\^\d+)?))(\\cdot\s))|((\\cdot\s)([a-zA-Z]))|((?<=[a-zA-Z](\s)?\d+)(\\cdot\s))|(\\\w+\s\d+)(\\cdot\s)
+
+((([a-zA-Z](\^\d+)?))(\\cdot\s))|((\\cdot\s)([a-zA-Z]))|((?<=[a-zA-Z](\s)?\d+)(\\cdot\s))|((\\\w+\s|\w+)\d+)(\\cdot\s)
 
 What should the pattern capture (YOU MAY HAVE TO ELIMINATE NESTED, EVALUABLE EXPONENTS IN JS)
 (1) the products of coefficients and variables

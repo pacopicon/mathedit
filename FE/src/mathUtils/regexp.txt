@@ -66,3 +66,6 @@ What should the pattern capture (YOU MAY HAVE TO ELIMINATE NESTED, EVALUABLE EXP
 (3) monomials where the the evaluable exponents are nested --> these should be evaluated on the spot and simplified.
 (4) monomials where exponents are unevaluable.
 (5) monomials where exponents are unevaluable, which are raised to the power of variables.
+
+
+(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?))+

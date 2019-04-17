@@ -2,7 +2,7 @@
 // (1) implement simplification steps in this order:
 //    (a) Get a list of all variables so they can be used in simpPatterns OR make simpPatterns be able to analyze any number of variables
 //		(b) Resolve all (nested) exponents
-//		(c) get product of all adjacent proximateFactors
+//		(c) get product of all adjacent proximateVariableMultiplication
 //		(d) Add like terms
 // (2) Exponents
 //    (a) The current exponent processor returns the output of its process, presupposing that there will always be exponents to process.  A Latex input without exponents will break the procedure.
@@ -38,7 +38,7 @@ const spliceString = (str, start, end, insert) => {
 	let tail   = str.slice(end)
 	let res = `${head}${insert}${tail}`
 	let offset = origStr.length - res.length
-	console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
+	// console.log(`\norigStr = ${origStr}\nstart = ${start}\nend = ${end}\nhead = ${head}\ninsert = ${insert}\ntail = ${tail}\noffset = ${offset}\nresult = ${res}`)
 	return { 
 		str: res,
 		offset 
@@ -76,7 +76,7 @@ const resolveExponents = (str) => {
 	let tail   = str.slice(end)	
 	let output = `${head}${power}${tail}`
 	let output2 = `${head}!!!!!${power}!!!!!${tail}`  		
-	console.log(`+-------------\n|origStr = ${origStr}\n|start = ${start}\n|end = ${end}\n|match = ${match}\n|base = ${base}\n|expon = ${expon}\n|power = ${power}\n|head = ${head}\n|\n|tail = ${tail}\n|\n|output2 = ${output2}\n|\n|wBrack.test(output) || WObrack.test(output) || wPar.test(output) = ${wBrack.test(output) || WObrack.test(output) || wPar.test(output)}\n+-------------`)
+	console.log(`+---------------PROCESSING EXPONENTS------------------\n|origStr = ${origStr}\n|start = ${start}\n|end = ${end}\n|match = ${match}\n|base = ${base}\n|expon = ${expon}\n|power = ${power}\n|head = ${head}\n|\n|tail = ${tail}\n|\n|output2 = ${output2}\n|\n|wBrack.test(output) || WObrack.test(output) || wPar.test(output) = ${wBrack.test(output) || WObrack.test(output) || wPar.test(output)}\n+---------------PROCESSING EXPONENTS------------------`)
 	if (wBrack.test(output) || WObrack.test(output) || wPar.test(output)) {
 		output = resolveExponents(output)
 	} 
@@ -86,11 +86,31 @@ const resolveExponents = (str) => {
 	}
 }
 
-const simplifyDotMultiplication = () => {
-
+const simplifydotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStepDone) => {
+	let str    = _str
+	let offset = 0
+	for (let i=0; i<matchObjArr.length; i++) {
+		let currStr   = matchObjArr[i].match
+		let currStart = matchObjArr[i].start
+		let currEnd		= matchObjArr[i].end
+		let solution  = currStr.replace('\\cdot ', '')
+		let res       = ''
+		if ((currStr.includes('{') && !currStr.includes('}')) || (!currStr.includes('{') && currStr.includes('}'))) {
+			isStepDone = false
+		} else {
+				res       = spliceString(str, currStart-offset, currEnd-offset, solution)
+				console.log(`\n+---------------PROCESSING ONE VAR MULT---------------\n|origStr = ${_str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|matchedStr = ${currStr}\n|INSERT = ${solution}\n+---------------PROCESSING ONE VAR MULT---------------`)
+				str       = res.str
+				offset   += res.offset
+		}
+	}
+	return {
+		isStepDone,
+		str
+	}
 }
 
-const resolveProximateFactors = (matchObjArr, _str) => {
+const resolveProximateVariableMultiplication = (matchObjArr, _str) => {
 	let str    = _str
 	let offset = 0
 	for (let i=0; i<matchObjArr.length; i++) {
@@ -162,11 +182,11 @@ const simplificationPatterns = [
 		name:'exponents'
   },
   {
-    name:'dotMultiplication',
-    patt: /\\cdot\s/g
+    name:'dotMultiplicationOfAtLeastOneVariable',
+    patt: /(((\d+)?(\^)?(\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\\)?[a-zA-Z]+(\s)?)|(\d+)?((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)?((\\)?[a-zA-Z]+(\s)?)|(((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(?<!(\d+(\w+)?(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?))(\\cdot\s)\d+(\\)?([a-zA-Z]+)?(\s)?)/g
   },
 	{
-		name:'proximateFactors',
+		name:'proximateVariableMultiplication',
 		patt: /((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|((\w+)*(\^)?(\w+)*(\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)+(\w+)*(\^)?(\w+)*)+|([a-zA-Z])(?!\32)(?<=\32)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\32)(\33|\34|\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57)*)+/g
 	},
 	{
@@ -270,28 +290,30 @@ const simplify = (_str, _step) => {
 	} else {
 		  
 	}
-	console.log(`+-----(1) BEFORE PROCESSING ---\n|LATEX STRING = ${_str}\n|step name = ${name}\n|matchObjArr = ${JSON.stringify(matchObjArr)}\n+-----(1) BEFORE PROCESSING ---\n`)
+	// console.log(`+-----(1) BEFORE PROCESSING ---\n|LATEX STRING = ${_str}\n|step name = ${name}\n|matchObjArr = ${JSON.stringify(matchObjArr)}\n+-----(1) BEFORE PROCESSING ---\n`)
   if (matchObjArr.length > 0 || name == 'exponents') {
 
     switch(name) {
       case 'exponents':
         str = resolveExponents(str)
         break;
-      case 'dotMultiplication':
-        console.log('>>>> matchObjArr to analyze = ', matchObjArr)
-        console.log('>>>> str to analyze ', str)
-        return {
-          str
-        }
-        // str = simplifyDotMultiplication(str)
+      case 'dotMultiplicationOfAtLeastOneVariable':
+        // console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+        // console.log('>>>> str to analyze ', str)
+        // return {
+        //   str
+        // }
+        res        = simplifydotMultiplicationOfAtLeastOneVariable(matchObjArr, _str, isStepDone)
+        str        = res.str
+        isStepDone = res.isStepDone
         break;
-      case 'proximateFactors':
-				// console.log('>>>> matchObjArr to analyze = ', matchObjArr)
-				// console.log('>>>> str to analyze ', str)
-				// return {
-				// 	str
-				// }
-        // str = resolveProximateFactors(matchObjArr, _str)
+      case 'proximateVariableMultiplication':
+				console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+				console.log('>>>> str to analyze ', str)
+				return {
+					str
+				}
+        // str = resolveProximateVariableMultiplication(matchObjArr, _str)
         break;
       case 'parentheticalMultiplication':
         str = processlikeTerms(matchObjArr, str)

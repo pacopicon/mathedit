@@ -104,7 +104,7 @@ const simplifyDotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStep
 		let currEnd		= matchObjArr[i].end
 		let solution  = currStr.replace('\\cdot ', '')
 		let res       = ''
-		if ((currStr.includes('{') && !currStr.includes('}')) || (!currStr.includes('{') && currStr.includes('}')) || str[currStart-offset-1] == '^' || str[currEnd-offset] == '^') {
+		if ((currStr.includes('{') && !currStr.includes('}')) || (!currStr.includes('{') && currStr.includes('}')) || str[currStart-offset-1] == '^') {
 			isStepDone = false
 		} else {
 				res       = spliceString(str, currStart-offset, currEnd-offset, solution)
@@ -321,6 +321,7 @@ const simplify = (_str, _step) => {
         isStepDone = res.isStepDone
         break;
       case 'dotMultiplicationOfCoefficientsOnly':
+        console.log('>>>> pattern name = ', name)
         console.log('>>>> matchObjArr to analyze = ', matchObjArr)
         console.log('>>>> str to analyze ', str)
         return {
@@ -331,6 +332,7 @@ const simplify = (_str, _step) => {
         // isStepDone = res.isStepDone
         break;
       case 'proximateVariableMultiplication':
+        console.log('>>>> pattern name = ', name)
 				console.log('>>>> matchObjArr to analyze = ', matchObjArr)
 				console.log('>>>> str to analyze ', str)
 				return {

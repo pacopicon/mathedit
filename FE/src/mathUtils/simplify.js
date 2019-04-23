@@ -94,7 +94,7 @@ const resolveExponents = (str) => {
 	}
 }
 
-const simplifyDotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStepDone) => {
+const simplifyDotMultiplicationOfAtLeastOneSingleVariable = (matchObjArr, _str, isStepDone) => {
   let str    = _str
   let initIsStepDone = isStepDone
 	let offset = 0
@@ -108,7 +108,7 @@ const simplifyDotMultiplicationOfAtLeastOneVariable = (matchObjArr, _str, isStep
 			isStepDone = false
 		} else {
 				res       = spliceString(str, currStart-offset, currEnd-offset, solution)
-				console.log(`\n+---------------PROCESSING ONE VAR MULT---------------\n|str = ${str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|initIsStepDone = ${initIsStepDone}\n|endIsStepDone = ${isStepDone}\n|matchedStr = ${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}\n|INSERT = ${solution}\n+---------------PROCESSING ONE VAR MULT---------------`)
+				console.log(`\n+---------------PROCESSING ONE VAR MULT---------------\n|str = ${str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|initIsStepDone = ${initIsStepDone}\n|endIsStepDone = ${isStepDone}\n|output str = ${res.str}\n|matchedStr = ${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}\n|INSERT = ${solution}\n+---------------PROCESSING ONE VAR MULT---------------`)
 				str       = res.str
 				offset   += res.offset
 		}
@@ -191,12 +191,20 @@ const simplificationPatterns = [
 		name:'exponents'
   },
   {
-    name:'dotMultiplicationOfAtLeastOneVariable',
+    name:'dotMultiplicationOfAtLeastOneSingleVariable',
     patt: /(((\d+)(\^)?(\\)?([a-zA-Z]+)?(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\\)?[a-zA-Z]+(\s)?)|(\d+)?((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)?((\\)?[a-zA-Z]+(\s)?)|(((\\)?[a-zA-Z]+(\s)?)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(?<!(\d+(\w+)?(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?))(\\cdot\s)\d+(\\)?([a-zA-Z]+)?(\s)?)/g
   },
   {
-    name: 'dotMultiplicationOfCoefficientsOnly',
-    patt: /(\d+[a-zA-Z]+(\^((\{)?(\+|\-|\^)?(\w+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)*)?(\\cdot\s)(\d+)(?!(\w+))(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?)|((?<!(\w+|\w+\^))(\d+)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)(\w+|\\[a-zA-Z]+\s)+(\^((\{)?(\+|\-|\^)?(\w+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)+)?)|\d+(\^((\{)?(\+|\-|\^)?([a-zA-Z]+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)+)(\\cdot\s)\d+(\41)/g
+    name: 'dotMultiplicationOfLeadingVarCoeffAndCoeff',
+    patt: /(\d+(\\)?[a-zA-Z]+(\s)?(\^((\{)?(\+|\-|\^)?(\\)?([a-zA-Z]+|\d+)(\s)?(\+|\-|\^)?(\{)?(\})?)*)?(\\cdot\s)(\d+)(?!(\w+))(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?)/g
+  },
+  {
+    name: 'dotMultiplicationOfCoeffAndVarCoeff',
+    patt: /((?<!(\w+|\w+\^))(\d+)(\^((\{)?(\+|\-|\^)?\d+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)((\\)?(\w+)(\s)?)+(\^((\{)?(\+|\-|\^)?(\\)?(\w+)(\s)?(\+|\-|\^)?(\{)?(\})?)+)?)/g
+  },
+  {
+    name: 'dotMultiplicationOfIdenticalVariableExponents',
+    patt: /\d+(\^((\{)?(\+|\-|\^)?(\\)?[a-zA-Z]+(\s)?(\+|\-|\^)?(\{)?(\})?)+)(\\cdot\s)\d+(\1)/g
   },
 	{
 		name:'proximateVariableMultiplication',
@@ -303,31 +311,54 @@ const simplify = (_str, _step) => {
 	} else {
 		  
 	}
-	// console.log(`+-----(1) BEFORE PROCESSING ---\n|LATEX STRING = ${_str}\n|step name = ${name}\n|matchObjArr = ${JSON.stringify(matchObjArr)}\n+-----(1) BEFORE PROCESSING ---\n`)
+  // console.log(`+-----(1) BEFORE PROCESSING ---\n|LATEX STRING = ${_str}\n|step name = ${name}\n|matchObjArr = ${JSON.stringify(matchObjArr)}\n+-----(1) BEFORE PROCESSING ---\n`)
+  // console.log(`\n>>>>>>>>> step -> ${step} (${simplificationPatterns[step].name})\n>>>>>>>>> matchObjArr.length -> ${matchObjArr.length}\n`)
   if (matchObjArr.length > 0 || name == 'exponents') {
 
     switch(name) {
       case 'exponents':
         str = resolveExponents(str)
         break;
-      case 'dotMultiplicationOfAtLeastOneVariable':
+      case 'dotMultiplicationOfAtLeastOneSingleVariable':
         // console.log('>>>> matchObjArr to analyze = ', matchObjArr)
         // console.log('>>>> str to analyze ', str)
         // return {
         //   str
         // }
-        res        = simplifyDotMultiplicationOfAtLeastOneVariable(matchObjArr, _str, isStepDone)
+        res        = simplifyDotMultiplicationOfAtLeastOneSingleVariable(matchObjArr, _str, isStepDone)
         str        = res.str
         isStepDone = res.isStepDone
         break;
-      case 'dotMultiplicationOfCoefficientsOnly':
+      case 'dotMultiplicationOfLeadingVarCoeffAndCoeff':
         console.log('>>>> pattern name = ', name)
         console.log('>>>> matchObjArr to analyze = ', matchObjArr)
         console.log('>>>> str to analyze ', str)
         return {
           str
         }
-        // res        = simplifyDotMultiplicationOfCoefficientsOnly(matchObjArr, _str, isStepDone)
+        // res        = simplifyDotMultiplicationOfLeadingVarCoeffAndCoeff(matchObjArr, _str, isStepDone)
+        // str        = res.str
+        // isStepDone = res.isStepDone
+        break;
+      case 'dotMultiplicationOfCoeffAndVarCoeff':
+        console.log('>>>> pattern name = ', name)
+        console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+        console.log('>>>> str to analyze ', str)
+        return {
+          str
+        }
+        // res        = simplifyDotMultiplicationOfCoeffAndVarCoeff(matchObjArr, _str, isStepDone)
+        // str        = res.str
+        // isStepDone = res.isStepDone
+        break;
+      case 'dotMultiplicationOfIdenticalVariableExponents':
+        console.log('>>>> pattern name = ', name)
+        console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+        console.log('>>>> str to analyze ', str)
+        return {
+          str
+        }
+        // res        = simplifyDotMultiplicationOfIdenticalVariableExponents(matchObjArr, _str, isStepDone)
         // str        = res.str
         // isStepDone = res.isStepDone
         break;
@@ -367,8 +398,10 @@ const simplify = (_str, _step) => {
 		}
 
   } else if (matchObjArr.length == 0 && step < simplificationPatterns.length - 1) {
+    if (verbose) {
+      console.log(`\n>>>>>>>>> step -> ${step} (${simplificationPatterns[step].name})\n>>>>>>>>> matchObjArr.length -> ${matchObjArr.length}\n`)
+    }
     step++ // update (2) step
-    if (verbose) console.log(`>>>>>>>>>step -> ${step} (${simplificationPatterns[step].name})\n`)
     res  = simplify(str, step)
 		str  = res.str
 		step = res.step

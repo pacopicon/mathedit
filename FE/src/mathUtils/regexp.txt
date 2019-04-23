@@ -1,6 +1,6 @@
 \frac{x^2x5x\left(45x^2xy^3xyx-4x5y\right)xx\left(\alpha x\right)x^2\gamma \left(x^{2+2^{3+4}+4-7776}x\right)}{2x^3xx^xx3x^5y^02x^{x^y}2x^0x^0\cdot 3x^{3+y}x\left(x^{2+2}x\right)xx^{2+2}\left(x5\right)5x\left(5xx\right)x5x\left(2x3x\right)2x^3x\left(x2x^3\right)2x^22x^3}
 
-((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|((\w+)*(\^)?(\w+)*((\\)[a-zA-Z]+(\s))+(\w+)*(\^)?(\w+)*)+|([a-zA-Z])(?!\34)(?<=\34)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\34)(\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57|\58|\59)*)+
+((((\{)*(\d+)?(\\)?\w+(\s)?(\d+)?\^\{(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\^|\+|\-)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\})*){1}((\{)*(\d+)?(\\)?\w+(\s)?(\^)?(\{)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\^|\+|\-)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\})*)*)|(((\d+)?(\\)?\w+(\s)?(\d+)?)(?<=((\d+)?(\\)?\w+(\s)?(\d+)?))(\^((\d+)?(\\)?\w+(\s)?(\d+)?))+))
 
 dot multiplication strings:
 (1)
@@ -47,8 +47,13 @@ abcdabcd    abcdabcdabcd    abcdea    abcdeabcdeabcde    abcdefghija
 
 \alpha \beta \gamma \Gamma \delta \Delta \epsilon \varepsilon \zeta \eta \theta \Theta \vartheta \iota \kappa \lambda \Lambda \mu \nu \xi \Xi \pi \Pi \varpi \rho \varrho \sigma \varsigma \Sigma \tau \upsilon \Upsilon \phi \varphi \chi \psi \Psi \omega \Omega 
 
-y^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}    x^{2^2}x^{2^2}
+yy^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}    x^{2^2}x^{2^2}
 y^{2^{2^{3^{4^5}}}}    y3^{y3^{y3^{y3^{y3^y3}}}}
+\gamma ^{2^{2^{3^4}}}    \gamma ^{2^{2^3}}    \gamma ^{2^{23}}    \gamma ^{2^{2\beta }}    \gamma ^{2\beta }    2\gamma ^{2\beta ^{2\gamma }}    4\beta ^{3\gamma ^{z^u}}    \beta ^{2^2}\beta ^{2^2}
+\gamma ^{2^{2^{3^{4^5}}}}    \gamma 3^{\gamma 3^{\gamma 3^{\gamma 3^{\gamma 3^\gamma 3}}}}
+/kappa y/mu ^{2^{2^{3^4}}}    /kappa y/mu ^{2^{2^3}}    /kappa y/mu ^{2^{23}}    /kappa y/mu ^{2^{2/delta x/omega }}    /kappa y/mu ^{2/delta x/omega }    2/kappa y/mu ^{2/delta x/omega ^{2/kappa y/mu }}    4/delta x/omega ^{3/kappa y/mu ^{z^u}}    /delta x/omega ^{2^2}/delta x/omega ^{2^2}
+/kappa y/mu ^{2^{2^{3^{4^5}}}}    /kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^/kappa y/mu 3}}}}
+
 
 // x(?=y)	Matches 'x' only if 'x' is followed by 'y'. 
 // x(?!y)	Matches 'x' only if 'x' is not followed by 'y'.

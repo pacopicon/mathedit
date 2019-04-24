@@ -113,20 +113,44 @@ x\cdot x       x^2\cdot x     x\cdot x^2     x\cdot 5         5\cdot x       5x\
 
 3) identical, leading and trailing, variable exponents
 
-((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))
-|
-((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)
+
+((\w+\d+\w*)|(\d+\w+\d*)|(\w)\4+)
 |
 ((\w+)*(\^)?(\w+)*((\\)[a-zA-Z]+(\s))+(\w+)*(\^)?(\w+)*)+
 |
-([a-zA-Z])(?!\34)(?<=\34)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\34)(\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57|\58|\59)*)+
+c
+((\w+|\\[a-zA-Z]+\s)?(\\[a-zA-Z]+\s)(\w+|\\[a-zA-Z]+\s)?(\3)(\w+|\\[a-zA-Z]+\s)?)+
 
 
-((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|((\w+)*(\^)?(\w+)*((\\)[a-zA-Z]+(\s))+(\w+)*(\^)?(\w+)*)+|([a-zA-Z])(?!\34)(?<=\34)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\34)(\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57|\58|\59)*)+
 
 
-/kappa y/mu ^{2^{2^{3^4}}}    /kappa y/mu ^{2^{2^3}}    /kappa y/mu ^{2^{23}}    /kappa y/mu ^{2^{2/delta x/omega }}    /kappa y/mu ^{2/delta x/omega }    2/kappa y/mu ^{2/delta x/omega ^{2/kappa y/mu }}    4/delta x/omega ^{3/kappa y/mu ^{z^u}}    /delta x/omega ^{2^2}/delta x/omega ^{2^2}
-/kappa y/mu ^{2^{2^{3^{4^5}}}}    /kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^/kappa y/mu 3}}}}
+
+((\w+)*(\^)?(\w+)*((\\)[a-zA-Z]+(\s))+(\w+)*(\^)?(\w+)*)+
 
 
-((((\{)*(\d+)?(\\)?\w+(\s)?(\d+)?\^\{(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\^|\+|\-)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\})*){1}((\{)*(\d+)?(\\)?\w+(\s)?(\^)?(\{)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\^|\+|\-)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\})*)*)|(((\d+)?(\\)?\w+(\s)?(\d+)?)(?<=((\d+)?(\\)?\w+(\s)?(\d+)?))(\^((\d+)?(\\)?\w+(\s)?(\d+)?))+))
+// proximateMultiplicationWithExponents:
+
+((\{)*(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*)+)+|(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)
+
+// alternationAndDuplication:
+
+(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)){2,}|([a-zA-Z](\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)))([a-zA-Z](\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))?)+|(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)(\w+))(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)(\w+)?)+|((\d+)(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)))((\d+)(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))?)+|(\d+([a-zA-Z]+))(\d+([a-zA-Z]+)?)+|(([a-zA-Z]+)\d+)(([a-zA-Z]+)(\d+)?)+|(?<!(\\|\\.|\\..|\\...|\\....|\\.....|\\......|\\.......|\\........))([a-zA-Z])([a-zA-Z])+
+
+
+
+
+
+// for reference only:
+
+
+((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|((\w+)*(\^)?(\w+)*(\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)+(\w+)*(\^)?(\w+)*)+|([a-zA-Z])(?!\32)(?<=\32)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\32)(\33|\34|\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57)*)+
+
+
+(
+  (\{)*(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+
+    (
+      \^(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*
+    )+
+)+
+|
+(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)

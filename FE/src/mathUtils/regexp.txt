@@ -1,6 +1,24 @@
-\frac{x^2x5x\left(45x^2xy^3xyx-4x5y\right)xx\left(\alpha x\right)x^2\gamma \left(x^{2+2^{3+4}+4-7776}x\right)}{2x^3xx^xx3x^5y^02x^{x^y}2x^0x^0\cdot 3x^{3+y}x\left(x^{2+2}x\right)xx^{2+2}\left(x5\right)5x\left(5xx\right)x5x\left(2x3x\right)2x^3x\left(x2x^3\right)2x^22x^3}
+\frac{x^2\cdot x5x\left(45x^2xy^3x\cdot yx-4x5y\right)x\cdot x\left(\alpha \cdot x\right)x^2\cdot \gamma \left(x^{2+2^{3+4}+4-6^5}\cdot x\right)}{2\phi ^3\phi ^{\phi }\cdot 3\phi ^5y^0\cdot 2\phi ^{\phi ^y}\cdot 2\phi ^0\cdot \phi ^0\cdot 3\phi ^{3+y}\phi \left(\phi ^{2+2}\cdot \phi \right)\phi \cdot \phi ^{2+2}\left(\phi \cdot 5\right)5\cdot \phi \left(5\phi \cdot \phi \right)\phi \cdot 5\phi \left(2\phi \cdot 3\phi \right)2\phi ^3\cdot \phi \left(\phi \cdot 2\phi ^3\right)2\phi ^2\cdot 2\phi ^3\left(\phi \phi \right)\phi 5\phi \left(x\phi x\phi \right)\phi x\phi \left(5\phi 5\right)}
 
-((((\{)*(\d+)?(\\)?\w+(\s)?(\d+)?\^\{(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\^|\+|\-)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\})*){1}((\{)*(\d+)?(\\)?\w+(\s)?(\^)?(\{)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\^|\+|\-)?(\d+)?(\\)?(\w+)?(\s)?(\d+)?(\})*)*)|(((\d+)?(\\)?\w+(\s)?(\d+)?)(?<=((\d+)?(\\)?\w+(\s)?(\d+)?))(\^((\d+)?(\\)?\w+(\s)?(\d+)?))+))
+((\{)*(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*)+)+|(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)
+
+proximate factor strings:  2x^{\varepsilon }\cdot 3    \phi x\phi
+
+\phi \beta \phi     \alpha \beta \alpha     5\phi 5     \phi 5\phi     5x5     x5x     5xy     5xyzxyz
+
+x5x    4x5y    2y3x    ^2x^2y^2 (only x^2y^2)    3x^{3+y}x     xx     xxx     xxxx     xxxxx    5x    5x5    x5    5x5x5x    
+xyxy    xxyy    yyxx    yyyxxx    xxxyyy    xx5yy6    5xx6yy    5xxyy5    xyxyxyx    xyzxyz   xxyyzz
+abcdabcd    abcdabcdabcd    abcdea    abcdeabcdeabcde    abcdefghija
+\alpha 5\alpha 5\alpha ^5\alpha \alpha \beta    \alpha a\alpha      
+alpha 5\alpha 5\alpha 5\alpha 5\alpha     \alpha 5\beta 5\gamma 5\alpha 5\alpha    .
+\alpha \beta \gamma \Gamma \delta \Delta \epsilon \varepsilon \zeta \eta \theta \Theta \vartheta \iota \kappa \lambda \Lambda \mu \nu \xi \Xi \pi \Pi \varpi \rho \varrho \sigma \varsigma \Sigma \tau \upsilon \Upsilon \phi \varphi \chi \psi \Psi \omega \Omega 
+
+yy^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}    x^{2^2}x^{2^2}
+y^{2^{2^{3^{4^5}}}}    y3^{y3^{y3^{y3^{y3^y3}}}}
+\gamma ^{2^{2^{3^4}}}    \gamma ^{2^{2^3}}    \gamma ^{2^{23}}    \gamma ^{2^{2\beta }}    \gamma ^{2\beta }    2\gamma ^{2\beta ^{2\gamma }}    4\beta ^{3\gamma ^{z^u}}    \beta ^{2^2}\beta ^{2^2}
+\gamma ^{2^{2^{3^{4^5}}}}    \gamma 3^{\gamma 3^{\gamma 3^{\gamma 3^{\gamma 3^\gamma 3}}}}
+\kappa y\mu ^{2^{2^{3^4}}}    \kappa y\mu ^{2^{2^3}}    \kappa y\mu ^{2^{23}}    \kappa y\mu ^{2^{2\delta x\omega }}    \kappa y\mu ^{2\delta x\omega }    2\kappa y\mu ^{2\delta x\omega ^{2\kappa y\mu }}    4\delta x\omega ^{3\kappa y\mu ^{z^u}}    \delta x\omega ^{2^2}\delta x\omega ^{2^2}
+\kappa y\mu ^{2^{2^{3^{4^5}}}}    \kappa y\mu 3^{\kappa y\mu 3^{\kappa y\mu 3^{\kappa y\mu 3^{\kappa y\mu 3^\kappa y\mu 3}}}}
 
 dot multiplication strings:
 (1)
@@ -10,50 +28,13 @@ x\cdot 5     5\cdot x       5x\cdot x      x\cdot 5x      2x\cdot 3x     2x\cdot
 2\cdot 3x^2     2\cdot 3\delta ^2     2\cdot 3\delta ^{\alpha}     2\cdot 3x^{\alpha +1}    2\cdot 3x^{\alpha 2}    2\cdot 3x^{2\alpha }    
 2\cdot 3x^{2+2}     2^3\cdot 3x^2     2^{3+4}\cdot 3x^2     2^{3+4}\cdot 3x^{\alpha +\beta -\delta }     2\cdot 3x4x    2\cdot 3x\alpha 4x\beta 5    
 
-2x^2\cdot 3    2x^{\alpha }\cdot 3    2\beta ^{\alpha }\cdot 3    2x^{\alpha +3x}\cdot 3    2x^{a\alpha }\cdot 3    2x^{\alpha 3}\cdot 3    2x^{2+2}\cdot 3
+2x^2\cdot 3    2x^{\varepsilon }\cdot 3    2\beta ^{\alpha }\cdot 3    2x^{\alpha +3x}\cdot 3    2x^{a\alpha }\cdot 3    2x^{\alpha 3}\cdot 3    2x^{2+2}\cdot 3
 
 2^x\cdot 3^x     2^\gamma \cdot 3^\gamma 
 (3)
 2^2\cdot 3     2^{2+2}\cdot 3     2\cdot 3^2     2\cdot 3^{2+2}     2^2\cdot 3^2   
 (4)
 2^x\cdot 3     2^{x+2}\cdot 3     2\cdot 3^x     2\cdot 3^{x+2}     2^x\cdot 3^y     2^{\alpha }\cdot 3x^2
-
-yes																																	complicated							no
-
-x(1) variable * anything												4+x\cdot yx    4+x\cdot 5 45x^2xy^3x\cdot yx    45x^2xy^3x\cdot 5
-																				\alpha 2\cdot 5x
-x(2) variable^expo * coefficient variable^expo					2x^0\cdot x^0\cdot 3x^{3+y}x}
-(3) variable^{expo} * anything										2x^{x^y}\cdot 2x^0
-(4) variable coefficient * anything
-(5) anything * variable 
-	 == anything * variable^expo 
-	 == anything * variable^{expo} 
-    == anything * variable coefficient
-(6) anything * coefficient variable
-(7) coefficient^expo * coefficient variable^expo																		2^{x^y}\cdot 2x^0
-
-45x^2x3\cdot yx-4x5y        500\cdot 5x    x500\cdot 5x       500\cdot 5    
-x^2-56x\div 5\cdot 6    3+x^2\div 5\cdot 6    5-45x^2xy^3x\div 5\cdot 6   
-\sin \left(5\cdot 7\right)    
-34 + 4\cdot 89 - 3x
-
-proximate factor strings:
-
-x5x    4x5y    2y3x    ^2x^2y^2 (only x^2y^2)    3x^{3+y}x     xx     xxx     xxxx     xxxxx    5x    5x5    x5    5x5x5x    
-xyxy    xxyy    yyxx    yyyxxx    xxxyyy    xx5yy6    5xx6yy    5xxyy5    xyxyxyx    xyzxyz   xxyyzz
-abcdabcd    abcdabcdabcd    abcdea    abcdeabcdeabcde    abcdefghija
-
-\alpha 5\alpha 5\alpha ^5\alpha \alpha \beta    \alpha a\alpha     \alpha 5\alpha 5\alpha 5\alpha 5\alpha     \alpha 5\beta 5\gamma 5\alpha 5\alpha 
-
-\alpha \beta \gamma \Gamma \delta \Delta \epsilon \varepsilon \zeta \eta \theta \Theta \vartheta \iota \kappa \lambda \Lambda \mu \nu \xi \Xi \pi \Pi \varpi \rho \varrho \sigma \varsigma \Sigma \tau \upsilon \Upsilon \phi \varphi \chi \psi \Psi \omega \Omega 
-
-yy^{2^{2^{3^4}}}    y^{2^{2^3}}    y^{2^{23}}    y^{2^{2x}}    y^{2x}    2y^{2x^{2y}}    4x^{3y^{z^u}}    x^{2^2}x^{2^2}
-y^{2^{2^{3^{4^5}}}}    y3^{y3^{y3^{y3^{y3^y3}}}}
-\gamma ^{2^{2^{3^4}}}    \gamma ^{2^{2^3}}    \gamma ^{2^{23}}    \gamma ^{2^{2\beta }}    \gamma ^{2\beta }    2\gamma ^{2\beta ^{2\gamma }}    4\beta ^{3\gamma ^{z^u}}    \beta ^{2^2}\beta ^{2^2}
-\gamma ^{2^{2^{3^{4^5}}}}    \gamma 3^{\gamma 3^{\gamma 3^{\gamma 3^{\gamma 3^\gamma 3}}}}
-/kappa y/mu ^{2^{2^{3^4}}}    /kappa y/mu ^{2^{2^3}}    /kappa y/mu ^{2^{23}}    /kappa y/mu ^{2^{2/delta x/omega }}    /kappa y/mu ^{2/delta x/omega }    2/kappa y/mu ^{2/delta x/omega ^{2/kappa y/mu }}    4/delta x/omega ^{3/kappa y/mu ^{z^u}}    /delta x/omega ^{2^2}/delta x/omega ^{2^2}
-/kappa y/mu ^{2^{2^{3^{4^5}}}}    /kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^{/kappa y/mu 3^/kappa y/mu 3}}}}
-
 
 // x(?=y)	Matches 'x' only if 'x' is followed by 'y'. 
 // x(?!y)	Matches 'x' only if 'x' is not followed by 'y'.

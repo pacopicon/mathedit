@@ -2,6 +2,14 @@
 
 ((\{)*(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*)+)+|(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)
 
+variable collection strings: 
+
+\frac{x^2\cdot x5x\left(45x^2xy^3x\cdot yx-4x5y\right)x\div x\left(\alpha \cdot x\right)x^2\cdot \gamma \left(x^{2+2^{3+4}+4-6^5}\cdot x\right)}{2\phi ^3\phi ^{\phi }\cdot 3\phi ^5y^0\cdot 2\phi ^{\phi ^y}\cdot 2\phi ^0\cdot \phi ^0\cdot 3\phi ^{3+y}\phi \left(\phi ^{2+2}\cdot \phi \right)\phi \cdot \phi ^{2+2}\left(\phi \cdot 5\right)5\cdot \phi \left(5\phi \cdot \phi \right)\phi \cdot 5\phi \left(2\phi \cdot 3\phi \right)2\phi ^3\cdot \phi \left(\phi \cdot 2\phi ^3\right)2\phi ^2\cdot 2\phi ^3\left(\phi \phi \right)\phi 5\phi \left(x\phi x\phi \right)\phi x\phi \left(5\phi 5\right)}
+
+\frac{\sqrt[x]{x}\left(\ln \left(\alpha \right)\:\cdot \log _x\left(x\right)\right)x^2\cdot \:\sin \left(x\right)\cos \left(\alpha \right)\tan \left(x\right)\cot \left(\phi \right)\csc \left(x\right)\sec \left(\theta \right)\sinh \left(\alpha \right)\cosh \left(\beta \right)\tanh \left(\Gamma \right)\coth \left(\delta \right)\sech \left(\chi \right)\arcsin \left(\phi \right)\arccos \left(\iota \right)\arctan \left(\kappa \right)\arccot \left(\mu \right)\arcsec \left(\nu \right)\arccsc \left(\omega \right)\arcsinh \left(\pi \right)\arccosh \left(\rho \right)\arctanh \left(\sigma \right)\arccoth \left(\tau \right)\arcsech \left(\upsilon \right)}{\binom{6}{60}\sum \:_{x=0}^x\frac{3}{2^x}\sum _{n=0}^{\infty }n+1\frac{d}{dx}\left(\frac{3x+9}{2-x}\right)\frac{\partial }{\partial x}\left(\frac{x}{x^2+y^2}\right)\int \:x^2dx=\frac{x^3}{3}+C\left(\int _0^{\pi \:}\sin \:\left(x\right)dx\right)\lim \:_{x\to \:\infty \:}\left(e^x\right)}
+
+\alpha \beta \gamma \Gamma \delta \Delta \epsilon \varepsilon \zeta \eta \theta \Theta \vartheta \iota \kappa \lambda \Lambda \mu \nu \xi \Xi \pi \Pi \varpi \rho \varrho \sigma \varsigma \sigma \tau \upsilon \Upsilon \phi \varphi \chi \psi \Psi \omega \Omega 
+
 proximate factor strings:  2x^{\varepsilon }\cdot 3    \phi x\phi
 
 \phi \beta \phi     \alpha \beta \alpha     5\phi 5     \phi 5\phi     5x5     x5x     5xy     5xyzxyz

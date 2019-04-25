@@ -1,31 +1,23 @@
-let str1 = '3x^3x\\left(y^4\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^4y^4\\sqrt[3]{27}-\\sin \\left(x^4-yx^4\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5\\cdot 2x^{x^y}\\cdot 2x^0\\cdot x^0\\cdot 3x^{3+y}x}\\right)'
+let str1 = '\\frac{x^2x5x\\left(45x^2xy^3xyx-4x5y\\right)xx\\left(\\alpha x\\right)x^2\\gamma \\left(x^{2+2^{3+4}+4-7776}x\\right)}{2\\phi ^3\\phi ^{\\phi }3\\phi ^5y^02\\phi ^{\\phi ^y}2\\phi ^0\\phi ^03\\phi ^{3+y}\\phi \\left(\\phi ^{2+2}\\phi \\right)\\phi \\phi ^{2+2}\\left(\\phi 5\\right)5\\phi \\left(5\\phi \\phi \\right)\\phi 5\\phi \\left(2\\phi 3\\phi \\right)2\\phi ^3\\phi \\left(\\phi 2\\phi ^3\\right)2\\phi ^22\\phi ^3\\left(\\phi \\phi \\right)\\phi 5\\phi \\left(x\\phi x\\phi \\right)\\phi x\\phi \\left(5\\phi 5\\right)}'
 
-let matchObjArr1 = [ { start: 0, end: 5, match: '3x^3x' },
-{ start: 11, end: 14, match: 'y^4' },
-{ start: 29, end: 30, match: 'y' },
-{ start: 45, end: 46, match: 'y' },
-{ start: 60, end: 61, match: 'y' },
-{ start: 68, end: 71, match: 'x^2' },
-{ start: 77, end: 80, match: 'x5x' },
-{ start: 81, end: 85, match: 'x^4y' },
-{ start: 111, end: 114, match: 'x^4' },
-{ start: 115, end: 119, match: 'yx^4' },
-{ start: 144, end: 154, match: '45x^2xy^3x' },
-{ start: 160, end: 162, match: 'yx' },
-{ start: 163, end: 167, match: '4x5y' },
-{ start: 173, end: 177, match: '2y3x' },
-{ start: 184, end: 190, match: '^2x^2y' },
-{ start: 193, end: 195, match: 'yx' },
-{ start: 204, end: 207, match: '7yx' },
-{ start: 208, end: 211, match: '8xy' },
-{ start: 212, end: 221, match: '2x^3xx^xx' },
-{ start: 227, end: 232, match: '3x^5y' },
-{ start: 240, end: 248, match: '2x^{x^y}' },
-{ start: 254, end: 258, match: '2x^0' },
-{ start: 264, end: 267, match: 'x^0' },
-{ start: 273, end: 283, match: '3x^{3+y}x}' } ]
+let matchObjArr1 = [ { start: 6, end: 12, match: 'x^2x5x' },
+  { start: 18, end: 30, match: '45x^2xy^3xyx' },
+  { start: 65, end: 75, match: 'x^2\\gamma ' },
+  { start: 81, end: 102, match: 'x^{2+2^{3+4}+4-7776}x' },
+  { start: 110,
+    end: 191,
+    match:
+    '{2\\phi ^3\\phi ^{\\phi }3\\phi ^5y^02\\phi ^{\\phi ^y}2\\phi ^0\\phi ^03\\phi ^{3+y}\\phi ' },
+  { start: 197, end: 213, match: '\\phi ^{2+2}\\phi ' },
+  { start: 220, end: 236, match: '\\phi \\phi ^{2+2}' },
+  { start: 321, end: 334, match: '2\\phi ^3\\phi ' },
+  { start: 340, end: 353, match: '\\phi 2\\phi ^3' },
+  { start: 360, end: 376, match: '2\\phi ^22\\phi ^3' } 
+]
 
-let verbose = false
+let setOfVariables = ['x', 'y', '\\alpha ', '\\gamma ', '\\phi ']
+
+let verbose = true
 let count = 0
 
 const constructString = (start, end, str) => {
@@ -91,11 +83,43 @@ const spliceOut = (str, start, end) => {
 	return head + tail
 }
 
+const getAllMatchesAndPositions = (str, patt) => {
+  let output = []
+  while (match = patt.exec(str)) {
+    let obj = {}
+    obj.start = match.index
+    obj.end   = patt.lastIndex
+    obj.match = match[0]
+    output.push(obj)
+    // console.log(`\nmatch[0] = ${match[0]}\nstr.slice(start, obj.end) = ${str.slice(obj.start, obj.end)}\nobj.start = ${obj.start}\nobj.end = ${obj.end}\n`);
+  }
+  return output
+}
+
+const separateCoefficientsFromGREEKVars = (_str, varArr) => {
+	let str = _str
+	let patt = /(\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|(?<!c)d[a-zA-Z]|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\partial\s([a-zA-Z])?|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)/g
+  let output = getAllMatchesAndPositions(str, patt)
+	// console.log('output = ', output)
+	for (let i=0; i<output.length; i++) {
+		let greekVar = output[i].match
+		str = str.replace(greekVar, '')
+		varArr.push(greekVar)
+	}
+	return {
+		str,
+		varArr
+	}
+}
+
 const separateCoefficientsFromVars = (str) => {
   count++
   if (verbose) console.log(`\n(${count})----BEGIN separateCoefficientsFromVars${'-'.repeat(40)}\nstr = ${str}\n+----${'-'.repeat(74)}`)
-	let coeff = ''
-	let output = []
+	let coeff  = ''
+  let output = []
+  let res    = separateCoefficientsFromGREEKVars(str, output)
+      output = res.varArr
+      str    = res.str
 	for (let i=0; i<str.length; i++) {
 		let char = str[i]
 		if (isNum(char)) {
@@ -117,13 +141,13 @@ const separateCoefficientsFromVars = (str) => {
 	return output
 }
 
-let setOfVariables = ['x', 'y']
+
 
 const packageVars = (varArr) => {
 	let obj = {}
 	for (let i=0; i<varArr.length; i++) {
-		let letter = varArr[i]
-		obj[letter] = {
+		let VAR  = varArr[i]
+		obj[VAR] = {
       coeff: 0,
       zero: false,
       simple: [],
@@ -238,12 +262,6 @@ const resolveProximateFactors = (matchObjArr, _str, setOfVariables) => {
     let currStart    = matchObj.start
     let currEnd		   = matchObj.end
     let coefficients = []
-
-    if (currStr == '2x^0') {
-      verbose = true
-    } else {
-      verbose = false
-    }
 
     // (1) ignore strings that begin with '^' (will cause infinite recursion)
     if (currStr[0] != '^' && currStr.length > 2) {

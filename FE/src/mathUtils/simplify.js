@@ -21,6 +21,7 @@
 //    (d) substitute var x or y for constant
 
 let verbose = true
+let failSafe = 0
 
 let str1 = `3x^3x\\left(y^{2^2}\\right)+\\left(-y\\right)^2\\left(y\\right)2\\left(y\\right)x^2\\cdot x5x-x^{2^2}y^{2^2}\\sqrt[3]{27}-\\sin \\left(x^{2^2}-yx^{2^2}\\right)\\left(\\frac{\\left(45x^2xy^3x\\cdot yx-4x5y\\left(2y3x\\right)^2x^2y^2-yx\\right)}{7yx-8xy+2x^3xx^xx\\cdot 3x^5y^0\\cdot 2x^{x^y}\\cdot 2x^0\\cdot x^0\\cdot 3x^{3+y}x}\\right)`
 
@@ -94,29 +95,26 @@ const resolveExponents = (str) => {
 	}
 }
 
-const simplifyDotMultiplicationOfAtLeastOneSingleVariable = (matchObjArr, _str, isStepDone) => {
+const simplifyDotMultiplication = (matchObjArr, _str, patt, msg) => {
   let str    = _str
-  let initIsStepDone = isStepDone
 	let offset = 0
 	for (let i=0; i<matchObjArr.length; i++) {
 		let currStr   = matchObjArr[i].match
 		let currStart = matchObjArr[i].start
 		let currEnd		= matchObjArr[i].end
 		let solution  = currStr.replace('\\cdot ', '')
-		let res       = ''
-		if ((currStr.includes('{') && !currStr.includes('}')) || (!currStr.includes('{') && currStr.includes('}')) || str[currStart-offset-1] == '^') {
-			isStepDone = false
-		} else {
-				res       = spliceString(str, currStart-offset, currEnd-offset, solution)
-				console.log(`\n+---------------PROCESSING ONE VAR MULT---------------\n|str = ${str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|initIsStepDone = ${initIsStepDone}\n|endIsStepDone = ${isStepDone}\n|output str = ${res.str}\n|matchedStr = ${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}\n|INSERT = ${solution}\n+---------------PROCESSING ONE VAR MULT---------------`)
-				str       = res.str
-				offset   += res.offset
+		if ((currStr.includes('{') && currStr.includes('}')) && str[currStart-offset-1] != '^') {
+			let res     = spliceString(str, currStart-offset, currEnd-offset, solution)
+			console.log(`n${msg}\n|failSafe = ${failSafe}\n|str = ${str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|output str = ${res.str}\n|matchedStr = ${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}\n|INSERT = ${solution}\n${msg}`)
+			str       = res.str
+			offset   += res.offset
 		}
-	}
+  }
+  
 	return {
-		isStepDone,
-		str
-	}
+    str,
+    isStepDone: !patt.test(str)
+  }
 }
 
 const resolveProximateVariableMultiplication = (matchObjArr, _str) => {
@@ -208,8 +206,12 @@ const simplificationPatterns = [
   },
 	{
 		name:'proximateVariableMultiplicationWithExponents',
-		patt: /((((\{)*(\w+|\\[a-zA-z]+\s)+\^\{(\w+|\\[a-zA-z]+\s)+(\^|\+|\-)?(\w+|\\[a-zA-z]+\s)*(\})*){1}((\{)*(\w+|\\[a-zA-z]+\s)+(\^)?(\{)?(\w+|\\[a-zA-z]+\s)*(\^|\+|\-)?(\w+|\\[a-zA-z]+\s)*(\})*)*)|(((\w+|\\[a-zA-z]+\s)+)(?<=((\w+|\\[a-zA-z]+\s)+))(\^((\w+|\\[a-zA-z]+\s)+))+))/g
-	},
+		patt: /(?<!((\)|\}|\|)\^))(((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*(\^|\+|\-)?)+)+)+|(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+))/g
+  },
+  {
+		name:'proximateVariableMultiplicationWithAlternationAndDuplication',
+		patt: /(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)){2,}|([a-zA-Z](\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)))([a-zA-Z](\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))?)+|(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)(\w+))(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)(\w+)?)+|((\d+)(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)))((\d+)(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))?)+|(\d+([a-zA-Z]+))(\d+([a-zA-Z]+)?)+|(([a-zA-Z]+)\d+)(([a-zA-Z]+)(\d+)?)+|(?<!(\\|\\.|\\..|\\...|\\....|\\.....|\\......|\\.......|\\........))([a-zA-Z])([a-zA-Z])+/g
+  },
 	{
 		name: 'likeTerms',
 		patt: /(\+|\-)*(\d*(x\d*y|y\d*x)\d*)/g
@@ -307,7 +309,7 @@ const simplify = (_str, _step) => {
         // get only matches that are adjacent to each other, filter non-adjacent out
 				matchObjArr = filterAdjacentMatches(matchObjArr) || []
 			}
-			isStepDone  = areAdjacentMatchesExhausted(matchObjArr)
+      isStepDone  = areAdjacentMatchesExhausted(matchObjArr)
 	} else {
 		  
 	}
@@ -315,30 +317,36 @@ const simplify = (_str, _step) => {
   // console.log(`\n>>>>>>>>> step -> ${step} (${simplificationPatterns[step].name})\n>>>>>>>>> matchObjArr.length -> ${matchObjArr.length}\n`)
   if (matchObjArr.length > 0 || name == 'exponents') {
 
+    // console.log(`\n+===== BEFORE SWITCH =====\n|failSafe = ${failSafe}`)
+    // console.log('|matchObjArr = ', matchObjArr)
+    // console.log('|pattern name = ', name)
+    // console.log(`+===== BEFORE SWITCH =====\n`)
+    let lead = ''
     switch(name) {
       case 'exponents':
         str = resolveExponents(str)
         break;
       case 'dotMultiplicationOfAtLeastOneSingleVariable':
+        // console.log(`\n+===== BEFORE SWITCH =====\n|failSafe = ${failSafe}`)
+        // console.log('|matchObjArr = ', matchObjArr)
+        // console.log('|pattern name = ', name)
+        // console.log(`+===== BEFORE SWITCH =====\n`)
+        lead = `\n+---------------PROCESSING ONE VAR MULT---------------`
+        res        = simplifyDotMultiplication(matchObjArr, str, patt, lead)
+        str        = res.str
+        isStepDone = res.isStepDone
+        break;
+      case 'dotMultiplicationOfLeadingVarCoeffAndCoeff':
+        // console.log('>>>> pattern name = ', name)
         // console.log('>>>> matchObjArr to analyze = ', matchObjArr)
         // console.log('>>>> str to analyze ', str)
         // return {
         //   str
         // }
-        res        = simplifyDotMultiplicationOfAtLeastOneSingleVariable(matchObjArr, _str, isStepDone)
+        lead = `\n+---------------PROCESSING LEADING VAR MULT---------------`
+        res        = simplifyDotMultiplication(matchObjArr, str, patt, lead)
         str        = res.str
         isStepDone = res.isStepDone
-        break;
-      case 'dotMultiplicationOfLeadingVarCoeffAndCoeff':
-        console.log('>>>> pattern name = ', name)
-        console.log('>>>> matchObjArr to analyze = ', matchObjArr)
-        console.log('>>>> str to analyze ', str)
-        return {
-          str
-        }
-        // res        = simplifyDotMultiplicationOfLeadingVarCoeffAndCoeff(matchObjArr, _str, isStepDone)
-        // str        = res.str
-        // isStepDone = res.isStepDone
         break;
       case 'dotMultiplicationOfCoeffAndVarCoeff':
         console.log('>>>> pattern name = ', name)
@@ -362,14 +370,23 @@ const simplify = (_str, _step) => {
         // str        = res.str
         // isStepDone = res.isStepDone
         break;
-      case 'proximateVariableMultiplication':
+      case 'proximateVariableMultiplicationWithExponents':
         console.log('>>>> pattern name = ', name)
 				console.log('>>>> matchObjArr to analyze = ', matchObjArr)
 				console.log('>>>> str to analyze ', str)
 				return {
 					str
 				}
-        // str = resolveProximateVariableMultiplication(matchObjArr, _str)
+        // str = resolveProximateVariableMultiplicationWithExponents(matchObjArr, _str)
+        break;
+      case 'proximateVariableMultiplicationWithAlternationAndDuplication':
+        console.log('>>>> pattern name = ', name)
+				console.log('>>>> matchObjArr to analyze = ', matchObjArr)
+				console.log('>>>> str to analyze ', str)
+				return {
+					str
+				}
+        // str = resolveProximateVariableMultiplicationWithAlternationAndDuplication(matchObjArr, _str)
         break;
       case 'parentheticalMultiplication':
         str = processlikeTerms(matchObjArr, str)
@@ -386,10 +403,19 @@ const simplify = (_str, _step) => {
 		}
 		
 		if (step <= simplificationPatterns.length - 1) {
+      // console.log(`\n>>>>>>>>> failSafe -> ${failSafe}`)
+      // console.log(`\n>>>>>>>>> step -> ${step} (${simplificationPatterns[step].name})`)
+      // console.log('\n>>>>>>>>> matchObjArr = ', matchObjArr)
+      failSafe++
+      if (failSafe == 20) {
+        return {
+          str,
+          step
+        }
+      }
 			res = simplify(str, step)
 			str  = res.str
 			step = res.step
-			// console.log(`\nRECURSION\nstr = ${str}\nstep = ${step}`)
 		} else {
 			return {
 				str,

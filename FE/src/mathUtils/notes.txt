@@ -130,27 +130,10 @@ c
 
 // proximateMultiplicationWithExponents:
 
-((\{)*(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*)+)+|(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)
+(?<!((\)|\}|\|)\^))(((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*(\^|\+|\-)?)+)+)+|(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+))
 
 // alternationAndDuplication:
 
 (\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)){2,}|([a-zA-Z](\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)))([a-zA-Z](\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))?)+|(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)(\w+))(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)(\w+)?)+|((\d+)(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s)))((\d+)(\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))?)+|(\d+([a-zA-Z]+))(\d+([a-zA-Z]+)?)+|(([a-zA-Z]+)\d+)(([a-zA-Z]+)(\d+)?)+|(?<!(\\|\\.|\\..|\\...|\\....|\\.....|\\......|\\.......|\\........))([a-zA-Z])([a-zA-Z])+
 
 
-
-
-
-// for reference only:
-
-
-((((\{)*\w+\^\{(\w+)?(\^|\+|\-)?(\w+)?(\})*){1}((\{)*\w+(\^)?(\{)?(\w+)?(\^|\+|\-)?(\w+)?(\})*)*)|((\w+)(?<=\w+)(\^\w+)+))|((\w+\d+\w*)|(\d+\w+\d*)|(\w)\23+)|((\w+)*(\^)?(\w+)*(\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)+(\w+)*(\^)?(\w+)*)+|([a-zA-Z])(?!\32)(?<=\32)([a-zA-Z])([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?([a-zA-Z])?((\32)(\33|\34|\35|\36|\37|\38|\39|\40|\41|\42|\43|\44|\45|\46|\47|\48|\49|\50|\51|\52|\53|\54|\55|\56|\57)*)+
-
-
-(
-  (\{)*(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+
-    (
-      \^(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*
-    )+
-)+
-|
-(((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)

@@ -96,24 +96,32 @@ const resolveExponents = (str) => {
 }
 
 const simplifyDotMultiplication = (matchObjArr, _str, patt, msg) => {
-  let str    = _str
-	let offset = 0
+  let str         = _str
+  let offset      = 0
+  let logObj      = {}
 	for (let i=0; i<matchObjArr.length; i++) {
 		let currStr   = matchObjArr[i].match
 		let currStart = matchObjArr[i].start
 		let currEnd		= matchObjArr[i].end
 		let solution  = currStr.replace('\\cdot ', '')
 		if ((currStr.includes('{') && currStr.includes('}')) && str[currStart-offset-1] != '^') {
-			let res     = spliceString(str, currStart-offset, currEnd-offset, solution)
-			console.log(`n${msg}\n|failSafe = ${failSafe}\n|str = ${str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|output str = ${res.str}\n|matchedStr = ${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}\n|INSERT = ${solution}\n${msg}`)
-			str       = res.str
-			offset   += res.offset
+      let matchedStr = `${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}`
+      let res     = spliceString(str, currStart-offset, currEnd-offset, solution)
+			    str     = res.str
+          offset += res.offset
+          logObj.matchedStr = matchedStr
+          logObj.insert     = solution
+			// console.log(`${msg}\n|isStepDone = ${isStepDone}\n|failSafe = ${failSafe}\n|str = ${str}\n|head = ${str.slice(0, currStart-offset)}\n|tail = ${str.slice(currEnd-offset)}\n|output str = ${res.str}\n|matchedStr = ${str[currStart-offset-1]}|${currStr}|${str[currEnd-offset]}\n|INSERT = ${solution}\n${msg}`)
 		}
   }
+  let isStepDone  = !patt.test(str)
+  console.log(`${msg}\n|isStepDone = ${isStepDone}\n|failSafe = ${failSafe}\n|ORIG str = ${_str}\n|FINAL str = ${str}`)
+  console.log('\n|logObj = ', logObj)
+  console.log(`\n${msg}`)
   
 	return {
     str,
-    isStepDone: !patt.test(str)
+    isStepDone
   }
 }
 

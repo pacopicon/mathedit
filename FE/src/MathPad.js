@@ -145,18 +145,43 @@ class MathPad extends Component {
   }
 
   getCursorPositionReport() {
+    let el     = document.getElementById('ul')
+    // let e     = document.querySelector('.mq-root-block:last-child')
     let afterCursorVar = document.querySelector('.mq-cursor + var')
     let afterCursorSpan = document.querySelector('.mq-cursor + span')
+    let beforeCursorVar = document.querySelector('.mq-cursor ~ var')
+    let beforeCursorSpan = document.querySelector('.mq-cursor ~ span')
     let afterCursor = afterCursorVar ? afterCursorVar : afterCursorSpan
+    let beforeCursor = beforeCursorVar ? beforeCursorVar : beforeCursorSpan
 
     let cursorParent = document.querySelector('.mq-hasCursor')
     
     
     // if (afterCursor && afterCursor.attributes) {
-    let AC, CP, CPC, isLast = false
+    let AC, CP, CPC, BC, E, isLast = false
+
+    if (el && el.children[0] && el.children[0].childNodes[0] && el.children[0].childNodes[0].children[0] && el.children[0].childNodes[0].children[0].children[0]) {
+      let list = el.children[0].childNodes[0].children[1]
+
+      E = list
+      
+      // E = []
+      // for (let i=0; i<list.length; i++) {
+      //   let item = list[i]
+      //   // for (let p in item) {
+      //   //   E.push(`${p}: ${item[p]}`)
+      //   // }
+      //   if (item) {
+      //     E.push(item)
+      //   }
+      // }
+    }
 
     if (afterCursor && afterCursor.attributes) {
       AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
+    }
+    if (beforeCursor && beforeCursor.attributes && beforeCursor.attributes['mathquill-command-id']) {
+      BC = beforeCursor.attributes['mathquill-command-id'].value ? beforeCursor.attributes['mathquill-command-id'].value : ''
     }
     if (cursorParent && cursorParent.attributes && cursorParent.attributes['mathquill-block-id']) {
       CP = cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''
@@ -169,12 +194,15 @@ class MathPad extends Component {
         AC,
         CP,
         CPC,
+        BC,
+        E,
         isLast 
       }
       this.setState({
         cursorReport
       })
-      console.dir(`AC = ${AC}, CP = ${CP}, CPC = ${CPC}, isLast = ${isLast}`)
+      // console.dir(`AC = ${AC}, CP = ${CP}, CPC = ${CPC}, BC = ${BC}, E = ${E}, isLast = ${isLast}`)
+      console.log('E =', E)
     // }
   }
 

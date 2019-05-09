@@ -14,7 +14,7 @@ class Header extends Component {
       <Navbar id="Header" collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <div className="white">MathEdit</div>
+            <div className="white">MathNotes</div>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>

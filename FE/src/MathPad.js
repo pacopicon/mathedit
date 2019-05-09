@@ -39,6 +39,10 @@ class MathPad extends Component {
     )
   }
 
+  componentDidUpdate() {
+    
+  }
+
   componentWillMount() {
     const id = rando()
     const temp = [id]
@@ -134,9 +138,9 @@ class MathPad extends Component {
     if (e.key == 'Enter') {      
       // Carriage Return
       this.insertComponent()
-      this.getCursorPositionReport()
+      // this.getCursorPositionReport()
     } else {
-      this.getCursorPositionReport()
+      // this.getCursorPositionReport()
     }
   }
 
@@ -155,26 +159,83 @@ class MathPad extends Component {
     let beforeCursor = beforeCursorVar ? beforeCursorVar : beforeCursorSpan
 
     let cursorParent = document.querySelector('.mq-hasCursor')
+
+    // const getSmallestNode2 = (list, _output, isNested) => {
+    //   let output = _output && _output.length > 0 ? _output : []
+    //   console.log('list = ', list)
+    //   console.log('list.children = ', list.children)
+    //   if (isNested) {
+    //     list = list.children
+    //   }
+    //   for (let i=0; i<list.length; i++) {
+    //     let child = list[i]
+    //     if (child.children.length == 0 && !child.attributes[0].nodeValue.includes('mq-cursor')) {
+    //       console.log('list = ', list)
+    //       console.log('child = ', child)
+    //       let obj = {}
+    //       obj.var = child.innerText
+    //       obj.tag = child.nodeName
+    //       obj.id  = child.attributes['mathquill-command-id'].nodeValue
+    //       output.push(obj)
+    //     } else if (child.children.length > 0 && !child.attributes[0].nodeValue.includes('mq-cursor')) {
+    //       console.log('______')
+    //       console.log('child = ', child)
+    //       console.log('child.children = ', child.children)
+    //       let list = child
+    //       output = [...output,...getSmallestNode(list, output, true)]
+    //     }
+    //   }
+    //   return output
+    // }
+
+    const getSmallestNode = (list, isNested) => {
+      const output = []
+      console.log('list = ', list)
+      console.log('list[0] = ', list[0])
+      console.log('list.children = ', list.children)
+      if (isNested) {
+        list = list[0] ? list[0] : list 
+        list = list.children
+      }
+      for (let i=0; i<list.length; i++) {
+        let child = list[i]
+        // if (!child.attributes[0].nodeValue.includes('mq-cursor')) {
+          console.log('list = ', list)
+          console.log('child = ', child)
+          console.log('child.attributes = ', child.attributes)
+          let obj   = {}
+          obj.value = child.children.length == 0 ? child.innerText : getSmallestNode(child, true)
+          obj.name  = child.className ? child.className : child.nodeName
+          if (child.attributes && child.attributes['mathquill-command-id'] && child.attributes['mathquill-command-id'].nodeValue) {
+            obj.id    = child.attributes['mathquill-command-id'].nodeValue
+          } else {
+            obj.id    = ''
+          }
+          
+          output.push(obj)
+        // }
+      }
+      return output
+    }
     
     
     // if (afterCursor && afterCursor.attributes) {
     let AC, CP, CPC, BC, E, isLast = false
 
     if (el && el.children[0] && el.children[0].childNodes[0] && el.children[0].childNodes[0].children[0] && el.children[0].childNodes[0].children[0].children[0]) {
-      let list = el.children[0].childNodes[0].children[1]
+      let list = el.children[0].childNodes[0].children[1].children
 
-      E = list
+      // E = list
       
       // E = []
       // for (let i=0; i<list.length; i++) {
       //   let item = list[i]
-      //   // for (let p in item) {
-      //   //   E.push(`${p}: ${item[p]}`)
-      //   // }
-      //   if (item) {
+      //   if (item.children.length == 0) {
+      //     let obj
       //     E.push(item)
       //   }
       // }
+      E = getSmallestNode(list)
     }
 
     if (afterCursor && afterCursor.attributes) {
@@ -213,6 +274,8 @@ class MathPad extends Component {
     latexPerLine[i] = latex
     this.setState({
       latexPerLine
+    }, () => {
+      this.getCursorPositionReport()
     })
   }
 

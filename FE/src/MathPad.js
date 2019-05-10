@@ -15,6 +15,7 @@ class MathPad extends Component {
       orderOfComponents: '',
       cursorReport: '',
       cursorLatexPositionSnippet: '',
+      numStrokes: 0,
       mod: 0
     }
     this.getLatexPerLine = this.getLatexPerLine.bind(this)
@@ -128,6 +129,8 @@ class MathPad extends Component {
             textArea.focus()
           }
         }
+        const latex = this.state.latexPerLine[next]
+        this.getIndexFromLatex(latex, 0)
       }
     )
   }
@@ -149,14 +152,14 @@ class MathPad extends Component {
       mod: this.state.mod + _mod
     }, () => {
       let mod = this.state.mod
-      let b1  = latex.length - 1
+      let b1  = latex ? latex.length - 1 : -1
       let b = b1 + mod
       let a = b + 1
       // console.log(`b1 = ${b1}, mod = ${mod}, a = ${a}`)
       this.setState({
         cursorPos: { b, a }
       }, () => {
-        console.log('cursorPos = ', this.state.cursorPos)
+        // console.log('cursorPos = ', this.state.cursorPos)
       })
     }) 
   }
@@ -172,6 +175,11 @@ class MathPad extends Component {
     const { latexPerLine, cursorPos } = this.state
     const latex = latexPerLine[i]
     const inputWidth = latex ? latex.length : 0
+    this.setState({
+      numStrokes: this.state.numStrokes + 1
+    }, () => {
+      console.log('numStrokes = ', this.state.numStrokes)
+    })
     if (e.key == 'Enter') {      
       // Carriage Return
       this.insertComponent()
@@ -180,12 +188,12 @@ class MathPad extends Component {
       let _mod = cursorPos.b == -1 ? 0 : -1
       this.getIndexFromLatex(latex, _mod)
       // this.moveCursor()
-      console.log('cursorPos = ', this.state.cursorPos)
+      // console.log('cursorPos = ', this.state.cursorPos)
     } else if (e.key == 'ArrowRight') {
       let _mod = cursorPos.a == inputWidth ? 0 : 1
       this.getIndexFromLatex(latex, _mod)
       // this.moveCursor()
-      console.log('cursorPos = ', this.state.cursorPos)
+      // console.log('cursorPos = ', this.state.cursorPos)
     } else if (e.key == 'ArrowUp') {
       this.moveCursor()
     } else {
@@ -194,7 +202,11 @@ class MathPad extends Component {
   }
 
   handleFocus(e) {
+    let { latexPerLine } = this.state
+    const i = this.getCurrentMathLineIndex()
+    const latex = latexPerLine[i]
     this.convertLatexToObject()
+    this.getIndexFromLatex(latex, 0)
   }
 
   convertLatexToObject() {
@@ -278,7 +290,7 @@ class MathPad extends Component {
   
   getLatexPerLine(latex, id) {
     let { latexPerLine } = this.state
-    const i = this.getCurrentMathLineIndex(id)
+    const i = this.getCurrentMathLineIndex()
     latexPerLine[i] = latex
     // console.log('latex = ', latex)
     this.getIndexFromLatex(latex, 0)

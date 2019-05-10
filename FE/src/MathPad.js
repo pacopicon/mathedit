@@ -138,14 +138,14 @@ class MathPad extends Component {
     if (e.key == 'Enter') {      
       // Carriage Return
       this.insertComponent()
-      // this.getCursorPositionReport()
+      this.getCursorPositionReport()
     } else {
-      // this.getCursorPositionReport()
+      this.getCursorPositionReport()
     }
   }
 
   handleFocus(e) {
-    // this.getCursorPositionReport()
+    this.getCursorPositionReport()
   }
 
   getCursorPositionReport() {
@@ -190,9 +190,9 @@ class MathPad extends Component {
 
     const getSmallestNode = (list, isNested) => {
       const output = []
-      console.log('list = ', list)
-      console.log('list[0] = ', list[0])
-      console.log('list.children = ', list.children)
+      // console.log('list = ', list)
+      // console.log('list[0] = ', list[0])
+      // console.log('list.children = ', list.children)
       if (isNested) {
         list = list[0] ? list[0] : list 
         list = list.children
@@ -200,14 +200,16 @@ class MathPad extends Component {
       for (let i=0; i<list.length; i++) {
         let child = list[i]
         // if (!child.attributes[0].nodeValue.includes('mq-cursor')) {
-          console.log('list = ', list)
-          console.log('child = ', child)
-          console.log('child.attributes = ', child.attributes)
+          // console.log('list = ', list)
+          // console.log('child = ', child)
+          // console.log('child.attributes = ', child.attributes)
           let obj   = {}
           obj.value = child.children.length == 0 ? child.innerText : getSmallestNode(child, true)
           obj.name  = child.className ? child.className : child.nodeName
           if (child.attributes && child.attributes['mathquill-command-id'] && child.attributes['mathquill-command-id'].nodeValue) {
             obj.id    = child.attributes['mathquill-command-id'].nodeValue
+          } else if (child.attributes && child.attributes['mathquill-block-id'] && child.attributes['mathquill-block-id'].nodeValue) {
+            obj.id    = child.attributes['mathquill-block-id'].nodeValue
           } else {
             obj.id    = ''
           }
@@ -272,6 +274,7 @@ class MathPad extends Component {
     let { latexPerLine } = this.state
     const i = this.getCurrentMathLineIndex(id)
     latexPerLine[i] = latex
+    console.log('latex = ', latex)
     this.setState({
       latexPerLine
     }, () => {
@@ -282,7 +285,7 @@ class MathPad extends Component {
   render() {
     let { MathLines } = this.state
     return (
-      <div id="MathPad" onFocus={this.handleFocus} onKeyDown={this.handleKeyDownEvents} onMouseDown={this.handleMouseDown}>
+      <div id="MathPad" onKeyDown={this.handleKeyDownEvents} onMouseDown={this.handleFocus}>
         <Header />
         <ul id='ul'>{ MathLines }</ul>
       </div>

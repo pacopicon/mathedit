@@ -9,7 +9,9 @@ class MathPad extends Component {
     super(props)
     this.state = {
       MathLines: '',
+      prevLatexPerLine: [],
       latexPerLine: [],
+      measuredLatexPerLine: [],
       currentMathLineId: '',
       cursorPos: '',
       orderOfComponents: '',
@@ -175,29 +177,32 @@ class MathPad extends Component {
     const { latexPerLine, cursorPos } = this.state
     const latex = latexPerLine[i]
     const inputWidth = latex ? latex.length : 0
-    this.setState({
-      numStrokes: this.state.numStrokes + 1
-    }, () => {
-      console.log('numStrokes = ', this.state.numStrokes)
-    })
+    // this.setState({
+    //   numStrokes: this.state.numStrokes + 1
+    // }, () => {
+    //   console.log('numStrokes = ', this.state.numStrokes)
+    // })
     if (e.key == 'Enter') {      
       // Carriage Return
       this.insertComponent()
-      this.convertLatexToObject()
+      this.convertLatexToObject(latex, i)
     } else if (e.key == 'ArrowLeft') {
       let _mod = cursorPos.b == -1 ? 0 : -1
-      this.getIndexFromLatex(latex, _mod)
+      this.convertLatexToObject(latex, i)
+      // this.getIndexFromLatex(latex, _mod)
       // this.moveCursor()
       // console.log('cursorPos = ', this.state.cursorPos)
     } else if (e.key == 'ArrowRight') {
       let _mod = cursorPos.a == inputWidth ? 0 : 1
-      this.getIndexFromLatex(latex, _mod)
+      this.convertLatexToObject(latex, i)
+      // this.getIndexFromLatex(latex, _mod)
       // this.moveCursor()
       // console.log('cursorPos = ', this.state.cursorPos)
     } else if (e.key == 'ArrowUp') {
+      this.convertLatexToObject(latex, i)
       this.moveCursor()
     } else {
-      this.convertLatexToObject()
+      // this.convertLatexToObject(latex)
     }
   }
 
@@ -205,11 +210,11 @@ class MathPad extends Component {
     let { latexPerLine } = this.state
     const i = this.getCurrentMathLineIndex()
     const latex = latexPerLine[i]
-    this.convertLatexToObject()
+    this.convertLatexToObject(latex, i)
     this.getIndexFromLatex(latex, 0)
   }
 
-  convertLatexToObject() {
+  convertLatexToObject(latex, index) {
     let el     = document.getElementById('ul')
     // let e     = document.querySelector('.mq-root-block:last-child')
     let afterCursorVar = document.querySelector('.mq-cursor + var')
@@ -284,7 +289,8 @@ class MathPad extends Component {
       this.setState({
         cursorReport
       })
-      // console.log('E =', E)
+      console.log('E =', E)
+      console.log('AC = ', AC)
   }
 
   
@@ -297,7 +303,7 @@ class MathPad extends Component {
     this.setState({
       latexPerLine
     }, () => {
-      this.convertLatexToObject()
+      this.convertLatexToObject(latex, i)
       // this.moveCursor()
     })
   }

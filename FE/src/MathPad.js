@@ -3,15 +3,15 @@ import MathLine from './MathLine'
 import Header from './Header'
 import './index.css';
 import { rando, processStr } from './utils'
+import { parseLatex } from './mathUtils/latexParser'
 
 class MathPad extends Component {
   constructor(props) {
     super(props)
     this.state = {
       MathLines: '',
-      prevLatexPerLine: [],
       latexPerLine: [],
-      measuredLatexPerLine: [],
+      chunkedLatexPerLine: [],
       currentMathLineId: '',
       cursorPos: '',
       orderOfComponents: '',
@@ -295,13 +295,15 @@ class MathPad extends Component {
 
   
   getLatexPerLine(latex, id) {
-    let { latexPerLine } = this.state
+    let { latexPerLine, chunkedLatexPerLine } = this.state
     const i = this.getCurrentMathLineIndex()
     latexPerLine[i] = latex
+    chunkedLatexPerLine[i] = [...parseLatex(latex, [])]
     // console.log('latex = ', latex)
     this.getIndexFromLatex(latex, 0)
     this.setState({
-      latexPerLine
+      latexPerLine,
+      chunkedLatexPerLine
     }, () => {
       this.convertLatexToObject(latex, i)
       // this.moveCursor()

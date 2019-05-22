@@ -259,18 +259,73 @@ class MathPad extends Component {
     // if (afterCursor && afterCursor.attributes) {
     let AC, CP, CPC, BC, E, isLast = false
 
+    const flattenLatexElementObject = (E, _arr) => {
+      let arr = _arr || []
+      // let isContainer = false
+      for (let i=0; i<E.length; i++) {
+        let item = E[i]
+        console.log('item = ', item)
+        let node = ''
+        if (item.name) {
+          node = item.name
+          // if (node == 'mq-sup') {
+          //   isContainer = true
+          // }
+        } else if (!Array.isArray(item.value) && !item.name) {
+          node = item.value
+        }
+        if ((!item.name.includes('mq-non-leaf') || item.name.includes('mq-nthroot mq-non-leaf')) && item.name != "mq-scaled") {
+          arr.push(node)
+        }
+        if (Array.isArray(item.value) && item.value.length > 0) {
+          arr = flattenLatexElementObject(item.value, arr)
+          if (!item.name.includes('mq-nthroot mq-non-leaf') && !item.name.includes('mq-numerator') && !item.name.includes('mq-denominator') && !item.name.includes('mq-fraction')) {
+            arr.push('container')
+          }
+        }
+      }
+      // console.log('arr1 = ', arr)
+      return arr
+    }
+
+    //["mq-nthroot mq-non-leaf mq-hasCursor", "SPAN", "mq-cursor", "mq-scaled", "mq-sqrt-prefix mq-scaled", "SPAN", "SPAN", "container"]
+
+    const filterDuplicateContainer = (arr) => {
+      const output = []
+      for (let i=0; i<arr.length; i++) {
+        if (arr[i-1] == 'container' && arr[i] == 'container') {
+          continue
+        } else {
+          output.push(arr[i])
+        } 
+      }
+      console.log('arr2 = ', output)
+      return output
+    }
+
     if (el && el.children[0] && el.children[0].childNodes[0] && el.children[0].childNodes[0].children[0] && el.children[0].childNodes[0].children[0].children[0]) {
       let list = el.children[0].childNodes[0].children[1].children
 
       E = getSmallestNode(list)
+      let arr = flattenLatexElementObject(E)
+      arr = filterDuplicateContainer(arr)
+      if (arr) {
+        for (let i=0; i<arr.length; i++) {
+          let item = arr[i]
+          if (item == 'mq-cursor') {
+            // BC = i - 1
+            AC = i
+          }
+        }
+      }
     }
 
-    if (afterCursor && afterCursor.attributes) {
-      AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
-    }
-    if (beforeCursor && beforeCursor.attributes && beforeCursor.attributes['mathquill-command-id']) {
-      BC = beforeCursor.attributes['mathquill-command-id'].value ? beforeCursor.attributes['mathquill-command-id'].value : ''
-    }
+    // if (afterCursor && afterCursor.attributes) {
+    //   AC = afterCursor.attributes['mathquill-command-id'].value ? afterCursor.attributes['mathquill-command-id'].value : ''
+    // }
+    // if (beforeCursor && beforeCursor.attributes && beforeCursor.attributes['mathquill-command-id']) {
+    //   BC = beforeCursor.attributes['mathquill-command-id'].value ? beforeCursor.attributes['mathquill-command-id'].value : ''
+    // }
     if (cursorParent && cursorParent.attributes && cursorParent.attributes['mathquill-block-id']) {
       CP = cursorParent.attributes['mathquill-block-id'].value ? cursorParent.attributes['mathquill-block-id'].value : ''
       CPC = cursorParent.attributes['class'].value ? cursorParent.attributes['class'].value : '' 
@@ -278,19 +333,22 @@ class MathPad extends Component {
     if (CP && !AC) {
       isLast = true
     }
-      let cursorReport = {
-        AC,
-        CP,
-        CPC,
-        BC,
-        E,
-        isLast 
-      }
+      // let cursorReport = {
+      //   AC,
+      //   CP,
+      //   CPC,
+      //   BC,
+      //   E,
+      //   isLast 
+      // }
       this.setState({
-        cursorReport
+        cursorReport: E
       })
-      console.log('E =', E)
+      
+      // console.log('E = ', E)
       console.log('AC = ', AC)
+      // console.log('BC = ', BC)
+      // console.log('CP = ', CP)
   }
 
   

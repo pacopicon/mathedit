@@ -84,3 +84,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* from viktorstrate react-mathquill:
+
+body {
+  margin: 90px 80px;
+  font-family: Georgia, 'Times New Roman', Times, serif
+}
+.result-container {
+  margin: 20px 0 0;
+  max-width: 600px;
+}
+.result-latex {
+  margin-left: 10px;
+  font-weight: 600;
+}
+    
+    */

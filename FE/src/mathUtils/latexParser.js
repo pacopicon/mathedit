@@ -3,7 +3,7 @@ export const parseLatex = (_latex, _inputs) => {
   let inputs = _inputs
   const limit = 2*(latex.length)
   let   count = 0
-  const RESERVED = /(:|\\:|=|>|<|\+|-|\\pm\s|\\cdot\s|\\times\s|\\div\s|\\frac\{|\}\{|(\})(?!\{)|\]\{|\||\'|\\sqrt\{|\\sqrt\[|!|\.|\\int\s|∂|\\partial\s|\\log\s|\\left\(|\\left\[|\\right\)|\\right\]|\\binom\{|\\to\s|\\infty\s|\\ge\s|\\le\s|\\circ\s|\\ln\s|\\partial\s|\\lim\s|\\sum\s|\\prod\s|\\sin\s|\\cos\s|\\tan\s|\\cot\s|\\csc\s|\\sec\s|\\sinh\s|\\cosh\s|\\tanh\s|\\coth\s|\\sech\s|\\arcsin\s|\\arccos\s|\\arctan\s|\\arccot\s|\\arccsc\s|\\arcsinh\s|\\arccosh\s|\\arctanh\s|\\arccoth\s|\\arcsech\s|\\begin\{pmatrix\}|\\end\{pmatrix\}|&|\\\\\s|\\rightarrow\s|\\overline\{|\\vec\{|\\in\s|\\forall\s|\\notin\s|\\exists\s|\\mathbb\{R\}|\\mathbb\{C\}|\\mathbb\{N\}|\\mathbb\{Z\}|\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)/g
+  const RESERVED = /(\\text\{|:|=|>|<|\+|-|\\pm|\\cdot|\\times|\\div|\\frac\{|\}\{|(\})(?!\{)|\]\{|\||\'|\\sqrt\{|\\sqrt\[|!|\.|\\int|∂|\\partial(\s)?|\\left(\(|\[|\|)|\\right(\)|\]|\|)|\\binom\{|\\to|\\infty|\\ge(\s)?|\\le(\s)?|\\circ(\s)?|\\sum|\\prod|\\sin|\\cos|\\tan|\\cot|\\csc|\\sec|\\sinh|\\cosh|\\tanh|\\coth|\\sech|\\arcsin|\\arccos|\\arctan|\\arccot|\\arccsc|\\arcsinh|\\arccosh|\\arctanh|\\arccoth|\\arcsech|\\begin\{pmatrix\}|\\end\{pmatrix\}|&|\\\\|\\rightarrow|\\overline\{|\\vec\{|\\in|\\forall|\\notin|\\exists|\\mathbb\{R\}|\\mathbb\{C\}|\\mathbb\{N\}|\\mathbb\{Z\}|\\alpha(\s)?|\\beta(\s)?|\\gamma(\s)?|\\Gamma(\s)?|\\delta(\s)?|\\Delta(\s)?|\\epsilon(\s)?|\\varepsilon(\s)?|\\zeta(\s)?|\\eta(\s)?|\\theta(\s)?|\\Theta(\s)?|\\vartheta(\s)?|\\iota(\s)?|\\kappa(\s)?|\\lambda(\s)?|\\Lambda(\s)?|\\mu(\s)?|\\nu(\s)?|\\xi(\s)?|\\Xi(\s)?|\\pi(\s)?|\\Pi(\s)?|\\varpi(\s)?|\\rho(\s)?|\\varrho(\s)?|\\sigma(\s)?|\\varsigma(\s)?|\\Sigma(\s)?|\\tau(\s)?|\\upsilon(\s)?|\\Upsilon(\s)?|\\phi(\s)?|\\varphi(\s)?|\\chi(\s)?|\\psi(\s)?|\\Psi(\s)?|\\omega(\s)?|\\Omega(\s)?|\\l|\\\s)/g
 
   const SUPER = '^{'
   const SUB = '_{'
@@ -38,12 +38,14 @@ export const parseLatex = (_latex, _inputs) => {
   const SP_varInput = () => {
     let alpha = 'abcdefghijklmnopqrstuvwxyz'
     if (latex[0] != ' ') {
+      
       if (0 == latex.search(RESERVED)) {
         let match = ''
         while (match = RESERVED.exec(latex)) {
           let start = match.index
           let letter = match[0]
           if (start == 0) {
+            // console.log('letter = ', letter)
             inputs.push(letter)
             latex = latex.replace(letter, '')
           }

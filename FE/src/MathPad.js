@@ -31,6 +31,7 @@ class MathPad extends Component {
     this.createMathLineElement = this.createMathLineElement.bind(this)
     this.getIndexFromLatex = this.getIndexFromLatex.bind(this)
     this.moveCursor = this.moveCursor.bind(this)
+    this.shortCutKey = this.shortCutKey.bind(this)
   }
 
   createMathLineElement(id, pushedLatex) {
@@ -237,9 +238,37 @@ class MathPad extends Component {
       }
       for (let i=0; i<list.length; i++) {
         let child = list[i]
-        // console.log('list = ', list)
-        // console.log('child = ', child)
-        // console.log('child.attributes = ', child.attributes)
+
+        // The String "=>" 
+        // is replaced by '→' in the DOM 
+        // is replaced by '\\rightarrow' in the Latex String 
+        // pushes '\\rightarrow' into Chunked Latex"
+        if (list[i-1] && list[i-1].innerText == '=' && list[i].innerText == '>') {
+          list[i-1].parentNode.removeChild(list[i-1])
+          list[i-1].innerHTML = '→'
+        }
+        // The String "log" 
+        // is replaced by 'log' in the DOM 
+        // is replaced by '\\log' in the Latex String 
+        // pushes '\\log' into Chunked Latex"
+
+        // if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
+        //   list[i-2].parentNode.removeChild(list[i-2])
+        //   list[i-2].parentNode.removeChild(list[i-2])
+        //   list[i-2].innerHTML = 'log'
+        // }
+
+        if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
+          list[i-2].parentNode.removeChild(list[i-2])
+          list[i-2].parentNode.removeChild(list[i-2])
+          list[i-2].innerHTML = 'log'
+          let id = Number(list[i-2].attributes['mathquill-command-id'].nodeValue)
+          let sub = document.createElement('span')
+
+          sub.innerHTML = `<span class="mq-supsub mq-non-leaf" mathquill-command-id="${id+1}"><span class="mq-sub mq-hasCursor" mathquill-block-id="${id+2}"></span><span style="display:inline-block;width:0">​</span></span>`
+          list[i-2].parentNode.appendChild(sub)
+        }
+
         let obj   = {}
         obj.value = child.children.length == 0 ? child.innerText : getSmallestNode(child, true)
         obj.name  = child.className ? child.className : child.nodeName
@@ -264,7 +293,7 @@ class MathPad extends Component {
       // let isContainer = false
       for (let i=0; i<E.length; i++) {
         let item = E[i]
-        console.log('item = ', item)
+        // console.log('item = ', item)
         let node = ''
         if (item.name) {
           node = item.name
@@ -279,7 +308,7 @@ class MathPad extends Component {
         }
         if (Array.isArray(item.value) && item.value.length > 0) {
           arr = flattenLatexElementObject(item.value, arr)
-          if (!item.name.includes('mq-nthroot mq-non-leaf') && !item.name.includes('mq-numerator') && !item.name.includes('mq-denominator') && !item.name.includes('mq-fraction')) {
+          if (!item.name.includes('mq-nthroot mq-non-leaf') && !item.name.includes('mq-numerator') && !item.name.includes('mq-denominator') && !item.name.includes('mq-fraction') && !item.name.includes('mq-sub')) {
             arr.push('container')
           }
         }
@@ -299,7 +328,7 @@ class MathPad extends Component {
           output.push(arr[i])
         } 
       }
-      console.log('arr2 = ', output)
+      // console.log('arr2 = ', output)
       return output
     }
 
@@ -346,15 +375,22 @@ class MathPad extends Component {
       })
       
       // console.log('E = ', E)
-      console.log('AC = ', AC)
+      // console.log('AC = ', AC)
       // console.log('BC = ', BC)
       // console.log('CP = ', CP)
   }
 
+  shortCutKey(latex) {
+    if (latex.includes('=>')) {
+      latex = latex.replace('=>', '\\rightarrow')
+    }
+    return latex
+  }
   
   getLatexPerLine(latex, id) {
     let { latexPerLine, chunkedLatexPerLine } = this.state
     const i = this.getCurrentMathLineIndex()
+    latex = this.shortCutKey(latex)
     latexPerLine[i] = latex
     chunkedLatexPerLine[i] = [...parseLatex(latex, [])]
     // console.log('latex = ', latex)

@@ -227,6 +227,41 @@ class MathPad extends Component {
 
     let cursorParent = document.querySelector('.mq-hasCursor')
 
+    const pressKeys = (key1, key2) => {
+      let event1 = document.createEvent('Event')
+      let event2 = document.createEvent('Event')
+      event1.key = key1
+      event2.key = key2
+      event1.initEvent('keydown')
+      event2.initEvent('keypress')
+      document.dispatchEvent(event1)
+      document.dispatchEvent(event2)
+    }
+
+    // const pressKey = (key) => {
+    //   let textarea = document.querySelector('textarea')
+    //   console.log('textarea = ', textarea)
+    //   var event = textarea.createEvent('Event');
+    //   // event.keyCode = key; 
+    //   event.key = key;
+    //   event.initEvent('keydown');
+    //   document.dispatchEvent(event);
+    // }
+
+    const setNativeValue = (element, value) => {
+      const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
+      const prototype = Object.getPrototypeOf(element)
+      const { set: prototypeValueSetter } = Object.getOwnPropertyDescriptor(prototype, 'value') || {}
+
+      if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
+        prototypeValueSetter.call(element, value)
+      } else if (valueSetter) {
+        valueSetter.call(element, value)
+      } else {
+        throw new Error('The given element does not have a value setter')
+      }
+    }
+
     const getSmallestNode = (list, isNested) => {
       const output = []
       // console.log('list = ', list)
@@ -258,15 +293,25 @@ class MathPad extends Component {
         //   list[i-2].innerHTML = 'log'
         // }
 
+        // if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
+        //   list[i-2].parentNode.removeChild(list[i-2])
+        //   list[i-2].parentNode.removeChild(list[i-2])
+        //   list[i-2].innerHTML = 'log'
+        //   let id = Number(list[i-2].attributes['mathquill-command-id'].nodeValue)
+        //   let sub = document.createElement('span')
+
+        //   sub.innerHTML = `<span class="mq-supsub mq-non-leaf" mathquill-command-id="${id+1}"><span class="mq-sub mq-hasCursor" mathquill-block-id="${id+2}"></span><span style="display:inline-block;width:0">​</span></span>`
+        //   list[i-2].parentNode.appendChild(sub)
+        // }
+
         if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
           list[i-2].parentNode.removeChild(list[i-2])
           list[i-2].parentNode.removeChild(list[i-2])
           list[i-2].innerHTML = 'log'
-          let id = Number(list[i-2].attributes['mathquill-command-id'].nodeValue)
-          let sub = document.createElement('span')
 
-          sub.innerHTML = `<span class="mq-supsub mq-non-leaf" mathquill-command-id="${id+1}"><span class="mq-sub mq-hasCursor" mathquill-block-id="${id+2}"></span><span style="display:inline-block;width:0">​</span></span>`
-          list[i-2].parentNode.appendChild(sub)
+          const textarea = document.getElementsByTagName('textarea')[0]
+          setNativeValue(textarea, '_')
+          textarea.dispatchEvent(new Event('input', { bubbles: true }))
         }
 
         let obj   = {}

@@ -18,10 +18,12 @@ class MathPad extends Component {
       cursorReport: '',
       cursorLatexPositionSnippet: '',
       numStrokes: 0,
-      mod: 0
+      mod: 0,
+      isCTRLDown: false
     }
     this.getLatexPerLine = this.getLatexPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
+    this.handleKeyUpEvents = this.handleKeyUpEvents.bind(this)
     this.convertLatexToObject = this.convertLatexToObject.bind(this)
     this.insertComponent = this.insertComponent.bind(this)
     this.handleFocus = this.handleFocus.bind(this)
@@ -44,10 +46,6 @@ class MathPad extends Component {
         getId={this.getId}
       />
     )
-  }
-
-  componentDidUpdate() {
-    
   }
 
   componentWillMount() {
@@ -181,6 +179,14 @@ class MathPad extends Component {
     this.getIndexFromLatex(latex, 0)
   }
 
+  handleKeyUpEvents(e) {
+    if (e.key == 'Control') {
+      this.setState({
+        isCTRLDown: false
+      })
+    }
+  }
+
   handleKeyDownEvents(e) {
     const setNativeValue = (element, value) => {
       const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
@@ -203,7 +209,7 @@ class MathPad extends Component {
     }
 
     const i = this.getCurrentMathLineIndex()
-    const { latexPerLine, cursorPos } = this.state
+    const { latexPerLine, latexArrayPerLine, cursorPos } = this.state
     const latex = latexPerLine[i]
     const inputWidth = latex ? latex.length : 0
     // this.setState({
@@ -215,31 +221,68 @@ class MathPad extends Component {
       // Carriage Return
       this.insertComponent()
       this.convertLatexToObject(latex, i)
+
     } else if (e.key == 'ArrowLeft') {
+
       let _mod = cursorPos.b == -1 ? 0 : -1
       this.convertLatexToObject(latex, i)
       // this.getIndexFromLatex(latex, _mod)
       // this.moveCursor()
       // console.log('cursorPos = ', this.state.cursorPos)
+
     } else if (e.key == 'ArrowRight') {
+
       let _mod = cursorPos.a == inputWidth ? 0 : 1
       this.convertLatexToObject(latex, i)
       // this.getIndexFromLatex(latex, _mod)
       // this.moveCursor()
       // console.log('cursorPos = ', this.state.cursorPos)
+
     } else if (e.key == 'ArrowUp') {
+
       this.convertLatexToObject(latex, i)
       this.moveCursor()
-    } else if (e.key == 'Backspace') {
-      if (latex) {
-        console.log(`checkLastWord('log_{ }', latex) =`, checkLastWord('log_{ }', latex))
+
+    } else if (e.key == 'Control') {
+      console.log('control')
+      this.setState({
+        isCTRLDown: true
+      })
+
+    } else if (e.key == '.') {
+      if (this.state.isCTRLDown) {
+        e.preventDefault()
+        const textarea = document.getElementsByTagName('textarea')[0]
+        setNativeValue(textarea, '→')
+        textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
+
+    } else if (e.key == 'Backspace') {
+
       if (latex && checkLastWord('log_{ }', latex)) {
-        
         const subParent = document.getElementsByClassName('mq-hasCursor')[0].parentNode
-        
         subParent.parentNode.removeChild(subParent)
       }
+      if (latex && checkLastWord('=', latex)) {
+        // const textarea = document.getElementsByTagName('textarea')[0]
+        // setNativeValue(textarea, '=')
+        // textarea.dispatchEvent(new Event('input', { bubbles: true }))
+        let newLatex = latex.slice(0, latex.indexOf('='))
+        latexPerLine[i] = newLatex
+        let latexArr = latexArrayPerLine[i]
+        let last = latexArr.length - 1
+        if (latexArr[last] == '=') {
+          latexArr.pop()
+        }
+        latexArrayPerLine[i] = latexArr
+        console.log('latex = ', latex)
+        console.log('newLatex = ', newLatex)
+        this.setState({
+          latexPerLine,
+          latexArrayPerLine
+        })
+      }
+
     } else if (e.key) {
       console.log('e.key = ', e.key)
       if (latex && checkLastWord('log', latex)) {
@@ -282,8 +325,8 @@ class MathPad extends Component {
         // is replaced by '\\rightarrow' in the Latex String 
         // pushes '\\rightarrow' into Chunked Latex"
         if (list[i-1] && list[i-1].innerText == '=' && list[i].innerText == '>') {
-          list[i-1].parentNode.removeChild(list[i-1])
-          list[i-1].innerHTML = '→'
+          // list[i-1].parentNode.removeChild(list[i-1])
+          // list[i-1].innerHTML = '→'
         }
         // The String "log" 
         // is replaced by 'log' in the DOM 
@@ -425,8 +468,12 @@ class MathPad extends Component {
   }
 
   shortCutKey(latex) {
-    if (latex.includes('=>')) {
-      latex = latex.replace('=>', '\\rightarrow')
+    String.prototype.replaceAll = function(search, replacement) {
+      var target = this;
+      return target.split(search).join(replacement);
+    };
+    if (latex.includes('→')) {
+      latex = latex.replaceAll('→', '\\rightarrow')
     }
     return latex
   }
@@ -451,7 +498,7 @@ class MathPad extends Component {
   render() {
     let { MathLines } = this.state
     return (
-      <div id="MathPad" onKeyDown={this.handleKeyDownEvents} onMouseDown={this.handleFocus}>
+      <div id="MathPad" onKeyDown={this.handleKeyDownEvents} onKeyUp={this.handleKeyUpEvents} onMouseDown={this.handleFocus}>
         <Header />
         <ul id='ul'>{ MathLines }</ul>
       </div>

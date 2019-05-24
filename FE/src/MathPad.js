@@ -11,7 +11,7 @@ class MathPad extends Component {
     this.state = {
       MathLines: '',
       latexPerLine: [],
-      chunkedLatexPerLine: [],
+      latexArrayPerLine: [],
       currentMathLineId: '',
       cursorPos: '',
       orderOfComponents: '',
@@ -158,7 +158,7 @@ class MathPad extends Component {
       let b1  = latex ? latex.length - 1 : -1
       let b = b1 + mod
       let a = b + 1
-      // console.log(`b1 = ${b1}, mod = ${mod}, a = ${a}`)
+      console.log(`b1 = ${b1}, mod = ${mod}, a = ${a}`)
       this.setState({
         cursorPos: { b, a }
       }, () => {
@@ -173,7 +173,35 @@ class MathPad extends Component {
     })
   }
 
+  handleFocus(e) {
+    let { latexPerLine } = this.state
+    const i = this.getCurrentMathLineIndex()
+    const latex = latexPerLine[i]
+    this.convertLatexToObject(latex, i)
+    this.getIndexFromLatex(latex, 0)
+  }
+
   handleKeyDownEvents(e) {
+    const setNativeValue = (element, value) => {
+      const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
+      const prototype = Object.getPrototypeOf(element)
+      const { set: prototypeValueSetter } = Object.getOwnPropertyDescriptor(prototype, 'value') || {}
+
+      if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
+        prototypeValueSetter.call(element, value)
+      } else if (valueSetter) {
+        valueSetter.call(element, value)
+      } else {
+        throw new Error('The given element does not have a value setter')
+      }
+    }
+
+    const checkLastWord = (word, latex) => {
+      let penult = latex.length - (word.length) 
+      let lastWord = latex.slice(penult)
+      return lastWord == word
+    }
+
     const i = this.getCurrentMathLineIndex()
     const { latexPerLine, cursorPos } = this.state
     const latex = latexPerLine[i]
@@ -202,17 +230,15 @@ class MathPad extends Component {
     } else if (e.key == 'ArrowUp') {
       this.convertLatexToObject(latex, i)
       this.moveCursor()
+    } else if (e.key) {
+      if (latex && checkLastWord('log', latex)) {
+        const textarea = document.getElementsByTagName('textarea')[0]
+        setNativeValue(textarea, '_')
+        textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      }
     } else {
-      // this.convertLatexToObject(latex)
-    }
-  }
 
-  handleFocus(e) {
-    let { latexPerLine } = this.state
-    const i = this.getCurrentMathLineIndex()
-    const latex = latexPerLine[i]
-    this.convertLatexToObject(latex, i)
-    this.getIndexFromLatex(latex, 0)
+    }
   }
 
   convertLatexToObject(latex, index) {
@@ -227,41 +253,6 @@ class MathPad extends Component {
 
     let cursorParent = document.querySelector('.mq-hasCursor')
 
-    const pressKeys = (key1, key2) => {
-      let event1 = document.createEvent('Event')
-      let event2 = document.createEvent('Event')
-      event1.key = key1
-      event2.key = key2
-      event1.initEvent('keydown')
-      event2.initEvent('keypress')
-      document.dispatchEvent(event1)
-      document.dispatchEvent(event2)
-    }
-
-    // const pressKey = (key) => {
-    //   let textarea = document.querySelector('textarea')
-    //   console.log('textarea = ', textarea)
-    //   var event = textarea.createEvent('Event');
-    //   // event.keyCode = key; 
-    //   event.key = key;
-    //   event.initEvent('keydown');
-    //   document.dispatchEvent(event);
-    // }
-
-    const setNativeValue = (element, value) => {
-      const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
-      const prototype = Object.getPrototypeOf(element)
-      const { set: prototypeValueSetter } = Object.getOwnPropertyDescriptor(prototype, 'value') || {}
-
-      if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
-        prototypeValueSetter.call(element, value)
-      } else if (valueSetter) {
-        valueSetter.call(element, value)
-      } else {
-        throw new Error('The given element does not have a value setter')
-      }
-    }
-
     const getSmallestNode = (list, isNested) => {
       const output = []
       // console.log('list = ', list)
@@ -273,6 +264,8 @@ class MathPad extends Component {
       }
       for (let i=0; i<list.length; i++) {
         let child = list[i]
+        let last = list[list.length - 1]
+        let lastChild = list[last]
 
         // The String "=>" 
         // is replaced by '→' in the DOM 
@@ -305,14 +298,10 @@ class MathPad extends Component {
         // }
 
         if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
-          list[i-2].parentNode.removeChild(list[i-2])
-          list[i-2].parentNode.removeChild(list[i-2])
-          list[i-2].innerHTML = 'log'
-
-          const textarea = document.getElementsByTagName('textarea')[0]
-          setNativeValue(textarea, '_')
-          textarea.dispatchEvent(new Event('input', { bubbles: true }))
-        }
+          // list[i-2].parentNode.removeChild(list[i-2])
+          // list[i-2].parentNode.removeChild(list[i-2])
+          // list[i-2].innerHTML = 'log'
+        } 
 
         let obj   = {}
         obj.value = child.children.length == 0 ? child.innerText : getSmallestNode(child, true)
@@ -433,16 +422,16 @@ class MathPad extends Component {
   }
   
   getLatexPerLine(latex, id) {
-    let { latexPerLine, chunkedLatexPerLine } = this.state
+    let { latexPerLine, latexArrayPerLine } = this.state
     const i = this.getCurrentMathLineIndex()
     latex = this.shortCutKey(latex)
     latexPerLine[i] = latex
-    chunkedLatexPerLine[i] = [...parseLatex(latex, [])]
+    latexArrayPerLine[i] = [...parseLatex(latex, [])]
     // console.log('latex = ', latex)
     this.getIndexFromLatex(latex, 0)
     this.setState({
       latexPerLine,
-      chunkedLatexPerLine
+      latexArrayPerLine
     }, () => {
       this.convertLatexToObject(latex, i)
       // this.moveCursor()

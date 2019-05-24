@@ -158,7 +158,7 @@ class MathPad extends Component {
       let b1  = latex ? latex.length - 1 : -1
       let b = b1 + mod
       let a = b + 1
-      console.log(`b1 = ${b1}, mod = ${mod}, a = ${a}`)
+      // console.log(`b1 = ${b1}, mod = ${mod}, a = ${a}`)
       this.setState({
         cursorPos: { b, a }
       }, () => {
@@ -230,17 +230,27 @@ class MathPad extends Component {
     } else if (e.key == 'ArrowUp') {
       this.convertLatexToObject(latex, i)
       this.moveCursor()
+    } else if (e.key == 'Backspace') {
+      if (latex) {
+        console.log(`checkLastWord('log_{ }', latex) =`, checkLastWord('log_{ }', latex))
+      }
+      if (latex && checkLastWord('log_{ }', latex)) {
+        
+        const subParent = document.getElementsByClassName('mq-hasCursor')[0].parentNode
+        
+        subParent.parentNode.removeChild(subParent)
+      }
     } else if (e.key) {
+      console.log('e.key = ', e.key)
       if (latex && checkLastWord('log', latex)) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '_')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
-    } else {
-
     }
   }
 
+  // CONVERT_LATEX_TO_OBJECT
   convertLatexToObject(latex, index) {
     let el     = document.getElementById('ul')
     // let e     = document.querySelector('.mq-root-block:last-child')

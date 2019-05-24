@@ -208,6 +208,27 @@ class MathPad extends Component {
       return lastWord == word
     }
 
+    const checkComplexLastWord = (patt, latex) => {
+      let match = ''
+      let word = ''
+      let index = ''
+      while (match = patt.exec(latex)) {
+        let start = match.index
+        word = match[0]
+        index = match['index']
+      }
+      let lastWord = latex.slice(index)
+      return lastWord == word
+    }
+
+    // const QuickKey = (latex, word, input) => {
+    //   if (latex && checkLastWord(word, latex) ) {
+    //     const textarea = document.getElementsByTagName('textarea')[0]
+    //     setNativeValue(textarea, input)
+    //     textarea.dispatchEvent(new Event('input', { bubbles: true }))
+    //   }
+    // }
+
     const i = this.getCurrentMathLineIndex()
     const { latexPerLine, latexArrayPerLine, cursorPos } = this.state
     const latex = latexPerLine[i]
@@ -232,6 +253,13 @@ class MathPad extends Component {
 
     } else if (e.key == 'ArrowRight') {
 
+      let logPatt = /\\log_\{(\w+|\\cdot\s|\+|\-|\\frac\{(\w+|\\cdot\s|\+|\-|\\frac\{\w+\}\{\w+\})+\}\{(\w+|\\cdot\s|\+|\-|\\frac\{\w+\}\{\w+\})+\})+\}/g
+      if ( latex && checkComplexLastWord(logPatt, latex) ) {
+        const textarea = document.getElementsByTagName('textarea')[0]
+        setNativeValue(textarea, '(')
+        textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+
       let _mod = cursorPos.a == inputWidth ? 0 : 1
       this.convertLatexToObject(latex, i)
       // this.getIndexFromLatex(latex, _mod)
@@ -249,6 +277,14 @@ class MathPad extends Component {
         isCTRLDown: true
       })
 
+    } else if (e.key == 'i') {
+      if (this.state.isCTRLDown) {
+        e.preventDefault()
+        const textarea = document.getElementsByTagName('textarea')[0]
+        setNativeValue(textarea, '∞')
+        textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+
     } else if (e.key == '.') {
       if (this.state.isCTRLDown) {
         e.preventDefault()
@@ -258,36 +294,23 @@ class MathPad extends Component {
       }
 
     } else if (e.key == 'Backspace') {
+      // DO NOT DELETE, THIS CODE MIGHT BECOME NECESSARY
 
-      if (latex && checkLastWord('log_{ }', latex)) {
-        const subParent = document.getElementsByClassName('mq-hasCursor')[0].parentNode
-        subParent.parentNode.removeChild(subParent)
-      }
-      if (latex && checkLastWord('=', latex)) {
-        // const textarea = document.getElementsByTagName('textarea')[0]
-        // setNativeValue(textarea, '=')
-        // textarea.dispatchEvent(new Event('input', { bubbles: true }))
-        let newLatex = latex.slice(0, latex.indexOf('='))
-        latexPerLine[i] = newLatex
-        let latexArr = latexArrayPerLine[i]
-        let last = latexArr.length - 1
-        if (latexArr[last] == '=') {
-          latexArr.pop()
-        }
-        latexArrayPerLine[i] = latexArr
-        console.log('latex = ', latex)
-        console.log('newLatex = ', newLatex)
-        this.setState({
-          latexPerLine,
-          latexArrayPerLine
-        })
-      }
+      // if (latex && checkLastWord('log_{ }', latex)) {
+      //   const subParent = document.getElementsByClassName('mq-hasCursor')[0].parentNode
+      //   subParent.parentNode.removeChild(subParent)
+      // }
 
     } else if (e.key) {
       console.log('e.key = ', e.key)
-      if (latex && checkLastWord('log', latex)) {
+      if (latex && (checkLastWord('log', latex) || checkLastWord('lim', latex))) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '_')
+        textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+      if (latex && checkLastWord('ln', latex) ) {
+        const textarea = document.getElementsByTagName('textarea')[0]
+        setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
     }
@@ -468,13 +491,22 @@ class MathPad extends Component {
   }
 
   shortCutKey(latex) {
-    String.prototype.replaceAll = function(search, replacement) {
-      var target = this;
-      return target.split(search).join(replacement);
-    };
-    if (latex.includes('→')) {
-      latex = latex.replaceAll('→', '\\rightarrow')
+    const searchAndReplace = (domEl, ltxStr) => {
+      String.prototype.replaceAll = function(search, replacement) {
+        var target = this;
+        return target.split(search).join(replacement);
+      };
+      if (latex.includes(domEl)) {
+        latex = latex.replaceAll(domEl, ltxStr)
+      }
+      return latex
     }
+    latex = searchAndReplace('→', '\\rightarrow')
+    latex = searchAndReplace('∞', '\\infty')
+    // if (latex.includes('→')) {
+    //   latex = latex.replaceAll('→', '\\rightarrow')
+    // }
+
     return latex
   }
   

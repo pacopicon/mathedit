@@ -14,7 +14,7 @@ class Header extends Component {
       <Navbar id="Header" collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <div className="white">MathNotes</div>
+            <div className="white Alegreya">MathNotes</div>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
@@ -28,10 +28,10 @@ class Header extends Component {
               }}
               options={names}
             />  */}
-            <NavDropdown eventKey={3} title="Export project" id="basic-nav-dropdown">
-              <MenuItem eventKey={3.1}>DocX</MenuItem>
-              <MenuItem eventKey={3.2}>Pages</MenuItem>
-              <MenuItem eventKey={3.3}>Pdf</MenuItem>
+            <NavDropdown className="Alegreya" eventKey={3} title="Export project" id="basic-nav-dropdown">
+              <MenuItem className="Alegreya" eventKey={3.1}>DocX</MenuItem>
+              <MenuItem className="Alegreya" eventKey={3.2}>Pages</MenuItem>
+              <MenuItem className="Alegreya" eventKey={3.3}>Pdf</MenuItem>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

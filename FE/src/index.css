@@ -2,10 +2,14 @@ body {
   margin: 0;
   padding: 0;
   /* font-family: 'Noto Serif', serif; */
-  font-family: 'Alegreya', serif;
+  /* font-family: 'Alegreya', serif; */
   /* font-family: 'Tinos', serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.Alegreya {
+  font-family: 'Alegreya', serif;
 }
 
 nav div.container {

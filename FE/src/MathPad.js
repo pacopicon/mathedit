@@ -205,11 +205,30 @@ class MathPad extends Component {
       }
     }
 
-    const checkLastWord = (word, latex) => {
-      let penult = latex.length - (word.length) 
-      let lastWord = latex.slice(penult)
-      return lastWord == word
+    const checkLastWord = (words, latex) => {
+      for (let i=0; i<words.length; i++) {
+        let word = words[i]
+        // console.log('word = ', word)
+        let penult = latex.length - (word.length) 
+        let lastWord = latex.slice(penult)
+        if (lastWord == word) {
+          return lastWord == word
+        }
+      }
     }
+
+    const typeWord = (word, latex) => {
+        let wordInput = ''
+        if (word == 'alpha') {
+          wordInput = '\\alpha '
+        }
+        for (let i=0; i<wordInput.length; i++) {
+          let letter = wordInput[i]
+          const textarea = document.getElementsByTagName('textarea')[0]
+          setNativeValue(textarea, letter)
+          textarea.dispatchEvent(new Event('input', { bubbles: true }))
+        }
+      }
 
     const checkComplexLastWord = (patt, latex) => {
       let match = ''
@@ -224,8 +243,8 @@ class MathPad extends Component {
       let lastWord = latex.slice(index)
       let arrowArr = word.match(fracPatt)
       return {
-        bool: lastWord == word,
-        numNests:  arrowArr.length
+        bool: lastWord && word ? lastWord == word : false,
+        numNests:  arrowArr && arrowArr.length ? arrowArr.length : 0
       }
     }
 
@@ -261,7 +280,7 @@ class MathPad extends Component {
 
     } else if (e.key == 'ArrowRight') {
 
-      let logPatt   = /\\log_(\{|\w+|\\cdot|\\div|\+|\-|\\frac\{|\}\{|\})+/g
+      let logPatt   = /\\log_(\{|(\\)?\w+(\s)?|\\cdot|\\div|\+|\-|\\frac\{|\}\{|\})+/g
       if (latex) {
         let res     = checkComplexLastWord(logPatt, latex)
         let bool    = res.bool
@@ -272,7 +291,7 @@ class MathPad extends Component {
           numArrowRights = 0
           numNests = 1
         }
-        console.log(`BEFORE numArrowRights = ${numArrowRights}\nres.numNests = ${res.numNests}\nnumNests = ${numNests}\nMATCH = ${numArrowRights == numNests}`)
+        // console.log(`BEFORE numArrowRights = ${numArrowRights}\nres.numNests = ${res.numNests}\nnumNests = ${numNests}\nMATCH = ${numArrowRights == numNests}`)
         if ( latex && bool && numArrowRights == numNests) {
           const textarea = document.getElementsByTagName('textarea')[0]
           setNativeValue(textarea, '(')
@@ -301,7 +320,7 @@ class MathPad extends Component {
       this.moveCursor()
 
     } else if (e.key == 'Control') {
-      console.log('control')
+      // console.log('control')
       this.setState({
         isCTRLDown: true
       })
@@ -333,16 +352,33 @@ class MathPad extends Component {
 
     } else if (e.key) {
       // console.log('e.key = ', e.key)
-      if (latex && (checkLastWord('log', latex) || checkLastWord('lim', latex))) {
+      let words = ['lim']
+      if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '_')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
-      if (latex && checkLastWord('ln', latex) ) {
+      words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','sech','arcsin','arccos','arctan','arccot','arcsec','arccsc','arcsinh','arccosh','arctanh','arccoth','arcsech']
+      if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
+      // words = ['alpha']
+      // if ( latex && checkLastWord(words, latex) ) {
+      //   const textarea = document.getElementsByTagName('textarea')[0]
+      //   setNativeValue(textarea, 'α')
+      //   textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      // }
+      // words = ['alpha']
+      // if (latex && checkLastWord(words, latex) ) {
+      //   typeWord(words[0])
+      // }
+      // if (latex && checkLastWord('\\alpha', latex)) {
+      //   const textarea = document.getElementsByTagName('textarea')[0]
+      //   setNativeValue(textarea, ' ')
+      //   textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      // }
     }
   }
 
@@ -533,6 +569,8 @@ class MathPad extends Component {
     }
     latex = searchAndReplace('→', '\\rightarrow')
     latex = searchAndReplace('∞', '\\infty')
+    // let alphaPatt = /(?<!\\)alpha/g
+    // latex = latex.replace(alphaPatt, '')
     // if (latex.includes('→')) {
     //   latex = latex.replaceAll('→', '\\rightarrow')
     // }

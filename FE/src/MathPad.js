@@ -5,6 +5,9 @@ import './index.css';
 import { rando, processStr } from './utils'
 import { parseLatex } from './mathUtils/latexParser'
 
+let numNests = 1
+let numArrowRights = 0
+
 class MathPad extends Component {
   constructor(props) {
     super(props)
@@ -212,14 +215,18 @@ class MathPad extends Component {
       let match = ''
       let word = ''
       let index = ''
+      let fracPatt = /\\frac\{/g
+
       while ((match = patt.exec(latex)) !== null) {
         word = match[0]
         index = match.index
       }
-      console.log('match = ', match)
       let lastWord = latex.slice(index)
-      console.log(`index = ${index}, latex = ${latex}, lastWord = ${lastWord}, word = ${word}, lastWord == word => ${lastWord == word}`)
-      return lastWord == word
+      let arrowArr = word.match(fracPatt)
+      return {
+        bool: lastWord == word,
+        numNests:  arrowArr.length
+      }
     }
 
     // const QuickKey = (latex, word, input) => {
@@ -254,13 +261,33 @@ class MathPad extends Component {
 
     } else if (e.key == 'ArrowRight') {
 
-      let logPatt = /\\log_(\{|\w+|\\cdot|\\div|\+|\-|\})+/g
-      if ( latex && checkComplexLastWord(logPatt, latex) ) {
-        console.log('here')
-        const textarea = document.getElementsByTagName('textarea')[0]
-        setNativeValue(textarea, '(')
-        textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      let logPatt   = /\\log_(\{|\w+|\\cdot|\\div|\+|\-|\\frac\{|\}\{|\})+/g
+      if (latex) {
+        let res     = checkComplexLastWord(logPatt, latex)
+        let bool    = res.bool
+          numNests += res.numNests
+        if (bool) {
+          numArrowRights++
+        } else {
+          numArrowRights = 0
+          numNests = 1
+        }
+        console.log(`BEFORE numArrowRights = ${numArrowRights}\nres.numNests = ${res.numNests}\nnumNests = ${numNests}\nMATCH = ${numArrowRights == numNests}`)
+        if ( latex && bool && numArrowRights == numNests) {
+          const textarea = document.getElementsByTagName('textarea')[0]
+          setNativeValue(textarea, '(')
+          textarea.dispatchEvent(new Event('input', { bubbles: true }))
+          // numArrowRights = -1
+          // numNests = 0
+        } else {
+          numNests = 1
+          // numArrowRights = 0
+        }
+      } else {
+        numNests = 1
+        // numArrowRights = 0
       }
+      // console.log(`AFTER numArrowRights = ${numArrowRights}\nnumNests = ${numNests}`)
 
       let _mod = cursorPos.a == inputWidth ? 0 : 1
       this.convertLatexToObject(latex, i)
@@ -288,6 +315,7 @@ class MathPad extends Component {
       }
 
     } else if (e.key == '.') {
+      
       if (this.state.isCTRLDown) {
         e.preventDefault()
         const textarea = document.getElementsByTagName('textarea')[0]

@@ -212,12 +212,13 @@ class MathPad extends Component {
       let match = ''
       let word = ''
       let index = ''
-      while (match = patt.exec(latex)) {
-        let start = match.index
+      while ((match = patt.exec(latex)) !== null) {
         word = match[0]
-        index = match['index']
+        index = match.index
       }
+      console.log('match = ', match)
       let lastWord = latex.slice(index)
+      console.log(`index = ${index}, latex = ${latex}, lastWord = ${lastWord}, word = ${word}, lastWord == word => ${lastWord == word}`)
       return lastWord == word
     }
 
@@ -253,8 +254,9 @@ class MathPad extends Component {
 
     } else if (e.key == 'ArrowRight') {
 
-      let logPatt = /\\log_\{(\w+|\\cdot\s|\+|\-|\\frac\{(\w+|\\cdot\s|\+|\-|\\frac\{\w+\}\{\w+\})+\}\{(\w+|\\cdot\s|\+|\-|\\frac\{\w+\}\{\w+\})+\})+\}/g
+      let logPatt = /\\log_(\{|\w+|\\cdot|\\div|\+|\-|\})+/g
       if ( latex && checkComplexLastWord(logPatt, latex) ) {
+        console.log('here')
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
@@ -302,7 +304,7 @@ class MathPad extends Component {
       // }
 
     } else if (e.key) {
-      console.log('e.key = ', e.key)
+      // console.log('e.key = ', e.key)
       if (latex && (checkLastWord('log', latex) || checkLastWord('lim', latex))) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '_')

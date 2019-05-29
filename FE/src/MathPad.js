@@ -231,6 +231,7 @@ class MathPad extends Component {
       }
 
     const checkComplexLastWord = (patt, latex) => {
+      console.log('hit')
       let match = ''
       let word = ''
       let index = ''
@@ -350,15 +351,23 @@ class MathPad extends Component {
       //   subParent.parentNode.removeChild(subParent)
       // }
 
+    } else if (e.key == 'h') {
+      let words = ['sinh','cosh','tanh','coth']
+      if ( latex && checkLastWord(words, latex) ) {
+        const textarea = document.getElementsByTagName('textarea')[0]
+        setNativeValue(textarea, '(')
+        textarea.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+
     } else if (e.key) {
       // console.log('e.key = ', e.key)
-      let words = ['lim']
+      let words = ['lim', 'log']
       if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '_')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
-      words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','sech','arcsin','arccos','arctan','arccot','arcsec','arccsc','arcsinh','arccosh','arctanh','arccoth','arcsech']
+      words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccot}', '\\operatorname{arcsec}','\\operatorname{arccsc}','arcsinh','arccosh','arctanh','arccoth','arcsech']
       if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '(')

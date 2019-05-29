@@ -3,7 +3,8 @@ export const parseLatex = (_latex, _inputs) => {
   let inputs = _inputs
   const limit = 2*(latex.length)
   let   count = 0
-  const RESERVED = /(\\text\{|:|=|>|<|\+|-|\\pm|\\cdot|\\times|\\div|\\frac\{|\}\{|(\})(?!\{)|\]\{|\||\'|\\sqrt\{|\\sqrt\[|!|\.|\\int|∂|\\partial(\s)?|\\left(\(|\[|\|)|\\right(\)|\]|\|)|\\binom\{|\\to|\\infty|\\ge(\s)?|\\le(\s)?|\\circ(\s)?|\\sum|\\prod|\\sin|\\cos|\\tan|\\cot|\\csc|\\sec|\\sinh|\\cosh|\\tanh|\\coth|\\arcsin|\\arccos|\\operatorname\{(arccot|arccsc|arcsec|sech)\}|\\arctan|\\arcsinh|\\arccosh|\\arctanh|\\arccoth|\\arcsech|\\begin\{pmatrix\}|\\end\{pmatrix\}|&|\\\\|\\rightarrow|\\overline\{|\\vec\{|\\in|\\forall|\\notin|\\exists|\\mathbb\{R\}|\\mathbb\{C\}|\\mathbb\{N\}|\\mathbb\{Z\}|\\alpha(\s)?|\\beta(\s)?|\\gamma(\s)?|\\Gamma(\s)?|\\delta(\s)?|\\Delta(\s)?|\\epsilon(\s)?|\\varepsilon(\s)?|\\zeta(\s)?|\\eta(\s)?|\\theta(\s)?|\\Theta(\s)?|\\vartheta(\s)?|\\iota(\s)?|\\kappa(\s)?|\\lambda(\s)?|\\Lambda(\s)?|\\mu(\s)?|\\nu(\s)?|\\xi(\s)?|\\Xi(\s)?|\\pi(\s)?|\\Pi(\s)?|\\varpi(\s)?|\\rho(\s)?|\\varrho(\s)?|\\sigma(\s)?|\\varsigma(\s)?|\\Sigma(\s)?|\\tau(\s)?|\\upsilon(\s)?|\\Upsilon(\s)?|\\phi(\s)?|\\varphi(\s)?|\\chi(\s)?|\\psi(\s)?|\\Psi(\s)?|\\omega(\s)?|\\Omega(\s)?|\\l|\\\s)/g
+  const HANDLE = /\\operatorname\{(arccosh|arccot|arccoth|arccsc|arcsinh|arcsec|arcsech|arctanh|sech)\}/g
+  const RESERVED = /(\\text\{|:|=|>|<|\+|-|\\pm|\\cdot|\\times|\\div|\\frac\{|\}\{|(\})(?!\{)|\]\{|\||\'|\\sqrt\{|\\sqrt\[|!|\.|\\int|∂|\\partial(\s)?|\\left(\(|\[|\|)|\\right(\)|\]|\|)|\\binom\{|\\to|\\infty|\\ge(\s)?|\\le(\s)?|\\circ(\s)?|\\sum|\\prod|\\operatorname\{(arccosh|arccot|arccoth|arccsc|arcsinh|arcsec|arcsech|arctanh|sech)\}|\\begin\{pmatrix\}|\\end\{pmatrix\}|&|\\\\|\\rightarrow|\\overline\{|\\vec\{|\\in|\\forall|\\notin|\\exists|\\mathbb\{R\}|\\mathbb\{C\}|\\mathbb\{N\}|\\mathbb\{Z\}|\\alpha(\s)?|\\beta(\s)?|\\gamma(\s)?|\\Gamma(\s)?|\\delta(\s)?|\\Delta(\s)?|\\epsilon(\s)?|\\varepsilon(\s)?|\\zeta(\s)?|\\eta(\s)?|\\theta(\s)?|\\Theta(\s)?|\\vartheta(\s)?|\\iota(\s)?|\\kappa(\s)?|\\lambda(\s)?|\\Lambda(\s)?|\\mu(\s)?|\\nu(\s)?|\\xi(\s)?|\\Xi(\s)?|\\pi(\s)?|\\Pi(\s)?|\\varpi(\s)?|\\rho(\s)?|\\varrho(\s)?|\\sigma(\s)?|\\varsigma(\s)?|\\Sigma(\s)?|\\tau(\s)?|\\upsilon(\s)?|\\Upsilon(\s)?|\\phi(\s)?|\\varphi(\s)?|\\chi(\s)?|\\psi(\s)?|\\Psi(\s)?|\\omega(\s)?|\\Omega(\s)?|\\a|\\c|\\l|\\s|\\t|\\\s)/g
 
   const SUPER = '^{'
   const SUB = '_{'
@@ -35,6 +36,16 @@ export const parseLatex = (_latex, _inputs) => {
     }
   }
 
+  const pushLetters = (oldWord, inputs) => {
+    let word = oldWord.replace('\\operatorname{', '')
+        word = word.replace('}', '')
+    for (let i=0; i<word.length; i++) {
+      let letter = word[i]
+      inputs.push(letter)
+    }
+    return inputs
+  }
+
   const SP_varInput = () => {
     let alpha = 'abcdefghijklmnopqrstuvwxyz'
     if (latex[0] != ' ') {
@@ -46,7 +57,14 @@ export const parseLatex = (_latex, _inputs) => {
           let letter = match[0]
           if (start == 0) {
             // console.log('letter = ', letter)
-            inputs.push(letter)
+            if (HANDLE.test(letter)) {
+              // console.log('letter = ', letter)
+              inputs = [...pushLetters(letter, inputs)]
+            } else {
+              inputs.push(letter)
+            }
+            // \\operatorname\{(arccosh|arccot|arccoth|arccsc|arcsinh|arcsec|arcsech|arctanh|sech)\}
+            
             latex = latex.replace(letter, '')
           }
         }
@@ -101,8 +119,3 @@ export const parseLatex = (_latex, _inputs) => {
     addScriptBrace('super')
     return inputs
 }
-
-// parseLatex()
-// console.log('inputs = ', inputs)
-// console.log(`inputs.join('') = `, inputs.join(''))
-// console.log(`lat = `, lat)

@@ -22,7 +22,7 @@ class MathPad extends Component {
       cursorLatexPositionSnippet: '',
       numStrokes: 0,
       mod: 0,
-      isCTRLDown: false
+      isCTRLdown: false
     }
     this.getLatexPerLine = this.getLatexPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
@@ -185,7 +185,7 @@ class MathPad extends Component {
   handleKeyUpEvents(e) {
     if (e.key == 'Control') {
       this.setState({
-        isCTRLDown: false
+        isCTRLdown: false
       })
     }
   }
@@ -217,11 +217,7 @@ class MathPad extends Component {
       }
     }
 
-    const typeWord = (word, latex) => {
-        let wordInput = ''
-        if (word == 'alpha') {
-          wordInput = '\\alpha '
-        }
+    const typeWord = (wordInput, latex) => {
         for (let i=0; i<wordInput.length; i++) {
           let letter = wordInput[i]
           const textarea = document.getElementsByTagName('textarea')[0]
@@ -231,7 +227,6 @@ class MathPad extends Component {
       }
 
     const checkComplexLastWord = (patt, latex) => {
-      console.log('hit')
       let match = ''
       let word = ''
       let index = ''
@@ -323,11 +318,30 @@ class MathPad extends Component {
     } else if (e.key == 'Control') {
       // console.log('control')
       this.setState({
-        isCTRLDown: true
+        isCTRLdown: true
       })
 
+    } else if (e.key == 'Alt') {
+      // console.log('control')
+      this.setState({
+        isALTdown: true
+      })
+
+    } else if (e.key == 'a') {
+      if (this.state.isCTRLdown) {
+        if ( latex  ) {
+          e.preventDefault()
+          const textarea = document.getElementsByTagName('textarea')[0]
+          setNativeValue(textarea, '∀')
+          textarea.dispatchEvent(new Event('input', { bubbles: true }))
+        }
+      }
+    } else if (e.key == '/') {
+      if (this.state.isCTRLdown) {
+        typeWord('\\overline', latex)
+      }
     } else if (e.key == 'i') {
-      if (this.state.isCTRLDown) {
+      if (this.state.isCTRLdown) {
         e.preventDefault()
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '∞')
@@ -336,12 +350,20 @@ class MathPad extends Component {
 
     } else if (e.key == '.') {
       
-      if (this.state.isCTRLDown) {
+      if (this.state.isCTRLdown) {
         e.preventDefault()
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '→')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
+
+    } else if (e.key == 'Space') {
+      // DO NOT DELETE, THIS CODE MIGHT BECOME NECESSARY
+
+      // if (latex && checkLastWord('log_{ }', latex)) {
+      //   const subParent = document.getElementsByClassName('mq-hasCursor')[0].parentNode
+      //   subParent.parentNode.removeChild(subParent)
+      // }
 
     } else if (e.key == 'Backspace') {
       // DO NOT DELETE, THIS CODE MIGHT BECOME NECESSARY
@@ -367,27 +389,12 @@ class MathPad extends Component {
         setNativeValue(textarea, '_')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
-      words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccot}', '\\operatorname{arcsec}','\\operatorname{arccsc}','arcsinh','arccosh','arctanh','arccoth','arcsech']
+      words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech']
       if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
-      // words = ['alpha']
-      // if ( latex && checkLastWord(words, latex) ) {
-      //   const textarea = document.getElementsByTagName('textarea')[0]
-      //   setNativeValue(textarea, 'α')
-      //   textarea.dispatchEvent(new Event('input', { bubbles: true }))
-      // }
-      // words = ['alpha']
-      // if (latex && checkLastWord(words, latex) ) {
-      //   typeWord(words[0])
-      // }
-      // if (latex && checkLastWord('\\alpha', latex)) {
-      //   const textarea = document.getElementsByTagName('textarea')[0]
-      //   setNativeValue(textarea, ' ')
-      //   textarea.dispatchEvent(new Event('input', { bubbles: true }))
-      // }
     }
   }
 
@@ -405,6 +412,34 @@ class MathPad extends Component {
     let cursorParent = document.querySelector('.mq-hasCursor')
 
     const getSmallestNode = (list, isNested) => {
+
+      const createOperatorNode = (list, operator) => {
+        let word = operator.split('')
+        let cond = operator.length
+        let indices = []
+        for (let i = list.length; i>-1; i--) {
+          let last = word.length - 1
+          // if (list[i] && list[i].innerText) {
+          //   console.log('list[i].innerText = ', list[i].innerText)
+          // }
+          if (list[i] && list[i].innerText && word[last] == list[i].innerText) {
+            
+            word.pop()
+            indices.push(i)
+            cond--
+          }
+        }
+        if (cond == 0) {
+          for (let i=0; i<operator.length; i++) {
+            let index = indices[i]
+            if (i < operator.length - 1) {
+              list[index].parentNode.removeChild(list[index])
+            } else {
+              list[index].innerHTML = operator
+            }
+          }
+        }
+      }
       const output = []
       // console.log('list = ', list)
       // console.log('list[0] = ', list[0])
@@ -413,46 +448,19 @@ class MathPad extends Component {
         list = list[0] ? list[0] : list 
         list = list.children
       }
+
       for (let i=0; i<list.length; i++) {
         let child = list[i]
         let last = list[list.length - 1]
         let lastChild = list[last]
 
-        // The String "=>" 
-        // is replaced by '→' in the DOM 
-        // is replaced by '\\rightarrow' in the Latex String 
-        // pushes '\\rightarrow' into Chunked Latex"
-        if (list[i-1] && list[i-1].innerText == '=' && list[i].innerText == '>') {
-          // list[i-1].parentNode.removeChild(list[i-1])
-          // list[i-1].innerHTML = '→'
-        }
-        // The String "log" 
-        // is replaced by 'log' in the DOM 
-        // is replaced by '\\log' in the Latex String 
-        // pushes '\\log' into Chunked Latex"
 
         // if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
         //   list[i-2].parentNode.removeChild(list[i-2])
         //   list[i-2].parentNode.removeChild(list[i-2])
         //   list[i-2].innerHTML = 'log'
-        // }
-
-        // if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
-        //   list[i-2].parentNode.removeChild(list[i-2])
-        //   list[i-2].parentNode.removeChild(list[i-2])
-        //   list[i-2].innerHTML = 'log'
-        //   let id = Number(list[i-2].attributes['mathquill-command-id'].nodeValue)
-        //   let sub = document.createElement('span')
-
-        //   sub.innerHTML = `<span class="mq-supsub mq-non-leaf" mathquill-command-id="${id+1}"><span class="mq-sub mq-hasCursor" mathquill-block-id="${id+2}"></span><span style="display:inline-block;width:0">​</span></span>`
-        //   list[i-2].parentNode.appendChild(sub)
-        // }
-
-        if (list[i-2] && list[i-2].innerText == 'l' && list[i-1] && list[i-1].innerText == 'o' && list[i].innerText == 'g') {
-          // list[i-2].parentNode.removeChild(list[i-2])
-          // list[i-2].parentNode.removeChild(list[i-2])
-          // list[i-2].innerHTML = 'log'
-        } 
+      
+        // } 
 
         let obj   = {}
         obj.value = child.children.length == 0 ? child.innerText : getSmallestNode(child, true)

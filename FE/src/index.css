@@ -55,7 +55,8 @@ nav div.container {
  .mq-root-block {
     padding: 0 !important;
     margin: 0 !important;
-    /* height: 60px !important; */
+    /* height: 30px !important; */
+    padding-top: 5px !important;
  }
 
  .mq-math-mode {
@@ -71,17 +72,15 @@ nav div.container {
   border-top-color: transparent !important;
  }
 
-span.mq-textarea textarea
-
 #inputWrapper {
   margin-top: 10%;
   margin-left: 10%;
-  height: 200px;
+  height: 200px !important;
   width: 300px;
 }
 
 input {
-  height: 100px !important;
+  height: 200px !important;
 }
 
 code {

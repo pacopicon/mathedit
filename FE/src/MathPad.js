@@ -205,17 +205,71 @@ class MathPad extends Component {
       }
     }
 
-    const checkLastWord = (words, latex) => {
-      for (let i=0; i<words.length; i++) {
-        let word = words[i]
-        // console.log('word = ', word)
-        let penult = latex.length - (word.length) 
-        let lastWord = latex.slice(penult)
-        if (lastWord == word) {
-          return lastWord == word
+    // const checkLastWord = (searchedWords, latex) => {
+    //   let outcome = false
+    //   let sinequanon = '\\left('
+    //   for (let i=0; i<searchedWords.length; i++) {
+    //     let searchedWord = searchedWords[i]
+    //     let searchedIndex = latex.indexOf(searchedWord)
+    //     if (searchedIndex != -1) {
+    //       let sinequanonIndex = latex.indexOf(sinequanon)
+    //       let location = searchedIndex + searchedWord.length
+    //       if (!sinequanonIndex || sinequanonIndex == -1 || (location != sinequanonIndex)) {
+    //         outcome = true
+    //         console.log(`sinequanonIndex = ${sinequanonIndex}, location = ${location}`)
+    //       }
+    //     }
+    //   }
+    //   return outcome
+    // }
+
+    const checkLastWord = (searchedWords, latex) => {
+      let outcome = false
+      let conditionalWord = '//right('
+      let _condWord = ''
+      for (let i=0; i<searchedWords.length; i++) {
+        let searchedWord = searchedWords[i]
+        let patt = new RegExp(`${searchedWord}`, 'g')
+        let match = ''
+        let word = ''
+        let index = ''
+        while ((match = patt.exec(latex)) !== null) {
+          word = match[0]
+          index = match.index
+          let location = word.length + index + 1
+          for (let k = location; k<conditionalWord.length; k++) {
+            _condWord += latex[k]
+          } 
+          if (conditionalWord != _condWord) {
+            outcome = true
+          }
         }
+
       }
+      return outcome
     }
+
+    // const checkLastWord = (words, latex) => {
+    //   let outcome = false
+    //   for (let i=0; i<words.length; i++) {
+    //     let word = words[i]
+       
+    //     let penult = latex.length - (word.length) 
+    //     let lastWord = latex.slice(penult)
+    //     let lastIndex = ''
+    //     if (latex.includes(word)) {
+    //       lastIndex = latex.indexOf(word) + word.length
+    //     }
+    //      console.log(`latex = ${latex}, lastWord = ${lastWord}, word = ${word}, lastIndex = ${lastIndex}, MATCH? = ${lastWord == word}`)
+    //     if (lastWord == word) {
+    //       outcome = true
+    //     } 
+    //     // else if (lastWord.includes(word) && ) {
+
+    //     // }
+    //   }
+    //   return outcome
+    // }
 
     const typeWord = (wordInput, latex) => {
         for (let i=0; i<wordInput.length; i++) {

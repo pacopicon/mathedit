@@ -20,9 +20,10 @@ class MathPad extends Component {
       orderOfComponents: '',
       cursorReport: '',
       cursorLatexPositionSnippet: '',
-      numStrokes: 0,
       mod: 0,
-      isCTRLdown: false
+      isCTRLdown: false,
+      isSub: false,
+      isPar: false
     }
     this.getLatexPerLine = this.getLatexPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
@@ -191,6 +192,7 @@ class MathPad extends Component {
   }
 
   handleKeyDownEvents(e) {
+
     const setNativeValue = (element, value) => {
       const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
       const prototype = Object.getPrototypeOf(element)
@@ -205,49 +207,69 @@ class MathPad extends Component {
       }
     }
 
-    // const checkLastWord = (searchedWords, latex) => {
-    //   let outcome = false
-    //   let sinequanon = '\\left('
-    //   for (let i=0; i<searchedWords.length; i++) {
-    //     let searchedWord = searchedWords[i]
-    //     let searchedIndex = latex.indexOf(searchedWord)
-    //     if (searchedIndex != -1) {
-    //       let sinequanonIndex = latex.indexOf(sinequanon)
-    //       let location = searchedIndex + searchedWord.length
-    //       if (!sinequanonIndex || sinequanonIndex == -1 || (location != sinequanonIndex)) {
-    //         outcome = true
-    //         console.log(`sinequanonIndex = ${sinequanonIndex}, location = ${location}`)
-    //       }
-    //     }
-    //   }
-    //   return outcome
-    // }
+    const fetchIndices = (patt, str) => {
+      let match
+      let word
+      let index
+      let indices = []
+      while ((match = patt.exec(str)) !== null) {
+        word = match[0]
+        index = match.index
+        indices.push(index)
+      }
+      // console.log('indices = ', indices)
+      return indices
+    }
 
     const checkLastWord = (searchedWords, latex) => {
-      let outcome = false
-      let conditionalWord = '//right('
-      let _condWord = ''
+      let outcome
       for (let i=0; i<searchedWords.length; i++) {
         let searchedWord = searchedWords[i]
-        let patt = new RegExp(`${searchedWord}`, 'g')
-        let match = ''
-        let word = ''
-        let index = ''
-        while ((match = patt.exec(latex)) !== null) {
-          word = match[0]
-          index = match.index
-          let location = word.length + index + 1
-          for (let k = location; k<conditionalWord.length; k++) {
-            _condWord += latex[k]
-          } 
-          if (conditionalWord != _condWord) {
+        let pattPar = new RegExp(`${searchedWord}\\\\left\\(`, 'g')
+        let patt    = new RegExp(`${searchedWord}`, 'g')
+        let searchedWordLocations = fetchIndices(patt, latex)
+        if (searchedWordLocations.length > 0) {
+          let parLocations = fetchIndices(pattPar, latex)
+          console.log(`searchedWord = ${searchedWord}, searchedWordLocations = ${searchedWordLocations}, parLocations = ${parLocations}`)
+          let lastWordIndex = searchedWordLocations.pop()
+          let lastParIndex = parLocations.pop()
+          if (lastWordIndex = lastParIndex) {
+            outcome = false
+          } else if (lastParIndex < lastWordIndex || !lastParIndex) {
             outcome = true
           }
+          // console.log(`searchedWord = ${searchedWord}, lastWordIndex = ${lastWordIndex}, lastParIndex = ${lastParIndex}`)
+          
         }
-
       }
       return outcome
     }
+
+    // const checkLastWord = (searchedWords, latex) => {
+    //   let outcome = false
+    //   let conditionalWord = '//right('
+    //   let _condWord = ''
+    //   for (let i=0; i<searchedWords.length; i++) {
+    //     let searchedWord = searchedWords[i]
+    //     let patt = new RegExp(`${searchedWord}`, 'g')
+    //     let match = ''
+    //     let word = ''
+    //     let index = ''
+    //     while ((match = patt.exec(latex)) !== null) {
+    //       word = match[0]
+    //       index = match.index
+    //       let location = word.length + index + 1
+    //       for (let k = location; k<conditionalWord.length; k++) {
+    //         _condWord += latex[k]
+    //       } 
+    //       if (conditionalWord != _condWord) {
+    //         outcome = true
+    //       }
+    //     }
+
+    //   }
+    //   return outcome
+    // }
 
     // const checkLastWord = (words, latex) => {
     //   let outcome = false
@@ -307,18 +329,21 @@ class MathPad extends Component {
     // }
 
     const i = this.getCurrentMathLineIndex()
-    const { latexPerLine, latexArrayPerLine, cursorPos } = this.state
+    const { latexPerLine, cursorPos, isPar, isSub } = this.state
     const latex = latexPerLine[i]
     const inputWidth = latex ? latex.length : 0
-    // this.setState({
-    //   numStrokes: this.state.numStrokes + 1
-    // }, () => {
-    //   console.log('numStrokes = ', this.state.numStrokes)
-    // })
+    const self = this
+
     if (e.key == 'Enter') {      
       // Carriage Return
       this.insertComponent()
       this.convertLatexToObject(latex, i)
+
+    } else if (e.key == '(') {
+
+      this.setState({
+        isPar: false
+      })
 
     } else if (e.key == 'ArrowLeft') {
 
@@ -436,18 +461,25 @@ class MathPad extends Component {
       }
 
     } else if (e.key) {
-      // console.log('e.key = ', e.key)
-      let words = ['lim', 'log']
-      if ( latex && checkLastWord(words, latex) ) {
+    
+      if ( latex && isSub ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '_')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
+        console.log('this went off')
+        self.setState({
+          isSub: false
+        })
       }
-      words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech']
-      if ( latex && checkLastWord(words, latex) ) {
+      // words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech']
+      if ( latex && isPar ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
+        console.log('this went off')
+        self.setState({
+          isPar: false
+        })
       }
     }
   }
@@ -465,19 +497,22 @@ class MathPad extends Component {
 
     let cursorParent = document.querySelector('.mq-hasCursor')
 
+    let self = this
+
     const getSmallestNode = (list, isNested) => {
 
       const createOperatorNode = (list, operator) => {
         let word = operator.split('')
         let cond = operator.length
         let indices = []
+        let subScriptOperators = new Set(['lim', 'log'])
+        let parOperators = new Set(['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech'])
         for (let i = list.length; i>-1; i--) {
           let last = word.length - 1
           // if (list[i] && list[i].innerText) {
           //   console.log('list[i].innerText = ', list[i].innerText)
           // }
           if (list[i] && list[i].innerText && word[last] == list[i].innerText) {
-            
             word.pop()
             indices.push(i)
             cond--
@@ -489,6 +524,15 @@ class MathPad extends Component {
             if (i < operator.length - 1) {
               list[index].parentNode.removeChild(list[index])
             } else {
+              if (subScriptOperators.has(operator)) {
+                self.setState({
+                  isSub: true
+                })
+              } else if (parOperators.has(operator)) {
+                self.setState({
+                  isPar: true
+                })
+              }
               list[index].innerHTML = operator
             }
           }
@@ -502,6 +546,10 @@ class MathPad extends Component {
         list = list[0] ? list[0] : list 
         list = list.children
       }
+
+      createOperatorNode(list, 'log')
+      createOperatorNode(list, 'lim')
+      createOperatorNode(list, 'sin')
 
       for (let i=0; i<list.length; i++) {
         let child = list[i]

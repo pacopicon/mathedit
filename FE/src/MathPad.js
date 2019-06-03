@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import MathLine from './MathLine'
 import Header from './Header'
 import './index.css';
-import { rando, processStr } from './utils'
+import { rando, processStr, isLetter } from './utils'
 import { parseLatex } from './mathUtils/latexParser'
 
 let numNests = 1
@@ -38,6 +38,8 @@ class MathPad extends Component {
     this.getIndexFromLatex = this.getIndexFromLatex.bind(this)
     this.moveCursor = this.moveCursor.bind(this)
     this.shortCutKey = this.shortCutKey.bind(this)
+    this.setNativeValue = this.setNativeValue.bind(this)
+    this.listenForOperator = this.listenForOperator.bind(this)
   }
 
   createMathLineElement(id, pushedLatex) {
@@ -191,21 +193,33 @@ class MathPad extends Component {
     }
   }
 
-  handleKeyDownEvents(e) {
+  setNativeValue(element, value){
+    const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
+    const prototype = Object.getPrototypeOf(element)
+    const { set: prototypeValueSetter } = Object.getOwnPropertyDescriptor(prototype, 'value') || {}
 
-    const setNativeValue = (element, value) => {
-      const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
-      const prototype = Object.getPrototypeOf(element)
-      const { set: prototypeValueSetter } = Object.getOwnPropertyDescriptor(prototype, 'value') || {}
-
-      if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
-        prototypeValueSetter.call(element, value)
-      } else if (valueSetter) {
-        valueSetter.call(element, value)
-      } else {
-        throw new Error('The given element does not have a value setter')
-      }
+    if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
+      prototypeValueSetter.call(element, value)
+    } else if (valueSetter) {
+      valueSetter.call(element, value)
+    } else {
+      throw new Error('The given element does not have a value setter')
     }
+    if (value == '(') {
+      console.log('this.state.isPar: ', this.state.isPar)
+      this.setState({
+        isPar: false
+      }, () => {
+        console.log('this.state.isPar: ', this.state.isPar)
+      })
+    } else if (value == '_') {
+      this.setState({
+        isSub: false
+      })
+    }
+  }
+
+  handleKeyDownEvents(e) {
 
     const fetchIndices = (patt, str) => {
       let match
@@ -297,7 +311,7 @@ class MathPad extends Component {
         for (let i=0; i<wordInput.length; i++) {
           let letter = wordInput[i]
           const textarea = document.getElementsByTagName('textarea')[0]
-          setNativeValue(textarea, letter)
+          this.setNativeValue(textarea, letter)
           textarea.dispatchEvent(new Event('input', { bubbles: true }))
         }
       }
@@ -323,7 +337,7 @@ class MathPad extends Component {
     // const QuickKey = (latex, word, input) => {
     //   if (latex && checkLastWord(word, latex) ) {
     //     const textarea = document.getElementsByTagName('textarea')[0]
-    //     setNativeValue(textarea, input)
+    //     this.setNativeValue(textarea, input)
     //     textarea.dispatchEvent(new Event('input', { bubbles: true }))
     //   }
     // }
@@ -369,7 +383,7 @@ class MathPad extends Component {
         // console.log(`BEFORE numArrowRights = ${numArrowRights}\nres.numNests = ${res.numNests}\nnumNests = ${numNests}\nMATCH = ${numArrowRights == numNests}`)
         if ( latex && bool && numArrowRights == numNests) {
           const textarea = document.getElementsByTagName('textarea')[0]
-          setNativeValue(textarea, '(')
+          this.setNativeValue(textarea, '(')
           textarea.dispatchEvent(new Event('input', { bubbles: true }))
           // numArrowRights = -1
           // numNests = 0
@@ -411,7 +425,7 @@ class MathPad extends Component {
         if ( latex  ) {
           e.preventDefault()
           const textarea = document.getElementsByTagName('textarea')[0]
-          setNativeValue(textarea, '∀')
+          this.setNativeValue(textarea, '∀')
           textarea.dispatchEvent(new Event('input', { bubbles: true }))
         }
       }
@@ -423,7 +437,7 @@ class MathPad extends Component {
       if (this.state.isCTRLdown) {
         e.preventDefault()
         const textarea = document.getElementsByTagName('textarea')[0]
-        setNativeValue(textarea, '∞')
+        this.setNativeValue(textarea, '∞')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
 
@@ -432,7 +446,7 @@ class MathPad extends Component {
       if (this.state.isCTRLdown) {
         e.preventDefault()
         const textarea = document.getElementsByTagName('textarea')[0]
-        setNativeValue(textarea, '→')
+        this.this.setNativeValue(textarea, '→')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
 
@@ -456,7 +470,7 @@ class MathPad extends Component {
       let words = ['sinh','cosh','tanh','coth']
       if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
-        setNativeValue(textarea, '(')
+        this.setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
 
@@ -464,21 +478,59 @@ class MathPad extends Component {
     
       if ( latex && isSub ) {
         const textarea = document.getElementsByTagName('textarea')[0]
-        setNativeValue(textarea, '_')
+        this.setNativeValue(textarea, '_')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
-        console.log('this went off')
-        self.setState({
-          isSub: false
-        })
+        
       }
       // words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech']
       if ( latex && isPar ) {
         const textarea = document.getElementsByTagName('textarea')[0]
-        setNativeValue(textarea, '(')
+        this.setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
-        console.log('this went off')
-        self.setState({
-          isPar: false
+        
+        // self.setState({
+        //   isPar: false
+        // }, () => {
+        //   console.log('setState CB went off')
+        // })
+      }
+    }
+  }
+
+  listenForOperator(list, operator, latex){
+    let word = operator.split('')
+    let opArrRev = word.reverse()
+    let opReverse = opArrRev.join('')
+    let cond = operator.length
+    let subScriptOperators = new Set(['lim', 'log'])
+    let parOperators = new Set(['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech'])
+    let strokesString = ''
+    for (let i = list.length; i>-1; i--) {
+      let last = word.length - 1
+      if (list[i] && isLetter(list[i].innerText)) {
+        strokesString += list[i].innerText
+        console.log('strokesString = ', strokesString)
+      }
+      
+      if (list[i] && list[i].innerText && word[last] == list[i].innerText) {
+        word.pop()
+        cond--
+      }
+    }
+    let lastSymbol = ''
+    let hasPar = false
+    console.log(`strokesString = ${strokesString}, opReverse = ${opReverse}, strokesString.length = ${strokesString.length}, opReverse.length = ${opReverse.length}, strokesString == opReverse => ${strokesString == opReverse}`)
+    
+    if (strokesString == opReverse) {
+      // console.log(`INSIDE symbolString = ${this.state.symbolString}, lastSymbol = ${lastSymbol}, hasPar = ${hasPar}, latex = ${latex}`)
+      if (subScriptOperators.has(operator)) {
+        this.setState({
+          isSub: true
+        })
+      } else if (parOperators.has(operator)) {
+        // console.log(`this.state.isPar = ${this.state.isPar}, lastLatexWord = ${lastLatexWord}`)
+        this.setState({
+          isPar: true
         })
       }
     }
@@ -497,47 +549,8 @@ class MathPad extends Component {
 
     let cursorParent = document.querySelector('.mq-hasCursor')
 
-    let self = this
-
     const getSmallestNode = (list, isNested) => {
 
-      const createOperatorNode = (list, operator) => {
-        let word = operator.split('')
-        let cond = operator.length
-        let indices = []
-        let subScriptOperators = new Set(['lim', 'log'])
-        let parOperators = new Set(['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech'])
-        for (let i = list.length; i>-1; i--) {
-          let last = word.length - 1
-          // if (list[i] && list[i].innerText) {
-          //   console.log('list[i].innerText = ', list[i].innerText)
-          // }
-          if (list[i] && list[i].innerText && word[last] == list[i].innerText) {
-            word.pop()
-            indices.push(i)
-            cond--
-          }
-        }
-        if (cond == 0) {
-          for (let i=0; i<operator.length; i++) {
-            let index = indices[i]
-            if (i < operator.length - 1) {
-              list[index].parentNode.removeChild(list[index])
-            } else {
-              if (subScriptOperators.has(operator)) {
-                self.setState({
-                  isSub: true
-                })
-              } else if (parOperators.has(operator)) {
-                self.setState({
-                  isPar: true
-                })
-              }
-              list[index].innerHTML = operator
-            }
-          }
-        }
-      }
       const output = []
       // console.log('list = ', list)
       // console.log('list[0] = ', list[0])
@@ -547,9 +560,9 @@ class MathPad extends Component {
         list = list.children
       }
 
-      createOperatorNode(list, 'log')
-      createOperatorNode(list, 'lim')
-      createOperatorNode(list, 'sin')
+      this.listenForOperator(list, 'log', latex)
+      this.listenForOperator(list, 'lim', latex)
+      this.listenForOperator(list, 'sin', latex)
 
       for (let i=0; i<list.length; i++) {
         let child = list[i]

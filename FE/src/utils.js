@@ -11,3 +11,8 @@ export const processStr = (str) => {
   let res = str.replace(/(\\)/g, "\\\\");
   return res;
 };
+
+export const isLetter = (str) => {
+  let patt = /[a-zA-Z]/g
+  return patt.test(str)
+}

@@ -23,7 +23,8 @@ class MathPad extends Component {
       mod: 0,
       isCTRLdown: false,
       isSub: false,
-      isPar: false
+      isPar: false,
+      strokeRecord: ''
     }
     this.getLatexPerLine = this.getLatexPerLine.bind(this)
     this.handleKeyDownEvents = this.handleKeyDownEvents.bind(this)
@@ -39,7 +40,34 @@ class MathPad extends Component {
     this.moveCursor = this.moveCursor.bind(this)
     this.shortCutKey = this.shortCutKey.bind(this)
     this.setNativeValue = this.setNativeValue.bind(this)
-    this.listenForOperator = this.listenForOperator.bind(this)
+    this.autoInsertPar = this.autoInsertPar.bind(this)
+  }
+
+  autoInsertPar(latex) {
+    let parOperators = new Set(['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech'])
+
+    const parPatt = /(\\sin|\\ln|\\cos|\\tan|\\cot|\\csc|\\sec|\\arcsin|\\arccos|\\arctan|\\operatorname\{(arccosh|arccot|arccoth|arccsc|arcsinh|arcsec|arcsech|arctanh|sech)\})(?!(\\left|h))/g
+    const subPatt = /(\\log)(?!(_))/g
+    
+    if (parPatt.test(latex) && !this.state.isPar) {
+      this.setState({
+        isPar: true
+      })
+    }
+
+    if (subPatt.test(latex) && !this.state.isSub) {
+      this.setState({
+        isSub: true
+      })
+    }
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    const { latexPerLine } = nextState
+    const i = this.getCurrentMathLineIndex()
+    const latex = latexPerLine[i]
+
+    this.autoInsertPar(latex)
   }
 
   createMathLineElement(id, pushedLatex) {
@@ -259,54 +287,6 @@ class MathPad extends Component {
       return outcome
     }
 
-    // const checkLastWord = (searchedWords, latex) => {
-    //   let outcome = false
-    //   let conditionalWord = '//right('
-    //   let _condWord = ''
-    //   for (let i=0; i<searchedWords.length; i++) {
-    //     let searchedWord = searchedWords[i]
-    //     let patt = new RegExp(`${searchedWord}`, 'g')
-    //     let match = ''
-    //     let word = ''
-    //     let index = ''
-    //     while ((match = patt.exec(latex)) !== null) {
-    //       word = match[0]
-    //       index = match.index
-    //       let location = word.length + index + 1
-    //       for (let k = location; k<conditionalWord.length; k++) {
-    //         _condWord += latex[k]
-    //       } 
-    //       if (conditionalWord != _condWord) {
-    //         outcome = true
-    //       }
-    //     }
-
-    //   }
-    //   return outcome
-    // }
-
-    // const checkLastWord = (words, latex) => {
-    //   let outcome = false
-    //   for (let i=0; i<words.length; i++) {
-    //     let word = words[i]
-       
-    //     let penult = latex.length - (word.length) 
-    //     let lastWord = latex.slice(penult)
-    //     let lastIndex = ''
-    //     if (latex.includes(word)) {
-    //       lastIndex = latex.indexOf(word) + word.length
-    //     }
-    //      console.log(`latex = ${latex}, lastWord = ${lastWord}, word = ${word}, lastIndex = ${lastIndex}, MATCH? = ${lastWord == word}`)
-    //     if (lastWord == word) {
-    //       outcome = true
-    //     } 
-    //     // else if (lastWord.includes(word) && ) {
-
-    //     // }
-    //   }
-    //   return outcome
-    // }
-
     const typeWord = (wordInput, latex) => {
         for (let i=0; i<wordInput.length; i++) {
           let letter = wordInput[i]
@@ -334,20 +314,27 @@ class MathPad extends Component {
       }
     }
 
-    // const QuickKey = (latex, word, input) => {
-    //   if (latex && checkLastWord(word, latex) ) {
-    //     const textarea = document.getElementsByTagName('textarea')[0]
-    //     this.setNativeValue(textarea, input)
-    //     textarea.dispatchEvent(new Event('input', { bubbles: true }))
-    //   }
-    // }
-
     const i = this.getCurrentMathLineIndex()
     const { latexPerLine, cursorPos, isPar, isSub } = this.state
     const latex = latexPerLine[i]
     const inputWidth = latex ? latex.length : 0
-    const self = this
 
+    // if (e.key) {
+    //   e.preventDefault()
+    //   let stroke = ''
+    //   if (e.key == ' ') {
+    //     stroke = ' '
+    //   } else if (e.key == 'Backspace') {
+    //     console.log('Backspace')
+    //   } else if (isLetter(e.key)) {
+    //     stroke = e.key
+    //   }
+
+    //   this.setState({
+    //     strokeRecord: this.state.strokeRecord + stroke
+    //   })
+    // } 
+    
     if (e.key == 'Enter') {      
       // Carriage Return
       this.insertComponent()
@@ -446,7 +433,7 @@ class MathPad extends Component {
       if (this.state.isCTRLdown) {
         e.preventDefault()
         const textarea = document.getElementsByTagName('textarea')[0]
-        this.this.setNativeValue(textarea, '→')
+        this.setNativeValue(textarea, '→')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
       }
 
@@ -467,7 +454,8 @@ class MathPad extends Component {
       // }
 
     } else if (e.key == 'h') {
-      let words = ['sinh','cosh','tanh','coth']
+      console.log('key listener for h fired')
+      let words = ['sinh','cosh','tanh','coth','arccosh']
       if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         this.setNativeValue(textarea, '(')
@@ -484,6 +472,7 @@ class MathPad extends Component {
       }
       // words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech']
       if ( latex && isPar ) {
+        console.log('sin fired')
         const textarea = document.getElementsByTagName('textarea')[0]
         this.setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
@@ -493,45 +482,6 @@ class MathPad extends Component {
         // }, () => {
         //   console.log('setState CB went off')
         // })
-      }
-    }
-  }
-
-  listenForOperator(list, operator, latex){
-    let word = operator.split('')
-    let opArrRev = word.reverse()
-    let opReverse = opArrRev.join('')
-    let cond = operator.length
-    let subScriptOperators = new Set(['lim', 'log'])
-    let parOperators = new Set(['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech'])
-    let strokesString = ''
-    for (let i = list.length; i>-1; i--) {
-      let last = word.length - 1
-      if (list[i] && isLetter(list[i].innerText)) {
-        strokesString += list[i].innerText
-        console.log('strokesString = ', strokesString)
-      }
-      
-      if (list[i] && list[i].innerText && word[last] == list[i].innerText) {
-        word.pop()
-        cond--
-      }
-    }
-    let lastSymbol = ''
-    let hasPar = false
-    console.log(`strokesString = ${strokesString}, opReverse = ${opReverse}, strokesString.length = ${strokesString.length}, opReverse.length = ${opReverse.length}, strokesString == opReverse => ${strokesString == opReverse}`)
-    
-    if (strokesString == opReverse) {
-      // console.log(`INSIDE symbolString = ${this.state.symbolString}, lastSymbol = ${lastSymbol}, hasPar = ${hasPar}, latex = ${latex}`)
-      if (subScriptOperators.has(operator)) {
-        this.setState({
-          isSub: true
-        })
-      } else if (parOperators.has(operator)) {
-        // console.log(`this.state.isPar = ${this.state.isPar}, lastLatexWord = ${lastLatexWord}`)
-        this.setState({
-          isPar: true
-        })
       }
     }
   }
@@ -559,10 +509,6 @@ class MathPad extends Component {
         list = list[0] ? list[0] : list 
         list = list.children
       }
-
-      this.listenForOperator(list, 'log', latex)
-      this.listenForOperator(list, 'lim', latex)
-      this.listenForOperator(list, 'sin', latex)
 
       for (let i=0; i<list.length; i++) {
         let child = list[i]

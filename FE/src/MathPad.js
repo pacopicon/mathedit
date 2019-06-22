@@ -455,7 +455,7 @@ class MathPad extends Component {
 
     } else if (e.key == 'h') {
       console.log('key listener for h fired')
-      let words = ['sinh','cosh','tanh','coth','arccosh']
+      let words = ['sinh','sech','cosh','tanh','coth','arccosh']
       if ( latex && checkLastWord(words, latex) ) {
         const textarea = document.getElementsByTagName('textarea')[0]
         this.setNativeValue(textarea, '(')
@@ -470,19 +470,14 @@ class MathPad extends Component {
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
         
       }
-      // words = ['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech']
+
       if ( latex && isPar ) {
         console.log('sin fired')
         const textarea = document.getElementsByTagName('textarea')[0]
         this.setNativeValue(textarea, '(')
         textarea.dispatchEvent(new Event('input', { bubbles: true }))
-        
-        // self.setState({
-        //   isPar: false
-        // }, () => {
-        //   console.log('setState CB went off')
-        // })
       }
+
     }
   }
 

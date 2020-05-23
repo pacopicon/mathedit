@@ -44,10 +44,11 @@ class MathPad extends Component {
   }
 
   autoInsertPar(latex) {
+    console.log('latex = ', latex)
     let parOperators = new Set(['sin','ln','cos','tan','cot','csc','sec','sinh','cosh','tanh','coth','\\operatorname{sech}','arcsin','arccos','arctan','\\operatorname{arccosh}','\\operatorname{arccot}','\\operatorname{arccoth}','\\operatorname{arccsc}','\\operatorname{arcsec}','\\operatorname{arcsech}','\\operatorname{arcsinh}','\\operatorname{arctanh}','arcsech'])
 
     const parPatt = /(\\sin|\\ln|\\cos|\\tan|\\cot|\\csc|\\sec|\\arcsin|\\arccos|\\arctan|\\operatorname\{(arccosh|arccot|arccoth|arccsc|arcsinh|arcsec|arcsech|arctanh|sech)\})(?!(\\left|h))/g
-    const subPatt = /(\\log)(?!(_))/g
+    const subPatt = /(\\log|\\lim)(?!(_))/g
     
     if (parPatt.test(latex) && !this.state.isPar) {
       this.setState({
@@ -175,7 +176,7 @@ class MathPad extends Component {
     let ul = document.getElementById('ul')
         if (ul && ul.children[0] && ul.children[0].childNodes[0] && ul.children[0].childNodes[0].children[0] && ul.children[0].childNodes[0].children[0].children[0]) {
           let ulArr =  ul.children
-          let textArea = ulArr[i+1].childNodes[0].childNodes[0].childNodes[0]
+          let textArea = ulArr[i+1] ? ulArr[i+1].childNodes[0].childNodes[0].childNodes[0] : null;
           if (textArea) {
             textArea.focus()
           }
@@ -234,11 +235,11 @@ class MathPad extends Component {
       throw new Error('The given element does not have a value setter')
     }
     if (value == '(') {
-      console.log('this.state.isPar: ', this.state.isPar)
+      // console.log('this.state.isPar: ', this.state.isPar)
       this.setState({
         isPar: false
       }, () => {
-        console.log('this.state.isPar: ', this.state.isPar)
+        // console.log('this.state.isPar: ', this.state.isPar)
       })
     } else if (value == '_') {
       this.setState({
@@ -272,7 +273,7 @@ class MathPad extends Component {
         let searchedWordLocations = fetchIndices(patt, latex)
         if (searchedWordLocations.length > 0) {
           let parLocations = fetchIndices(pattPar, latex)
-          console.log(`searchedWord = ${searchedWord}, searchedWordLocations = ${searchedWordLocations}, parLocations = ${parLocations}`)
+          // console.log(`searchedWord = ${searchedWord}, searchedWordLocations = ${searchedWordLocations}, parLocations = ${parLocations}`)
           let lastWordIndex = searchedWordLocations.pop()
           let lastParIndex = parLocations.pop()
           if (lastWordIndex = lastParIndex) {
@@ -630,6 +631,7 @@ class MathPad extends Component {
   }
 
   shortCutKey(latex) {
+    console.log('latex = ', latex)
     const searchAndReplace = (domEl, ltxStr) => {
       String.prototype.replaceAll = function(search, replacement) {
         var target = this;

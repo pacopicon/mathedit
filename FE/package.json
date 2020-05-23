@@ -3,18 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "algebra-latex": "^1.1.5",
+    "algebra.js": "^0.2.6",
     "axios": "^0.18.0",
+    "coffeequate": "^1.3.0",
     "react": "^16.6.3",
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.6.3",
-    "react-mathquill": "0.1.3",
-    "react-scripts": "2.1.1"
+    "react-mathquill": "0.2.5",
+    "react-scripts": "2.1.1",
+    "save": "^2.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "cd src && cd mathUtils && node test",
+    "eject": "react-scripts eject",
+    "calc": "cd src && cd mathUtils && node calc",
+    "simplify": "cd src && cd mathUtils && node simplify"
   },
   "eslintConfig": {
     "extends": "react-app"

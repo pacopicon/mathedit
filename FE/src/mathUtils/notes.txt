@@ -1,0 +1,166 @@
+Mathematical Operators
+
+i. Arithmetic
+    a. +
+    b. -
+    c. \pm
+    d. 2 x 4, *, x\left(y\right), \left(y\right)x, \left(y\right)\left(x\right), xy
+    e. x\cdiv y, frac{x}{y}
+    f. x^y, x^{yy}
+    g. \sqrt{x}, \sqrt[x]{y}
+    h. \left|x\right|
+    i. \ln \left(x\right), \log _x\left(y\right)
+    j. \sum _{n=0}^{\infty \:}\frac{3}{2^n}, \sum _{n=0}^{x}\frac{3}{2^n}
+    k. factorial => x!  (e.g. 10! = 1 * 2 * 3 * 4 * 5 * 6 * 7 * 8 * 9 * 10)
+ii . algebraic
+    a. binomial coefficient => \binom{x}{y}  ///// DOES NOT WORK ON SYMBOLAB!
+    b. pattern for greek letters: (\\alpha\s|\\beta\s|\\gamma\s|\\Gamma\s|\\delta\s|\\Delta\s|\\epsilon\s|\\varepsilon\s|\\zeta\s|\\eta\s|\\theta\s|\\Theta\s|\\vartheta\s|\\iota\s|\\kappa\s|\\lambda\s|\\Lambda\s|\\mu\s|\\nu\s|\\xi\s|\\Xi\s|\\pi\s|\\Pi\s|\\varpi\s|\\rho\s|\\varrho\s|\\sigma\s|\\varsigma\s|\\Sigma\s|\\tau\s|\\upsilon\s|\\Upsilon\s|\\phi\s|\\varphi\s|\\chi\s|\\psi\s|\\Psi\s|\\omega\s|\\Omega\s)
+    c. Greek letters: 
+        -\\alpha\s
+        -\\beta\s
+        -\\gamma\s
+        -\\Gamma\s
+        -\\delta\s
+        -\\Delta\s
+        -\\epsilon\s
+        -\\varepsilon\s
+        -\\zeta\s
+        -\\eta\s
+        -\\theta\s
+        -\\Theta\s
+        -\\vartheta\s
+        -\\iota\s
+        -\\kappa\s
+        -\\lambda\s
+        -\\Lambda\s
+        -\\mu\s
+        -\\nu\s
+        -\\xi\s
+        -\\Xi\s
+        -\\pi\s
+        -\\Pi\s
+        -\\varpi\s
+        -\\rho\s
+        -\\varrho\s
+        -\\sigma\s
+        -\\varsigma\s
+        -\\Sigma\s
+        -\\tau\s
+        -\\upsilon\s
+        -\\Upsilon\s
+        -\\phi\s
+        -\\varphi\s
+        -\\chi\s
+        -\\psi\s
+        -\\Psi\s
+        -\\omega\s
+        -\\Omega\s
+
+iii. trigonometric
+    a. \sin \left(x\right) (e.g., all trig functions have same syntax)
+    b. cos
+    c. tan
+    d. cot
+    e. sec
+    f. csc
+    g. sinh
+    h. cosh
+    i. tanh
+    j. coth
+    k. sech
+    l. arcsin
+    m. arccos
+    n. arctan
+    o. arccot
+    p. arcsec
+    q. arccsc
+    r. arcsinh
+    s. arccosh
+    t. arctanh
+    u. arccoth
+    v. arcsech
+iv. calculus
+    a. differentiation => \frac{d}{dx}\left(\frac{3x+9}{2-x}\right)
+    b. partial differentiation => \frac{\partial }{\partial x}\left(\frac{x}{x^2+y^2}\right)
+    c. integral => \int x^2dx=\frac{x^3}{3}+C, \int _0^{\pi }\sin \left(x\right)dx
+    d. limit => \lim _{x\to \infty }\left(e^x\right)
+
+
+
+dot mult combos:
+
+Behavior:
+(1) = simply remove \cdot\s and let proximateMult take care of it
+(2) = remove \cdot\s and render product of coefficients.  
+      This can be done by combining the strings such that 1st operand coefficient 
+      is placed next to the 2nd operand variable but away from 2nd operand coefficient.
+      It will then be picked up by proximateMult
+(3) = Resolve mathematically and render solution
+(4) = Simplify but render with dot multiplication
+
+dotMultiplicationOfAtLeastOneVariable
+
+name: 'dotMultiplicationOfCoefficientsOnly'
+patt: /(\d+[a-zA-Z]+(\^((\{)?(\+|\-|\^)?(\w+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)*)?(\\cdot\s)(\d+)(?!(\w+))(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?)|((?<!(\w+|\w+\^))(\d+)(\^((\{)?(\+|\-|\^)?\w+(\+|\-|\^)?(\{)?(\})?)+)?(\\cdot\s)(\d+)(\w+|\\[a-zA-Z]+\s)+(\^((\{)?(\+|\-|\^)?(\w+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)+)?)|\d+(\^((\{)?(\+|\-|\^)?([a-zA-Z]+|\\[a-zA-Z]+\s)(\+|\-|\^)?(\{)?(\})?)+)(\\cdot\s)\d+(\41)/g
+
+dotMultiplication_nonAlgebraic
+
+dotMultiplication_minimalSimp
+
+-x * x       = x^2       => (1)
+-x^2 * x     = x^3       => (1)
+-x * x^2     = x^3       => (1)
+-x * 5       = 5x        => (1)  
+-5 * x       = 5x        => (1)
+-5x * x      = 5x^2      => (1)
+-x * 5x      = 5x^2      => (1)
+-2x * 3x     = 6x^2      => (1)
+-2x * x^3    = 2x^3      => (1)
+-2x^3 * x    = 2x^4      => (1)
+-x * 2x^3    = 2x^4      => (1)
+-2x^2 * 2x^3 = 4x^5      => (1)
+
+-2 * 3x^2    = 6x^2      => (2)
+-2x^2 * 3    = 6x^2      => (2)
+-2^x * 3^x   = 6^x       => (2)
+
+-2^2 * 3     = 12        => (3)
+-2 * 3^2     = 18        => (3)
+-2^2 * 3^2   = 36        => (3)
+
+-2^x * 3     = 3 * 2^x   => (4)
+-2 * 3^x     = 2 * 3^x   => (4)
+-2^x * 3^y   = 3^y * 2^x => (4)
+
+
+variable^{anything} * anything
+variable coefficient * anything
+anything * variable == anything * variable^anything == anything * variable^{anything} 
+    == anything * variable coefficient
+anything * coefficient variable
+
+
+(1)
+x\cdot x       x^2\cdot x     x\cdot x^2     x\cdot 5         5\cdot x       5x\cdot x      x\cdot 5x      2x\cdot 3x     2x\cdot x^3    2x^3\cdot x    x\cdot 2x^3    2x^2\cdot 2x^3 
+(2)
+2\cdot 3x^2    2x^2\cdot 3    2^x\cdot 3^x   
+(3)
+2^2\cdot 3     2\cdot 3^2     2^2\cdot 3^2   
+(4)
+2^x\cdot 3     2\cdot 3^x     2^x\cdot 3^y  
+
+1) leading var-coeff, trailing coeff
+
+2) leading coeff, trailing var-coeff
+
+3) identical, leading and trailing, variable exponents
+
+
+(?<!((\)|\}|\|)\^))(
+  ((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*(\^|\+|\-)?)+)+)+
+  |
+  (((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)
+) 
+
+
+(?<!((\)|\}|\|)\^))((((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+)(?<=((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))(\^((\w+|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+))+)|((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^((?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))+(\^|\+|\-)?(?<!\\frac)(\{)?(\w|\\(?!(cdot|div|sin)\s)(?<=\\)([a-zA-Z]+\s))*(\})*(\^|\+|\-)?)+)+)+)

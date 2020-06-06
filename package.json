@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^4.0.1",
+    "jspdf": "^1.5.3",
     "react-bootstrap": "^0.32.4"
   }
 }

@@ -1,24 +1,50 @@
 import axios from 'axios';
-const url = 'http://localhost:4000/api/'
-const route = 'mathHtml'
+import { API_URL } from './mathUtils/VARS';
 
-const axiosPost = (latexStr, callback) => {
-  const payload = {}
-  payload.latexStr = latexStr
+export const postToBE = (payload, route, callback) => {
   return axios.post(
-    `${url}${route}`, 
+    `${API_URL}${route}`, 
     payload
     ).then( response => {
-      const { success, html } = response.data
-      if (success) {
-        callback(null, html)
-      } else {
-        const err = 'Error, success = false'
-        callback(err)
-      }
+        callback(null, response.data)
+     
     }).catch(err => {
       callback(err)
     })
 }
 
-export default axiosPost;
+export const getFileNames = (currFileName, callback) => {
+  const route = 'fileNames'
+  
+  return axios.get(
+    `${API_URL}${route}`
+    ).then( response => {
+      const fileNames     = response.data
+      const _fileNames    = [];
+      const _currFileName = `${currFileName}.tex`;
+      fileNames.map( fileName => {
+        if (fileName !== _currFileName) {
+          fileName = fileName.replace('.tex', '')
+          _fileNames.push(fileName)
+        }
+      })
+      callback(null, _fileNames)
+    }).catch(err => {
+      callback(err)
+    })
+
+}
+
+export const loadFile = (callback) => {
+  const route = 'file'
+  return axios.post(
+    `${API_URL}${route}`
+    ).then( response => {
+        callback(response.data)
+     
+    }).catch(err => {
+      callback(err)
+    })
+
+}
+

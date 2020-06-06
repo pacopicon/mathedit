@@ -16,3 +16,13 @@ export const isLetter = (str) => {
   let patt = /[a-zA-Z]/g
   return patt.test(str)
 }
+
+export const deleteObjProp = (_prop, obj) => {
+  const _obj = {}
+  for (let prop in obj) {
+    if (prop !== _prop) {
+      _obj[prop] = obj[prop]
+    }
+  }
+  return _obj
+}

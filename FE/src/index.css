@@ -1,24 +1,76 @@
 body {
   margin: 0;
   padding: 0;
-  /* font-family: 'Noto Serif', serif; */
-  /* font-family: 'Alegreya', serif; */
-  /* font-family: 'Tinos', serif; */
+  /* font-family: 'Noto Serif', serif !important; */
+  /* font-family: 'Alegreya', serif !important; */
+  /* font-family: 'Tinos', serif !important; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-.Alegreya {
+#brand {
+  font-family: 'Alegreya', serif !important;
+  height: 20% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.navbar {
+  margin-bottom: 0px !important;
+}
+.navbar-toggler {
+  float: right !important;
+  /* padding: 0 !important; */
+  margin-right: 10% !important;
+}
+
+.collapse {
+  padding: 0 !important;
+}
+
+#title {
+  text-align: center;
+  font-size: 20px !important;
+  margin-bottom: 10px;
   font-family: 'Alegreya', serif;
+  cursor: pointer;
+}
+.navbar-nav {
+  margin: 0 !important;
 }
 
-nav div.container {
-  margin-right: 0 !important;
-  margin-left: 0 !important;
+#brand, button {
+  margin-right: 3em !important;
 }
 
-#MathPad {
+form {
+  margin-left: 35% !important;
+  width: 30% !important;
+  display: inline-block !important;
+  text-align: center !important;
+}
 
+#titleInput.form-group {
+  /* width: 25% !important; */
+  margin: 0 !important;
+  padding: 0 !important;
+  /* height: 20px !important; */
+  float: left !important;
+}
+
+#titleSubmit {
+  width: 25% !important;
+  /* height: 20px !important; */
+  /* float: right !important; */
+  float: left;
+}
+
+#ul {
+  margin-right: 2em;
+  /* margin-left: 1em !important; */
+}
+
+ul {
+  padding-inline-start: 2em !important;
 }
 
 #MathLines {
@@ -53,23 +105,68 @@ nav div.container {
  }
 
  .mq-root-block {
-    padding: 0 !important;
-    margin: 0 !important;
-    /* height: 30px !important; */
-    padding-top: 5px !important;
+   /* height: 30px; */
+   padding-top: 5px !important;
+
  }
 
- .mq-math-mode {
+ /* .mq-editable-field .mq-latex-command-input */
+.mq-math-mode, .mq-math-mode .mq-editable-field {
   padding: 0 !important;
-  /* font-family: 'Noto Serif', serif !important; */
-  font-family: 'Alegreya', serif !important;
-  /* font-size: 30px; */
-  /* font-family: 'Tinos', serif !important; */
+  margin: 0 !important;
+  /* height: 30px !important; */
+  padding-top: 5px !important;
+  /* font-family: 'Alegreya', serif !important; */
+  /* font-family: 'Inconsolata', monospace !important; */
+  /* font-family: 'Old Standard TT', serif !important; */
+  /* font-family: 'Playfair Display', serif !important; */
+  /* font-family: 'Source Code Pro', monospace !important; */
+ }
+
+.mq-math-mode {
+  padding: 0 !important;
   border-style: dashed !important;
   border-left-color: lightblue !important;
   border-right-color: lightblue !important;
   border-bottom-color: lightblue !important;
   border-top-color: transparent !important;
+ }
+
+ .mq-supsub {
+  font-size: 60% !important;
+  vertical-align: -0.3em !important;
+ }
+
+.mq-supsub.mq-sup-only {
+  font-size: 60% !important;
+  /* vertical-align: -0.1em !important; */
+}
+.mq-large-operator {
+  vertical-align: 0em !important;
+  line-height: inherit !important;
+}
+
+.mq-to {
+  font-size: 60% !important;
+ }
+
+.mq-from {
+  font-size: 60% !important;
+  margin-top: 0.5em !important;
+ }
+
+ big {
+   /* font-family: 'Alegreya', serif !important; */
+   /* font-stretch: expanded !important; */
+   /* font-family: 'EB Garamond', serif !important; */
+  /* font-family: 'GFS Didot', serif !important;   */
+  /* font-family: 'Noto Sans', sans-serif !important; */
+   font-size: 120% !important;
+   transform: scale(1.6, 1.3) !important;
+   font-size-adjust: 0.28 !important;
+   /* line-height: 1.1em !important; */
+   margin-right: 0.2em !important;
+   padding-left: 0.1em !important;
  }
 
 #inputWrapper {
@@ -79,9 +176,9 @@ nav div.container {
   width: 300px;
 }
 
-input {
+/* input {
   height: 200px !important;
-}
+} */
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

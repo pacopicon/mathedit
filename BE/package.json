@@ -4,18 +4,20 @@
   "description": "a set of software procedures that handle Prequal client data",
   "main": "app.js",
   "scripts": {
-    "server": "node app.js",
-    "mon": "nodemon app.js",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "calc": "node test.js"
   },
   "dependencies": {
     "algebra.js": "^0.2.6",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "body-parser": "^1.18.2",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "mathquill-markup-generator": "^0.2.0",
-    "nodemon": "^1.17.3"
+    "node-latex": "^2.6.3",
+    "nodemon": "^1.17.3",
+    "string-to-stream": "^3.0.1"
   },
   "repository": {
     "type": "git",

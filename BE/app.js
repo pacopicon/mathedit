@@ -3,7 +3,7 @@ require('dotenv').config();
 const express     			= require('express');
 const app         			= express();
 const bodyParser  			= require('body-parser');
-const router = require('./router')
+const router            = require('./router')
 
 // BodyParser Middleware
 app.use(bodyParser.json());

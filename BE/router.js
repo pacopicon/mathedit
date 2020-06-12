@@ -1,23 +1,22 @@
 const express     = require('express');
 const router      = express.Router();
 const {
-  save,
+  exportToPDF,
   loadFileName,
   loadfile,
   downloadFile
 } = require('./io')
 
-router.post('/save', (req, res) => {
+router.post('/export', (req, res) => {
   const {
     linesToSave,
-    fileName,
-    format
+    fileName
   } = req.body;
 
-  save(linesToSave, fileName, format, (err, msg) => {
+  exportToPDF(linesToSave, fileName, (err, msg) => {
     const response = {
       success: !err ? true : false,
-      msg: !err ? msg : err
+      data: !err ? msg : err
     }
     if (err) {
       console.error(err)

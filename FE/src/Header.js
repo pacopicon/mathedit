@@ -22,26 +22,26 @@ const Header = (props) => {
       }
     } else {
       dropdownItems.push(
-        <NavDropdown.Item key={1}>No Saved Files</NavDropdown.Item>
+        <NavDropdown.Item key={1}>No Uploaded Files</NavDropdown.Item>
       )
     }
     return dropdownItems;
   }
 
-  const downloadFile = () => {
-    const file = props.currFileName
-    const url = FILES_URL + `${file}.tex`;
-    fetch(url)
-      .then( response => {
-        response.blob().then( blob => {
-          let url = window.URL.createObjectURL(blob);
-          let a = document.createElement('a');
-          a.href = url;
-          a.download = `${file}.tex`
-          a.click();
-        })
-      })
-  }
+  // const exportToPDF = () => {
+  //   const file = props.currFileName
+  //   const url = FILES_URL + `${file}.tex`;
+  //   fetch(url)
+  //     .then( response => {
+  //       response.blob().then( blob => {
+  //         let url = window.URL.createObjectURL(blob);
+  //         let a = document.createElement('a');
+  //         a.href = url;
+  //         a.download = `${file}.tex`
+  //         a.click();
+  //       })
+  //     })
+  // }
 
   return  <Navbar bg="light" expand="sm" collapseOnSelect>
             <Navbar.Brand id="brand">
@@ -50,15 +50,18 @@ const Header = (props) => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mr-auto">
-                <Button variant="outline-success" onClick={() => { props.createNewFile() }}className="Alegreya">Create New File</Button>
+                <Button variant="outline-success" onClick={ () => { props.createNewFile() } } className="Alegreya">Create New File</Button>
                 {
-                  !props.isSaved 
-                  ? <Button variant="outline-success" onClick={() => { props.checkToSave(true) }}className="Alegreya">Save current</Button>
-                  : ''
+                  props.linesToSave
+                    ? <Button variant="outline-success" onClick={props.saveLocal} className="Alegreya">Save Locally</Button>
+                    : ''
                 }
-                
-                <Button variant="outline-success" onClick={downloadFile}className="Alegreya">Download current</Button>
-                
+                {
+                  props.linesToSave
+                    ? <Button variant="outline-success" onClick={props.exportToPDF}className="Alegreya">Export to PDF</Button>
+                    : ''
+                }
+                <input type="file" onChange={props.onFileChange} multiple />
                 <NavDropdown title="Files" id="basic-nav-dropdown">
                   {
                     renderDropdown()
@@ -69,6 +72,4 @@ const Header = (props) => {
           </Navbar>
 }
 
-export default Header
-
-
+export default Header;

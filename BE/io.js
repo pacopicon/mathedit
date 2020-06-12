@@ -1,40 +1,56 @@
-const writeLatex      = require('node-latex');
-const streamifyString = require('string-to-stream')
+const latexToPDF      = require('node-latex');
+const streamifyString = require('string-to-stream');
 const fs              = require('fs')
-const repo            = './texFiles/';
+const repo            = './texFile/';
 
-exports.save = (linesToSave, fileName, format, callback) => {
+exports.exportToPDF = (linesToSave, fileName, callback) => {
 
-  if (format === 'pdf') {
+  const initFp = `${repo}${fileName}.tex`;
+  const endFp  = `${repo}${fileName}.pdf`;
 
-    // const inputStream = streamifyString(linesToSave);
+  fs.writeFile(initFp, linesToSave, (err) => {
+    if (err) {
+      callback(err, null);
+    } else {
+
+      const inputStream  = fs.createReadStream(initFp);
+      const output       = fs.createWriteStream(endFp);
+      const pdf          = latexToPDF(inputStream);
+      console.log(' typeof pdf = ', typeof pdf)
+      console.log('pdf  = ', pdf)
+      
+
+      pdf.pipe(output);
+      pdf.on('error', err => console.log('Error::', err));
+      pdf.on('finish', async () => {
+
+        fs.unlink(initFp, async () => {
+          fs.readFile(endFp, (err, buf) => {
+            if (err) {
+              callback(err)
+              return;
+            } else {
+              // const outputStream  = await fs.createReadStream(endFp);
+              fs.unlink(endFp, async () => {
+                
+      // console.log('blob = ', blob)
+                // const buffer = Buffer.from(buf)
+                const str = buf.toString('base64')
+                callback(null, str)
+                // callback(null, outputStream)
+              })
+            }
+          });
+        })
+      })
+    }
+  })
+
   
-    const inputStream  = fs.createReadStream('test.txt');
-    const output = fs.createWriteStream(fileName);
-    const pdf    = writeLatex(inputStream);
 
-    console.log('fileName = ', fileName)
-    console.log('inputStream = ', inputStream)
+  
 
-    pdf.pipe(output);
-    pdf.on('error', err => console.log('Error::', err));
-    pdf.on('finish', () => console.log('PDF generated'))
-
-  } else if (format === 'tex') {
-    const fp   = `${repo}${fileName}.tex`;
-    fs.writeFile(fp, linesToSave, (err) => {
-      if (err) {
-        callback(err, null);
-      } else {
-
-        const msg = 'WRITE tex successful';
-        console.log(msg)
-        callback(null, msg)
-
-      }
-    })
-
-  }
+  
 
 }
 

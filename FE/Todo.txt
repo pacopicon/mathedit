@@ -1,0 +1,27 @@
+TODO:
+
+(1) Finish the resolveProximateFactors fn
+    (a) The console.log in the Splice fn gets the wrong "origStr" when the string being processed has brackets.  This isn't botching the return, just how the function is being logged.  It's minor, but it may make it difficult to debug the function.  Fix it
+    (b) Handle monomials raised to the power of 0.  x^0 = 1.  In binomials it doesn't matter as much because (2x^2)(x^0) = 2x^2, but if x^0 is its own term and this term is added or subtracted, we still need that 1.
+    (c) you broke something and now 2x^3xx^xx simplifies to 2x^{5x} (incorrect) instead of 2x^{5+x} (correct)
+(2) Add to Solve.js the following techniques:
+    (a) factoring binomials (two terms)
+    (b) factoring four or more terms by grouping
+
+
+Tests
+
+1 - save current file (it should POST, then write in BE)
+2 - save current file from (1) again (it shouldn't POST)
+3 - load file ( current file should prompt to save: if no it shouldn't, if yes it follow both (1) and (2))
+4 - default file naming should be orderly ('untitled', then 'untitled_1', then 'untitled_2' etc.)
+5 - you should not be prompted to save or save at all a file with no Latex or just spaces.
+
+
+To do:
+1 - Make it so you can export as visible, legible PDF files
+2 - Add Buttons for Math Symbols as well as Hints (hover hints?)
+2.5 - Make viewable on iPad
+3 - Fix the Display of Nthroots and Squareroots
+4 - make it so you can modulate font size
+5 - implement do/undo functionality

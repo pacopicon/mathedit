@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
-// import MathLine from './MathLine_Orig';
 import MathLine from './MathLine';
 import Header from './Header';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import swal from 'sweetalert';
-import {
-  postToBE,
-  getFileNames
-} from './api';
+import { postToBE } from './api';
 import './index.css';
-// import { rando, processStr, isLetter } from './utils';
 import { rando, deleteObjProp } from './utils';
 import { parseLatex } from './mathUtils/latexParser';
 
@@ -27,6 +22,9 @@ class MathPad extends Component {
       numUntitled: 1,
       shouldDisplaySave: false,
       fileNames: [],
+      uploadedfiles: null,
+      lineStop: null,
+      template: [`\\documentclass[fleqn]{article}\n\\usepackage{amsmath}\n\\begin{document}\n\\noindent\n\\begin{flalign*}\n`,`\\end{flalign*}\n\\noindent\n\\end{document}`],
       currentFile: {
         'untitled-1': {
           latexPerLine: [],
@@ -62,91 +60,198 @@ class MathPad extends Component {
     this.shortCutKey = this.shortCutKey.bind(this);
     this.setNativeValue = this.setNativeValue.bind(this);
     this.autoInsertPar = this.autoInsertPar.bind(this);
-    this.save = this.save.bind(this);
-    this.checkToSave = this.checkToSave.bind(this);
+    this.exportToPDF = this.exportToPDF.bind(this);
+    this.checkToKeep = this.checkToKeep.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleTitleChange = this.handleTitleChange.bind(this);
     this.loadFile = this.loadFile.bind(this);
     this.createNewFile = this.createNewFile.bind(this);
+    this.onFileChange = this.onFileChange.bind(this);
+    this.saveLocal = this.saveLocal.bind(this);
+  }
+
+  downloadLocally = (blob, fileName) => {
+    
+    if (typeof window.navigator.msSaveBlob !== 'undefined') {
+      window.navigator.msSaveBlob(blob, fileName)
+    } else {
+
+      const blobURL = ( window.URL && window.URL.createObjectURL ) ? window.URL.createObjectURL(blob) : window.webkitURL.createObjectURL(blob);
+      const tempLink         = document.createElement('a');
+      tempLink.style.display = 'none';
+      tempLink.href          = blobURL;
+      tempLink.setAttribute('download', fileName);
+
+      if (typeof tempLink.download === 'undefined') {
+        tempLink.setAttribute('target', '_blank');
+      }
+
+      document.body.appendChild(tempLink);
+      tempLink.click();
+
+      setTimeout(function() {
+          document.body.removeChild(tempLink);
+          window.URL.revokeObjectURL(blobURL);
+      }, 200)
+
+    }
+  }
+
+  async saveLocal() {
+    const {
+      currentFile,
+      currFileName,
+      template
+    }                  = this.state;
+
+    const latexPerLine = currentFile[currFileName] ? currentFile[currFileName].latexPerLine : [];
+    const linesToSave  = this.concatenateLatex(latexPerLine).trim();
+    let fileName       = await this.createFileName();
+    fileName           = fileName ? fileName : currFileName;
+    fileName           += '.tex'
+
+    const blobData     = [`${template[0]}${linesToSave}${template[1]}`];
+    // const blobData     = [linesToSave];
+    // const blob        = new Blob(blobData, {type: 'application/octet-stream'} );
+    const blob         = new Blob(blobData, {type: 'text/html'} );
+    
+    this.downloadLocally(blob, fileName);
+    // const saveLocal = () => {
+    //   const filename    = props.currFileName;
+    //   const linesToSave = props.fullLatex;;
+
+    //   const element     = document.createElement('a');
+    //   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(linesToSave));
+    //   element.setAttribute('download', filename);
+
+    //   element.style.display = 'none';
+    //   document.body.appendChild(element);
+
+    //   element.click();
+
+    //   document.body.removeChild(element);
+
+    // }
+
+
+    // const file = props.currFileName
+    // const url = FILES_URL + `${file}.tex`;
+    // fetch(url)
+    //   .then( response => {
+    //     response.blob().then( blob => {
+    //       let url = window.URL.createObjectURL(blob);
+    //       let a = document.createElement('a');
+    //       a.href = url;
+    //       a.download = `${file}.tex`
+    //       a.click();
+    //     })
+    //   })
+  }
+
+  async onFileChange(e) {
+
+    const files     = e.target.files
+    let {
+      currentFile,
+      currFileName,
+      fileNames
+    }               = this.state;
+
+
+    for (let i=0; i<files.length; i++) {
+      const file     = files[i];
+      const data     = await file.text();
+      console.log('data = ', data)
+      console.log('file = ', file)
+      const fileName = file.name.replace('.tex', '')
+      const latexes                           = data.split('\n');
+      currentFile[fileName]                   = {};
+      currentFile[fileName].latexPerLine      = latexes
+      currentFile[fileName].latexArrayPerLine = [];
+      currentFile[fileName].MathLines         = [];
+      currentFile[fileName].currentMathLineId = '';
+      currentFile[fileName].orderOfComponents = [];
+      currentFile[fileName].savedLatex        = data;
+      currentFile[fileName].isSaved           = true;
+
+      fileNames.push(fileName);
+
+      for (let i=0; i<latexes.length; i++) {
+        const latex                           = latexes[i];
+        currentFile[fileName].latexArrayPerLine.push( parseLatex(latex, []) )
+        const id                              = rando();
+        currentFile[fileName].MathLines.push( this.createMathLineElement(id, latex) );
+        currentFile[fileName].orderOfComponents.push(id);
+      } // end inside for loop
+
+      if (files.length === 1) {
+
+        this.checkToKeep( (lineCheck) => {
+
+          if (!lineCheck) {
+            currentFile = deleteObjProp(currFileName, currentFile);
+          }
+
+          this.setState({
+            currentFile,
+            fileNames,
+            currFileName: fileName
+          })
+        })
+  
+      } // end conditional
+
+    } // end outside for loop
+
+    if (files.length > 1) {
+      this.setState({
+        currentFile,
+        fileNames
+      })
+    }
+
   }
 
   concatenateLatex = (latexPerLine) => {
     let linesToSave = '';
-    for ( let i=0; i<latexPerLine.length; i++ ) {
-      const line = latexPerLine[i];
-      if (i !== latexPerLine.length - 1) {
-        linesToSave += line + '\n';
-      } else {
-        linesToSave += line;
-      }
+    let len         = latexPerLine.length
+    for ( let i=0; i<len; i++ ) {
+      linesToSave += latexPerLine[i] + (i !== len - 1 ? ' \\\\' : '') + '\n';
     }
-    console.log('linesToSave = ', linesToSave)
     return linesToSave;
   }
 
-  async checkToSave(isCurrent, callback) {
+  async checkToKeep(callback) {
 
     const {
       currentFile,
       currFileName
-    }                   = this.state;
-    
-    let lineCheck       = false;
-    const latexPerLine  = currentFile[currFileName].latexPerLine;
-    let savedLatex      = currentFile[currFileName].savedLatex;
-    // const last          = latexPerLine.length - 1;
+    }                  = this.state;
+    const latexPerLine = currentFile[currFileName].latexPerLine;
+    let linesToSave    = this.concatenateLatex(latexPerLine);
+    let keepCurrFile   = false;
+    let lineCheck      = linesToSave.split('\n').join('');
+    lineCheck          = lineCheck.split('\\').join('');
+    lineCheck          = lineCheck.trim();
 
-    // for ( let i=0; i<latexPerLine.length; i++ ) {
-    //   const line = latexPerLine[i];
-    //   if (i !== last) {
-    //     linesToSave += line + '\n';
-    //   } else {
-    //     linesToSave += line;
-    //   }
-    // }
-    
-    let linesToSave     = this.concatenateLatex(latexPerLine);
-
-    if ( !savedLatex || ( savedLatex !== linesToSave) ) {
-      lineCheck   = linesToSave.split('\n').join('');
-      lineCheck   = lineCheck.split('\\').join('');
-      lineCheck   = lineCheck.trim();
-    }
-
-    let shouldSaveCurrFile = false;
     if (lineCheck) {
-
-      if (!isCurrent) {
-
-        shouldSaveCurrFile = await swal({
-          text: 'Would you like to save your current file?',
-          buttons: ['no', 'yes']
-        });
-
-        console.log('prompt return = ', shouldSaveCurrFile);
-
-      } else {
-        shouldSaveCurrFile = true;
-      }
-
-      if (shouldSaveCurrFile) {
-        this.save(linesToSave);
-      }
-    } else if (isCurrent) {
-      swal("There is nothing to save", {
-        buttons: false,
-        timer: 750
+      keepCurrFile = await swal({
+        text: 'Would you like to keep the current file?',
+        buttons: ['no', 'yes']
       });
     }
-    if (callback) {
-      const shouldDiscardCurrentFile = !isCurrent && !lineCheck
-      callback(shouldDiscardCurrentFile);
+
+    if (keepCurrFile) {
+      callback(lineCheck);
+    } else {
+      callback(false);
     }
   }
 
   createFileName = async (altName) => {
 
-    let fileName = await swal({
+    let fileName = null
+    fileName = await swal({
       text: 'Please name your file:',
       content: 'input',
       button: {
@@ -157,11 +262,6 @@ class MathPad extends Component {
 
     if (altName && !fileName) {
       fileName = altName
-    }
-
-    if (!fileName) {
-      const { numUntitled } = this.state;
-      fileName              = `untitled-${numUntitled + 1}`;
     }
 
     return fileName;
@@ -186,9 +286,9 @@ class MathPad extends Component {
       currentFile[fileName].MathLines.push( this.createMathLineElement(id, '') );
       currentFile[fileName].orderOfComponents.push(id);
 
-      this.checkToSave( false, (shouldDiscardCurrentFile) => {
+      this.checkToKeep( (lineCheck) => {
 
-        if (shouldDiscardCurrentFile) {
+        if (!lineCheck) {
           currentFile = deleteObjProp(currFileName, currentFile);
         }
 
@@ -203,46 +303,51 @@ class MathPad extends Component {
 
   loadFile(fileName) {
 
-    const payload = {
-      fileName
-    };
-
-    postToBE(payload, 'file', async (error, data) => {
-      if (error) {
-        console.log('error = ', error);
-      } else {
-        const latexes                     = data.textArr;
-        let { currentFile, currFileName }       = this.state;
-        currentFile[fileName]                   = {};
-        currentFile[fileName].latexPerLine      = latexes;
-        currentFile[fileName].latexArrayPerLine = [];
-        currentFile[fileName].MathLines         = [];
-        currentFile[fileName].currentMathLineId = '';
-        currentFile[fileName].orderOfComponents = [];
-        currentFile[fileName].savedLatex        = data.text;
-        currentFile[fileName].isSaved          = true;
-
-        for (let i=0; i<latexes.length; i++) {
-          const latex                           = latexes[i];
-          currentFile[fileName].latexArrayPerLine.push( parseLatex(latex, []) )
-          const id                              = rando();
-          currentFile[fileName].MathLines.push( this.createMathLineElement(id, latex) );
-          currentFile[fileName].orderOfComponents.push(id);
-        }
-        this.checkToSave( false, (shouldDiscardCurrentFile) => {
-
-          if (shouldDiscardCurrentFile) {
-            currentFile = deleteObjProp(currFileName, currentFile);
-          }
-
-          this.setState({
-            currentFile,
-            currFileName: fileName
-          })
-        })
-
-      }
+    this.setState({
+      currFileName: fileName
     })
+
+    // const payload = {
+    //   fileName
+    // };
+
+    // postToBE(payload, 'file', async (error, data) => {
+    //   if (error) {
+    //     console.log('error = ', error);
+    //   } else {
+    //     const latexes                           = data.textArr;
+    //     let { currentFile, currFileName }       = this.state;
+    //     currentFile[fileName]                   = {};
+    //     currentFile[fileName].latexPerLine      = latexes;
+    //     currentFile[fileName].latexArrayPerLine = [];
+    //     currentFile[fileName].MathLines         = [];
+    //     currentFile[fileName].currentMathLineId = '';
+    //     currentFile[fileName].orderOfComponents = [];
+    //     currentFile[fileName].savedLatex        = data.text;
+    //     currentFile[fileName].isSaved           = true;
+
+    //     for (let i=0; i<latexes.length; i++) {
+    //       const latex                           = latexes[i];
+    //       currentFile[fileName].latexArrayPerLine.push( parseLatex(latex, []) )
+    //       const id                              = rando();
+    //       currentFile[fileName].MathLines.push( this.createMathLineElement(id, latex) );
+    //       currentFile[fileName].orderOfComponents.push(id);
+    //     }
+
+    //     this.checkToKeep( (lineCheck) => {
+
+    //       if (!lineCheck) {
+    //         currentFile = deleteObjProp(currFileName, currentFile);
+    //       }
+
+    //       this.setState({
+    //         currentFile,
+    //         currFileName: fileName
+    //       })
+    //     })
+
+    //   }
+    // })
   }
 
   handleTitleChange(e) {
@@ -267,9 +372,14 @@ class MathPad extends Component {
     })
   }
 
-  async save(linesToSave) {
+  async exportToPDF() {
 
-    let { currentFile, currFileName, fileNames } = this.state;
+    let {
+      currentFile,
+      currFileName,
+      template
+    } = this.state;
+
     let fileName        = '';
 
     if ( currFileName.includes('untitled') ) {
@@ -278,30 +388,52 @@ class MathPad extends Component {
       fileName = currFileName;
     }
 
+    const latexPerLine = currentFile[currFileName].latexPerLine;
+    let linesToSave    = this.concatenateLatex(latexPerLine);
+
     const payload = {
-      linesToSave,
-      fileName,
-      format: 'tex'
+      linesToSave: `${template[0]}${linesToSave}${template[1]}`,
+      fileName
     }
-    postToBE(payload, 'save', (error, succ) => {
+    postToBE(payload, 'export', (error, b64Data) => {
       if (error) {
         console.log('error = ', error);
       } else {
-        console.log('succ = ', succ)
-        currentFile[currFileName].savedLatex = linesToSave;
-        currentFile[currFileName].isSaved    = true;
-        currentFile[fileName]                = currentFile[currFileName];
+        // const blobData = [base64Str]
+        // const blob = new Blob(blobData, {type: 'applicaiton/pdf'} )
+        // this.downloadLocally(blob, `${fileName}.pdf`)
+////////////////
+        const b64toBlob = (b64Data, contentType='', sliceSize=512) => {
+          const byteCharacters = atob(b64Data);
+          const byteArrays = [];
         
-        if (fileName !== currFileName) {
-          currentFile = deleteObjProp(currFileName, currentFile);
+          for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            const slice = byteCharacters.slice(offset, offset + sliceSize);
+        
+            const byteNumbers = new Array(slice.length);
+            for (let i = 0; i < slice.length; i++) {
+              byteNumbers[i] = slice.charCodeAt(i);
+            }
+        
+            const byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+          }
+        
+          const blob = new Blob(byteArrays, {type: contentType});
+          return blob;
         }
+        const blob = b64toBlob(b64Data, 'applicaiton/pdf');
+        const blobUrl = URL.createObjectURL(blob);
+        
+        window.location = blobUrl;
+////////////
 
-        fileNames.push(fileName);
-        this.setState({
-          currentFile,
-          fileNames,
-          currFileName: fileName
-        })
+        
+        // console.log('buffer = ', buffer)
+
+        // const blobData = [buffer];
+        // const blob     = new Blob(blobData, {type: 'application/pdf'} );
+        // this.downloadLocally(blob, fileName + '.pdf');
       }
     })
   }
@@ -356,16 +488,20 @@ class MathPad extends Component {
     currentFile[currFileName].MathLines         = [ this.createMathLineElement(id, '') ];
     currentFile[currFileName].orderOfComponents = temp;
 
-    getFileNames( currFileName, (err, fileNames) => {
-      if (err) {
-        console.error(err);
-      } else {
-        this.setState({
-          currentFile,
-          fileNames
-        })
-      }
+    this.setState({
+      currentFile
     })
+
+    // getFileNames( currFileName, (err, fileNames) => {
+    //   if (err) {
+    //     console.error(err);
+    //   } else {
+    //     this.setState({
+    //       currentFile,
+    //       fileNames
+    //     })
+    //   }
+    // })
   }
 
   getCurrentMathLineIndex() {
@@ -410,27 +546,31 @@ class MathPad extends Component {
   }
 
   backspaceComponent = () => {
-    let { currentFile, currFileName } = this.state;
-
-    let MathLines           = currentFile[currFileName].MathLines;
-    let latexArrayPerLine   = currentFile[currFileName].latexArrayPerLine;
-    let orderOfComponents   = currentFile[currFileName].orderOfComponents;
-    let latexPerLine        = currentFile[currFileName].latexPerLine;
     const current           = this.getCurrentMathLineIndex();
-    const prior             = current - 1;
 
-    MathLines.splice(current, 1);
-    latexArrayPerLine.splice(current, 1);
-    orderOfComponents.splice(current, 1);
-    latexPerLine.splice(current, 1);
+    if (current !== 0) {
 
-    currentFile[currFileName].MathLines         = MathLines;
-    currentFile[currFileName].currentMathLineId = orderOfComponents[prior];
-    currentFile[currFileName].latexArrayPerLine = latexArrayPerLine;
-    currentFile[currFileName].orderOfComponents = orderOfComponents;
-    currentFile[currFileName].latexPerLine      = latexPerLine;
-    
-    this.setCurrFileStateAndFocusLastMathline(currentFile, prior, currFileName);
+      let { currentFile, currFileName } = this.state;
+
+      let MathLines           = currentFile[currFileName].MathLines;
+      let latexArrayPerLine   = currentFile[currFileName].latexArrayPerLine;
+      let orderOfComponents   = currentFile[currFileName].orderOfComponents;
+      let latexPerLine        = currentFile[currFileName].latexPerLine;
+      const prior             = current - 1;
+
+      MathLines.splice(current, 1);
+      latexArrayPerLine.splice(current, 1);
+      orderOfComponents.splice(current, 1);
+      latexPerLine.splice(current, 1);
+
+      currentFile[currFileName].MathLines         = MathLines;
+      currentFile[currFileName].currentMathLineId = orderOfComponents[prior];
+      currentFile[currFileName].latexArrayPerLine = latexArrayPerLine;
+      currentFile[currFileName].orderOfComponents = orderOfComponents;
+      currentFile[currFileName].latexPerLine      = latexPerLine;
+      this.setCurrFileStateAndFocusLastMathline(currentFile, prior, currFileName);
+
+    }
   }
 
   insertComponent() {
@@ -649,12 +789,13 @@ class MathPad extends Component {
       currFileName,
       // cursorPos,
       isPar,
-      isSub
+      isSub,
+      lineStop
     }                  = this.state;
     const i            = this.getCurrentMathLineIndex();
     const isSaved      = currentFile[currFileName].isSaved;
     const latexPerLine = currentFile[currFileName].latexPerLine;
-    const latex        = latexPerLine[i];
+    let latex          = latexPerLine[i];
 
     if (isSaved && e.key !== 'Space' && e.key !== 'Enter') {
       currentFile[currFileName].isSaved = false;
@@ -697,10 +838,8 @@ class MathPad extends Component {
         }
 
       }
-      const i         = this.getCurrentMathLineIndex();
-      const currLatex = latexPerLine[i];
 
-      if (!currLatex) {
+      if (!latex) {
         this.backspaceComponent();
       }
       // DO NOT DELETE, THIS CODE MIGHT BECOME NECESSARY
@@ -1042,19 +1181,22 @@ class MathPad extends Component {
       currentFile,
       currFileName,
       isTitleClicked,
-      fileNames
-    }               = this.state;
-    const MathLines = currentFile[currFileName] ? currentFile[currFileName].MathLines : null;
-    const isSaved = currentFile[currFileName] ? currentFile[currFileName].isSaved : false;
+      fileNames,
+      uploadedfiles
+    }                  = this.state;
+    const MathLines    = currentFile[currFileName] ? currentFile[currFileName].MathLines : null;
+    const latexPerLine = currentFile[currFileName] ? currentFile[currFileName].latexPerLine : [];
+    const linesToSave  = this.concatenateLatex(latexPerLine).trim();
     return (
       <div id="MathPad" onKeyDown={this.handleKeyDownEvents} onKeyUp={this.handleKeyUpEvents} onMouseDown={this.handleFocus}>
         <Header
-          checkToSave={this.checkToSave}
           fileNames={fileNames}
-          currFileName={currFileName}
           loadFile={this.loadFile}
           createNewFile={this.createNewFile}
-          isSaved={isSaved}
+          onFileChange={this.onFileChange}
+          exportToPDF={this.exportToPDF}
+          linesToSave={linesToSave}
+          saveLocal={this.saveLocal}
         />
         {
           isTitleClicked
@@ -1079,5 +1221,3 @@ class MathPad extends Component {
 }
 
 export default MathPad;
-
-/* <input type="text" id="titleInput" placeholder={this.state.currFileName} onChange={this.handleTitleChange} /> */
